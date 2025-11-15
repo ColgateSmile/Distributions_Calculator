@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Student's t Distribution Calculator</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- jStat for distribution math -->
+  <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", Roboto, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .page-wrapper {
+      flex: 1 0 auto;
+    }
+
+    .card {
+      background: #1e253b;
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      color: #f8fafc;
+    }
+
+    .card-header {
+      background: radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.08) 0%, rgba(30, 37, 59, 0) 60%);
+      border-bottom: 1px solid #334155;
+      border-radius: 1rem 1rem 0 0 !important;
+      color: #f8fafc;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+    }
+
+    .metric-row {
+      margin-bottom: 0.75rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      gap: 0.5rem;
+    }
+
+    .metric-label {
+      font-weight: 600;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .metric-label .info-icon {
+      color: #38bdf8;
+      font-size: 0.85rem;
+      cursor: pointer;
+    }
+
+    .metric-value {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 0.75rem;
+      margin-top: 1rem;
+    }
+
+    .stat-tile {
+      background-color: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      min-height: 78px;
+      font-size: 0.85rem;
+      line-height: 1.3;
+    }
+
+    .stat-title {
+      font-weight: 600;
+      color: #f8fafc;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-bottom: 0.25rem;
+      font-size: 0.8rem;
+    }
+
+    .stat-title .info-icon {
+      color: #38bdf8;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .stat-main {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #38bdf8;
+    }
+
+    .stat-desc {
+      font-size: 0.7rem;
+      color: #94a3b8;
+    }
+
+    footer {
+      border-top: 1px solid #334155;
+      margin-top: 3rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .hm-foot-icon a {
+      color: #38bdf8;
+      font-size: 1.2rem;
+      display: inline-flex;
+      width: 2rem;
+      height: 2rem;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      text-decoration: none;
+    }
+
+    .hm-foot-icon a:hover {
+      color: #0ea5e9;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+    }
+
+    footer a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      color: #0ea5e9;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+    }
+  </style>
+</head>
+<body>
+<div class="container page-wrapper">
+  <div class="text-center mb-4">
+    <h1 class="h3 mb-1">Student's t Distribution Calculator</h1>
+    <div class="text-secondary">
+      T ~ t<sub>ν</sub>. Visualize the PDF, CDF, shaded probabilities, and descriptive values for any degrees of freedom.
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- LEFT PANEL -->
+    <div class="col-lg-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <div class="fw-semibold">Inputs</div>
+          <div class="small text-secondary">Enter ν (df) and x</div>
+        </div>
+        <div class="card-body">
+          <div class="mb-3">
+            <label class="form-label">ν (degrees of freedom)</label>
+            <input id="dfInput" type="number" min="1" value="10" class="form-control" />
+            <div class="form-text text-secondary" style="font-size: .7rem; color: #64748b !important;">
+              ν must be ≥ 1
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">x (highlight)</label>
+            <input id="xInput" type="number" step="0.1" value="0" class="form-control" />
+          </div>
+
+          <div class="d-flex gap-2">
+            <button id="calcBtn" class="btn btn-primary flex-grow-1">Calculate</button>
+            <button id="resetBtn" class="btn btn-outline-secondary flex-grow-1">Reset</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="col-lg-8 d-flex flex-column gap-4">
+      <!-- CHART CARD -->
+      <div class="card">
+        <div class="card-header">
+          <div class="fw-semibold">Density Curve (PDF)</div>
+          <div class="small text-secondary">Blue area = P(T ≤ x). Red area = P(T > x).</div>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="distChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTS CARD -->
+      <div class="card p-3">
+        <div class="metric-row">
+          <div class="metric-label">
+            <span>PDF(x)</span>
+            <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="PDF (Probability Density Function): the height of the t curve at x."></i>
+          </div>
+          <div class="metric-value" id="pdfVal">–</div>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric-label">
+            <span>CDF(x) = P(T ≤ x)</span>
+            <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="CDF (Cumulative Distribution Function): probability the t value is at or below x."></i>
+          </div>
+          <div class="metric-value" id="cdfVal">–</div>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric-label">
+            <span>P(T &gt; x)</span>
+            <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Probability that the t-statistic exceeds x. Equals 1 − CDF(x)."></i>
+          </div>
+          <div class="metric-value" id="aboveVal">–</div>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric-label">
+            <span>t-value</span>
+            <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="t-value: the standardized statistic measured in standard-error units."></i>
+          </div>
+          <div class="metric-value" id="tVal">–</div>
+        </div>
+
+        <div class="metric-row">
+          <div class="metric-label">
+            <span>Two-tailed P(|T| ≥ |x|)</span>
+            <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Two-tailed probability that the magnitude of T is at least |x|. Useful for two-sided tests."></i>
+          </div>
+          <div class="metric-value" id="twoTailVal">–</div>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-tile">
+            <div class="stat-title">
+              <span>Degrees of freedom (ν)</span>
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Controls tail heaviness. Smaller ν = heavier tails."></i>
+            </div>
+            <div class="stat-main" id="dfVal">–</div>
+            <div class="stat-desc">Shape parameter</div>
+          </div>
+
+          <div class="stat-tile">
+            <div class="stat-title">
+              <span>Mean</span>
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Mean exists only for ν &gt; 1 and equals 0."></i>
+            </div>
+            <div class="stat-main" id="meanVal">–</div>
+            <div class="stat-desc">Center of the curve</div>
+          </div>
+
+          <div class="stat-tile">
+            <div class="stat-title">
+              <span>Std Dev</span>
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Standard deviation exists for ν &gt; 2."></i>
+            </div>
+            <div class="stat-main" id="stdVal">–</div>
+            <div class="stat-desc">Spread in SE units</div>
+          </div>
+
+          <div class="stat-tile">
+            <div class="stat-title">
+              <span>Variance</span>
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-placement="top" title="Variance = ν / (ν − 2) when ν &gt; 2."></i>
+            </div>
+            <div class="stat-main" id="varVal">–</div>
+            <div class="stat-desc">Spread (squared)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="hm-foot-icon mb-2">
+    <a href="https://www.facebook.com/dror.mor.9" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://github.com/ColgateSmile" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://www.linkedin.com/in/dror-mor-%D7%93%D7%A8%D7%95%D7%A8-%D7%9E%D7%95%D7%A8-90865a201/" target="_blank"><i class="fab fa-linkedin"></i></a>
+    <a href="https://www.instagram.com/drmor1994/" target="_blank"><i class="fab fa-instagram"></i></a>
+  </div>
+  <small>
+    Created by <span style="color: #38bdf8;">Dror Mor</span> |
+    <a href="https://colgatesmile.github.io/DrorMorResume/" target="_blank">Website</a> |
+    <a href="https://github.com/ColgateSmile" target="_blank">GitHub</a>
+  </small>
+</footer>
+
+<script>
+  function fmt4(v) {
+    if (!isFinite(v)) return '∞';
+    return Number(v).toFixed(4);
+  }
+
+  function fmtNA() {
+    return 'undefined';
+  }
+
+  function buildCurve(df) {
+    let lower = jStat.studentt.inv(0.001, df);
+    let upper = jStat.studentt.inv(0.999, df);
+    if (!isFinite(lower)) lower = -10;
+    if (!isFinite(upper)) upper = 10;
+    const steps = 250;
+    const stepSize = (upper - lower) / steps;
+    const pts = [];
+    for (let i = 0; i <= steps; i++) {
+      const xVal = lower + i * stepSize;
+      pts.push({ x: xVal, y: jStat.studentt.pdf(xVal, df) });
+    }
+    return pts;
+  }
+
+  function splitAreas(points, xCut) {
+    const left = [];
+    const right = [];
+    for (let i = 0; i < points.length; i++) {
+      const pt = points[i];
+      if (pt.x <= xCut) {
+        left.push({ x: pt.x, y: pt.y });
+        right.push({ x: pt.x, y: null });
+      } else {
+        left.push({ x: pt.x, y: null });
+        right.push({ x: pt.x, y: pt.y });
+      }
+    }
+    return { left, right };
+  }
+
+  const dfInput = document.getElementById('dfInput');
+  const xInput = document.getElementById('xInput');
+  const calcBtn = document.getElementById('calcBtn');
+  const resetBtn = document.getElementById('resetBtn');
+
+  const pdfValEl = document.getElementById('pdfVal');
+  const cdfValEl = document.getElementById('cdfVal');
+  const aboveValEl = document.getElementById('aboveVal');
+  const twoTailValEl = document.getElementById('twoTailVal');
+  const tValEl = document.getElementById('tVal');
+
+  const dfValEl = document.getElementById('dfVal');
+  const meanValEl = document.getElementById('meanVal');
+  const stdValEl = document.getElementById('stdVal');
+  const varValEl = document.getElementById('varVal');
+
+  const ctx = document.getElementById('distChart').getContext('2d');
+  let chartInstance = null;
+
+  function renderNumbers(df, x) {
+    const pdf = jStat.studentt.pdf(x, df);
+    const cdf = jStat.studentt.cdf(x, df);
+    const above = 1 - cdf;
+    const twoTail = 2 * Math.min(cdf, 1 - cdf);
+
+    pdfValEl.textContent = fmt4(pdf);
+    cdfValEl.textContent = fmt4(cdf);
+    aboveValEl.textContent = fmt4(above);
+    twoTailValEl.textContent = fmt4(twoTail);
+    tValEl.textContent = fmt4(x);
+
+    dfValEl.textContent = df;
+
+    if (df > 1) {
+      meanValEl.textContent = fmt4(0);
+    } else {
+      meanValEl.textContent = fmtNA();
+    }
+
+    if (df > 2) {
+      const variance = df / (df - 2);
+      const stdDev = Math.sqrt(variance);
+      stdValEl.textContent = fmt4(stdDev);
+      varValEl.textContent = fmt4(variance);
+    } else if (df > 1) {
+      stdValEl.textContent = '∞';
+      varValEl.textContent = '∞';
+    } else {
+      stdValEl.textContent = fmtNA();
+      varValEl.textContent = fmtNA();
+    }
+  }
+
+  function renderChart(df, xCut) {
+    const curvePts = buildCurve(df);
+    const { left, right } = splitAreas(curvePts, xCut);
+
+    const data = {
+      datasets: [
+        {
+          label: 'PDF',
+          data: curvePts,
+          parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+          borderColor: 'rgba(148,163,184,1)',
+          backgroundColor: 'rgba(148,163,184,1)',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.2,
+          fill: false
+        },
+        {
+          label: 'Area ≤ x',
+          data: left,
+          parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+          borderColor: 'rgba(56,189,248,0)',
+          backgroundColor: 'rgba(56,189,248,0.4)',
+          pointRadius: 0,
+          showLine: true,
+          tension: 0.2,
+          fill: 'origin'
+        },
+        {
+          label: 'Area > x',
+          data: right,
+          parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+          borderColor: 'rgba(248,113,113,0)',
+          backgroundColor: 'rgba(248,113,113,0.4)',
+          pointRadius: 0,
+          showLine: true,
+          tension: 0.2,
+          fill: 'origin'
+        }
+      ]
+    };
+
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          type: 'linear',
+          title: { display: true, text: 't', color: '#f8fafc' },
+          ticks: {
+            color: '#f8fafc',
+            callback: (val) => Number(val).toFixed(2)
+          },
+          grid: { display: false }
+        },
+        y: {
+          title: { display: true, text: 'PDF', color: '#f8fafc' },
+          ticks: {
+            color: '#f8fafc',
+            callback: (val) => Number(val).toFixed(3)
+          },
+          grid: { color: 'rgba(148,163,184,0.2)' }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: '#f8fafc' }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              const xv = ctx.parsed.x;
+              const yv = ctx.parsed.y;
+              if (xv === undefined || yv === undefined) return null;
+              return `t=${Number(xv).toFixed(3)}, pdf=${Number(yv).toFixed(4)}`;
+            }
+          }
+        }
+      }
+    };
+
+    if (chartInstance) {
+      chartInstance.data = data;
+      chartInstance.options = options;
+      chartInstance.update();
+    } else {
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data,
+        options
+      });
+    }
+  }
+
+  function calculateAndRender() {
+    const df = parseFloat(dfInput.value);
+    const x = parseFloat(xInput.value);
+
+    if (isNaN(df) || df < 1) {
+      alert('Degrees of freedom must be at least 1.');
+      return;
+    }
+    if (isNaN(x)) {
+      alert('Please enter a numeric x value.');
+      return;
+    }
+
+    renderNumbers(df, x);
+    renderChart(df, x);
+
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach((el) => {
+      new bootstrap.Tooltip(el);
+    });
+  }
+
+  calcBtn.addEventListener('click', calculateAndRender);
+
+  resetBtn.addEventListener('click', () => {
+    dfInput.value = 10;
+    xInput.value = 0;
+    calculateAndRender();
+  });
+
+  calculateAndRender();
+</script>
+</body>
+</html>
