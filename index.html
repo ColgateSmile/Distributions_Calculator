@@ -298,6 +298,18 @@
       </div>
     </div>
   </div>
+
+  <div class="card mt-4">
+    <div class="card-header">When to use the t distribution vs. the normal</div>
+    <div class="card-body">
+      <p class="mb-3 text-secondary">Both distributions model standardized means, but the right choice depends on your sample size and whether the population standard deviation is known.</p>
+      <ul class="mb-3">
+        <li><strong>Use Student's t</strong> for inference on a population mean when the population standard deviation is unknown. Typical cases include small or moderate samples (often n &lt; 30) or regression coefficients where the error variance is estimated from the data. Heavy tails (smaller ν) widen intervals to account for this extra uncertainty.</li>
+        <li><strong>Use the normal (z)</strong> when the population standard deviation is known or when sample sizes are large enough for the Central Limit Theorem to make the sampling distribution close to normal. Standard normal tables/quantiles (z-scores) apply here.</li>
+      </ul>
+      <p class="mb-0 text-secondary">If data are highly skewed or categorical, consider other families (e.g., log-normal, binomial/Poisson) instead of forcing a symmetric t or normal model.</p>
+    </div>
+  </div>
 </div>
 
 <footer>
