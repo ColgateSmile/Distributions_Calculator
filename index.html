@@ -1,0 +1,1213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Online Statistics Distributions</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- Custom styles -->
+  <link rel="stylesheet" href="/css/Index_Style.css" />
+</head>
+<body>
+
+<div class="container page-wrapper">
+  <!-- Header / Hero -->
+  <div class="text-center mb-4">
+    <div class="hero-pill mb-2">
+      <i class="fa-solid fa-sigma"></i>
+      <span>Online Statistics Calculators</span>
+    </div>
+    <h1 class="h3 mb-2">Continuous Distributions Playground</h1>
+    <p class="text-secondary mb-1">
+      Explore key probability distributions, see their shapes, and compute probabilities for your data.
+    </p>
+    <p class="text-secondary" style="font-size:.8rem;">
+      Click a card to reveal a short explanation, then jump into an interactive calculator.
+    </p>
+  </div>
+
+  <!-- Cards grid -->
+  <div class="row g-4">
+    <!-- Normal distribution card -->
+    <div class="col-md-6">
+      <div class="card h-100 dist-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">Normal Distribution</div>
+            <div class="small text-secondary">X ~ N(μ, σ²)</div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge-tag">
+              <i class="fa-solid fa-bell-curve"></i>
+              <span>Bell-shaped, symmetric</span>
+            </span>
+            <i class="fa-solid fa-chevron-down dist-toggle-icon"></i>
+          </div>
+        </div>
+        <div class="card-body dist-card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="mb-0 dist-toggle-hint">
+              Click anywhere on this card to see when to use the normal distribution.
+            </p>
+            <a href="Normal_Distribution_Calculator.html" class="btn btn-outline-light btn-sm" onclick="event.stopPropagation();">
+              <i class="fa-solid fa-calculator me-1"></i>
+              Open Normal Calculator
+            </a>
+          </div>
+
+          <!-- Hidden explanation -->
+          <div class="dist-details mt-3">
+            <p class="text-secondary mb-2">
+              The normal (Gaussian) distribution is the classic "bell curve". Many natural and measurement
+              processes are approximately normal when lots of small, independent effects add up.
+            </p>
+            <h6 class="mb-1" style="font-size:.85rem;">Use it when:</h6>
+            <ul>
+              <li>Your variable is continuous and roughly symmetric around a mean.</li>
+              <li>You know the population standard deviation <strong>σ</strong>, or your sample size is large (Central Limit Theorem).</li>
+              <li>You want probabilities about <strong>sample means</strong> or standardized z-scores.</li>
+            </ul>
+            <h6 class="mb-1" style="font-size:.85rem;">Typical scenarios:</h6>
+            <ul>
+              <li>Heights, test scores, measurement errors.</li>
+              <li>Quality control with known process variability.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- t distribution card -->
+    <div class="col-md-6">
+      <div class="card h-100 dist-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">t Distribution</div>
+            <div class="small text-secondary">T ~ t<sub>ν</sub></div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge-tag">
+              <i class="fa-solid fa-scale-balanced"></i>
+              <span>Heavier tails</span>
+            </span>
+            <i class="fa-solid fa-chevron-down dist-toggle-icon"></i>
+          </div>
+        </div>
+        <div class="card-body dist-card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="mb-0 dist-toggle-hint">
+              Click this card to learn when to use the t distribution.
+            </p>
+            <a href="t_distribution.html" class="btn btn-outline-light btn-sm" onclick="event.stopPropagation();">
+              <i class="fa-solid fa-calculator me-1"></i>
+              Open t Distribution Calculator
+            </a>
+          </div>
+
+          <!-- Hidden explanation -->
+          <div class="dist-details mt-3">
+            <p class="text-secondary mb-2">
+              The t distribution looks similar to the normal curve but with heavier tails,
+              especially for small degrees of freedom ν. It is built for working with sample means
+              when the population standard deviation is <strong>unknown</strong>.
+            </p>
+            <h6 class="mb-1" style="font-size:.85rem;">Use it when:</h6>
+            <ul>
+              <li>You have a <strong>small or moderate sample</strong> size.</li>
+              <li>Population standard deviation is unknown – you estimate it from the sample.</li>
+              <li>You're doing <strong>t-tests</strong> (one-sample, paired, or simple two-sample) on means.</li>
+            </ul>
+            <h6 class="mb-1" style="font-size:.85rem;">Typical scenarios:</h6>
+            <ul>
+              <li>Comparing an average to a known value with small n.</li>
+              <li>Hypothesis testing on mean improvement in an experiment.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- t-test Hypothesis Calculator card -->
+    <div class="col-md-6">
+      <div class="card h-100 dist-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">t-test for a Mean</div>
+            <div class="small text-secondary">Unknown σ, one-sample t-test</div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge-tag">
+              <i class="fa-solid fa-chart-line"></i>
+              <span>σ unknown, small/medium n</span>
+            </span>
+            <i class="fa-solid fa-chevron-down dist-toggle-icon"></i>
+          </div>
+        </div>
+
+        <div class="card-body dist-card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="mb-0 dist-toggle-hint">
+              Click this card to see when to use a one-sample t-test for a mean.
+            </p>
+            <a
+              href="T_Test_Calculator.html"
+              class="btn btn-outline-light btn-sm"
+              onclick="event.stopPropagation();"
+            >
+              <i class="fa-solid fa-calculator me-1"></i>
+              Open t-test Calculator
+            </a>
+          </div>
+
+          <!-- Hidden explanation (shown when card is unfolded) -->
+          <div class="dist-details mt-3">
+            <p class="text-secondary mb-2">
+              Use the one-sample <strong>t-test</strong> when you compare a sample mean X̄ to a claimed value μ₀,
+              the population standard deviation σ is <strong>unknown</strong>, and you estimate it with the
+              sample standard deviation s.
+            </p>
+
+            <h6 class="mb-1" style="font-size:.85rem;">Use it when:</h6>
+            <ul>
+              <li>You test H₀: μ = μ₀ vs. H₁: μ &lt; μ₀, μ &gt; μ₀, or μ ≠ μ₀.</li>
+              <li>Your data are roughly normal, or n is not tiny (e.g. n ≥ 20–30).</li>
+              <li>The question does <strong>not</strong> give σ, only the sample sd s.</li>
+            </ul>
+
+            <h6 class="mb-1" style="font-size:.85rem;">Typical exam questions:</h6>
+            <ul>
+              <li>"A new diet is tested on 40 people. Is the average blood glucose lower than 100?"</li>
+              <li>"Did a new teaching method change the average test grade?"</li>
+            </ul>
+
+            <h6 class="mb-1" style="font-size:.85rem;">What this calculator does:</h6>
+            <ul>
+              <li>Lets you choose <strong>left / right / two-tailed</strong> H₁ and significance level α.</li>
+              <li>Computes the test statistic
+                <span class="text-secondary">
+                  t = (X̄ − μ₀) / (s / √n)
+                </span>
+                and the <strong>p-value</strong>.
+              </li>
+              <li>Shows the <strong>critical t-value(s)</strong>, the rejection region, and a clear
+                  conclusion about H₀ in words.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Z-test Hypothesis Calculator card -->
+    <div class="col-md-6">
+      <div class="card h-100 dist-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">Hypothesis Test for a Mean (Z-test)</div>
+            <div class="small text-secondary">Known σ, one-sample test</div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge-tag">
+              <i class="fa-solid fa-square-root-variable"></i>
+              <span>σ known or large n</span>
+            </span>
+            <i class="fa-solid fa-chevron-down dist-toggle-icon"></i>
+          </div>
+        </div>
+
+        <div class="card-body dist-card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="mb-0 dist-toggle-hint">
+              Click this card to see when to use a Z-test for a mean.
+            </p>
+            <a
+              href="Hypothesis_Testing_Calculator.html"
+              class="btn btn-outline-light btn-sm"
+              onclick="event.stopPropagation();"
+            >
+              <i class="fa-solid fa-calculator me-1"></i>
+              Open Z-test Calculator
+            </a>
+          </div>
+
+          <!-- Hidden explanation -->
+          <div class="dist-details mt-3">
+            <p class="text-secondary mb-2">
+              Use a one-sample <strong>Z-test</strong> when you compare a sample mean X̄ to a claimed value μ₀,
+              and the population standard deviation <strong>σ is known</strong> (or n is large and the exercise
+              tells you to treat it like known).
+            </p>
+
+            <h6 class="mb-1" style="font-size:.85rem;">Use it when:</h6>
+            <ul>
+              <li>You are testing H₀: μ = μ₀ vs. H₁: μ &lt; μ₀, μ &gt; μ₀, or μ ≠ μ₀.</li>
+              <li>The question gives you σ explicitly, or sample size is large (e.g. n ≥ 30).</li>
+              <li>The data come from a roughly normal population or from many small independent effects.</li>
+            </ul>
+
+            <h6 class="mb-1" style="font-size:.85rem;">Typical exam questions:</h6>
+            <ul>
+              <li>"The mean waiting time is 10 minutes with σ = 5. A new system is tested on 40 calls – did the mean waiting time decrease?"</li>
+              <li>"The national mean grade is 74.5 with σ = 8. A new method gets X̄ = 75.9 for n = 100. Is the improvement significant?"</li>
+            </ul>
+
+            <h6 class="mb-1" style="font-size:.85rem;">What this calculator does:</h6>
+            <ul>
+              <li>Lets you choose the <strong>alternative hypothesis</strong> (left / right / two-tailed) and α.</li>
+              <li>Uses
+                <span class="text-secondary">
+                  Z = (X̄ − μ₀) / (σ / √n)
+                </span>
+                to compute the test statistic and the <strong>p-value</strong>.
+              </li>
+              <li>Shows the <strong>critical Z value(s)</strong>, the rejection region for X̄, and a full
+                  step-by-step explanation and conclusion about H₀.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confidence Interval card -->
+    <div class="col-md-6">
+      <div class="card h-100 dist-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">Confidence Intervals</div>
+            <div class="small text-secondary">Interval estimate for μ, μ₁ − μ₂, p</div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge-tag">
+              <i class="fa-solid fa-arrows-left-right"></i>
+              <span>Range of plausible values</span>
+            </span>
+            <i class="fa-solid fa-chevron-down dist-toggle-icon"></i>
+          </div>
+        </div>
+        <div class="card-body dist-card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="mb-0 dist-toggle-hint">
+              Click this card to learn what a confidence interval means and when to use it.
+            </p>
+            <a
+              href="Confidence_Interval_Calculator.html"
+              class="btn btn-outline-light btn-sm"
+              onclick="event.stopPropagation();"
+            >
+              <i class="fa-solid fa-calculator me-1"></i>
+              Open CI Calculator
+            </a>
+          </div>
+
+          <!-- Hidden explanation -->
+          <div class="dist-details mt-3">
+            <p class="text-secondary mb-2">
+              A confidence interval doesn't give one "perfect" estimate. Instead, it gives a
+              <strong>range of plausible values</strong> for a population parameter (like a mean or
+              a difference between two means), based on your sample data.
+            </p>
+
+            <h6 class="mb-1" style="font-size:.85rem;">Use it when:</h6>
+            <ul>
+              <li>You want to <strong>estimate</strong> a parameter (μ, μ₁ − μ₂, or p), not just test a hypothesis.</li>
+              <li>You have a sample mean (or difference of means) and a standard deviation and sample size.</li>
+              <li>You want to combine your sample information with a chosen confidence level
+                  (e.g. 95%, 98%) to get a <strong>lower and upper bound</strong>.</li>
+            </ul>
+
+            <h6 class="mb-1" style="font-size:.85rem;">What it tells you:</h6>
+            <ul>
+              <li>The point estimate (like X̄ or X̄₁ − X̄₂).</li>
+              <li>The <strong>standard error</strong> and <strong>margin of error</strong> (how much random variation to expect).</li>
+              <li>A final interval: <strong>estimate ± margin of error</strong>, which you interpret as
+                  "We are C% confident that the true parameter lies between these two values".</li>
+            </ul>
+
+            <h6 class="mb-1" style="font-size:.85rem;">Connections to other cards:</h6>
+            <ul>
+              <li>For large samples or known σ → CI uses the <strong>Z distribution</strong> (Normal card).</li>
+              <li>For unknown σ with smaller n → CI uses the <strong>t distribution</strong> (t card).</li>
+              <li>For two samples, the CI can compare <strong>μ₁ − μ₂</strong> (e.g. men vs women, engineers vs programmers).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div> <!-- /row -->
+
+  <!-- Step-by-step recipes -->
+  <section class="mb-5 mt-5">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <div class="pill-title">RECIPES</div>
+          <h3 class="mb-0">Step-by-step: common question types</h3>
+        </div>
+        <span class="badge badge-pill badge-steps">
+          <i class="fa-solid fa-list-check me-1"></i>
+          Follow these for almost any exam question
+        </span>
+      </div>
+      <div class="card-body">
+        <div class="accordion" id="recipesAccordion">
+          <!-- Probability with Normal -->
+          <div class="accordion-item bg-transparent text-light border-soft">
+            <h2 class="accordion-header" id="headingProb">
+              <button
+                class="accordion-button collapsed bg-transparent text-light"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseProb"
+                aria-expanded="false"
+                aria-controls="collapseProb"
+              >
+                1. Probability with Normal (single value or sample mean)
+              </button>
+            </h2>
+            <div
+              id="collapseProb"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingProb"
+              data-bs-parent="#recipesAccordion"
+            >
+              <div class="accordion-body">
+                <p class="mb-2">
+                  <strong>Goal examples:</strong> "What is the probability a person weighs more than 80 kg?"  
+                  "What is the probability that the <strong>average</strong> waiting time is less than 10 minutes?"
+                </p>
+                <ol class="list-unstyled list-steps">
+                  <li>
+                    <span class="step-number">1</span>
+                    <strong>Identify what is random.</strong><br />
+                    Are you talking about:
+                    <ul class="mb-1">
+                      <li>a <strong>single observation</strong> X (one passenger, one score), or</li>
+                      <li>a <strong>sample mean</strong> X̄ (average of n people)?</li>
+                    </ul>
+                    <span class="text-soft">Look for words like "a randomly chosen person" (X) vs. "the average of 200 people" (X̄).</span>
+                  </li>
+                  <li>
+                    <span class="step-number">2</span>
+                    <strong>Write the distribution.</strong><br />
+                    Single: X ~ N(μ, σ).<br />
+                    Sample mean: X̄ ~ N( μ, σ / √n ).
+                  </li>
+                  <li>
+                    <span class="step-number">3</span>
+                    <strong>Standardize to Z.</strong>
+                    <div class="formula mt-1 mb-1">
+                      Z = ( a − μ ) / σ &nbsp; or &nbsp; Z = ( a − μ ) / ( σ / √n )
+                    </div>
+                    <span class="text-soft">"a" is the cutoff value from the question (e.g., 18.5 kg, 10 minutes).</span>
+                  </li>
+                  <li>
+                    <span class="step-number">4</span>
+                    <strong>Draw a quick sketch.</strong><br />
+                    Draw a bell curve, mark μ in the center, mark your cutoff a, and shade the area you want (left/right/between).  
+                    <span class="text-soft">This helps prevent mixing up "above" and "below".</span>
+                  </li>
+                  <li>
+                    <span class="step-number">5</span>
+                    <strong>Use Z-table or your calculator.</strong><br />
+                    <ul class="mb-1">
+                      <li>For P(X &lt; a): use Φ(Z).</li>
+                      <li>For P(X &gt; a): use 1 − Φ(Z).</li>
+                      <li>For P(a &lt; X &lt; b): compute two Z values and do Φ(Zb) − Φ(Za).</li>
+                    </ul>
+                  </li>
+                  <li>
+                    <span class="step-number">6</span>
+                    <strong>Write a sentence in words.</strong><br />
+                    Example: "There is about a 3.8% chance that the average luggage weight is above 18.5 kg."
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <!-- CI known sigma (Z) -->
+          <div class="accordion-item bg-transparent text-light border-soft">
+            <h2 class="accordion-header" id="headingZCI">
+              <button
+                class="accordion-button collapsed bg-transparent text-light"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseZCI"
+                aria-expanded="false"
+                aria-controls="collapseZCI"
+              >
+                2. Confidence Interval for μ (σ known → Z-CI)
+              </button>
+            </h2>
+            <div
+              id="collapseZCI"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingZCI"
+              data-bs-parent="#recipesAccordion"
+            >
+              <div class="accordion-body">
+                <p class="mb-2">
+                  A confidence interval gives a <strong>range of plausible values</strong> for the true mean μ,
+                  based on your sample.
+                </p>
+                <p class="mb-1"><strong>Use this version when σ is known (rare in practice, but common in exercises).</strong></p>
+                <p class="mb-1"><strong>Formula:</strong></p>
+                <div class="formula mb-2">
+                  CI: X̄ ± z<sub>α/2</sub> · ( σ / √n )
+                </div>
+
+                <ol class="list-unstyled list-steps">
+                  <li>
+                    <span class="step-number">1</span>
+                    <strong>Write down the sample summary.</strong><br />
+                    Identify X̄ (sample mean), σ (given by the question), and n (sample size).
+                  </li>
+                  <li>
+                    <span class="step-number">2</span>
+                    <strong>Choose the confidence level.</strong><br />
+                    Example: 95% confidence → α = 0.05 → α/2 = 0.025.  
+                    Then find z<sub>α/2</sub> from the Z-table (95% → 1.96).
+                  </li>
+                  <li>
+                    <span class="step-number">3</span>
+                    <strong>Compute the standard error.</strong><br />
+                    SE = σ / √n.  
+                    <span class="text-soft">This is the typical "error size" of the sample mean.</span>
+                  </li>
+                  <li>
+                    <span class="step-number">4</span>
+                    <strong>Compute the margin of error.</strong><br />
+                    ME = z<sub>α/2</sub> × SE.
+                  </li>
+                  <li>
+                    <span class="step-number">5</span>
+                    <strong>Build the interval.</strong><br />
+                    CI = ( X̄ − ME, X̄ + ME ).
+                  </li>
+                  <li>
+                    <span class="step-number">6</span>
+                    <strong>Interpret in context.</strong><br />
+                    "We are 95% confident that the true mean waiting time is between ___ and ___ minutes."
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <!-- CI unknown sigma (t) -->
+          <div class="accordion-item bg-transparent text-light border-soft">
+            <h2 class="accordion-header" id="headingTCI">
+              <button
+                class="accordion-button collapsed bg-transparent text-light"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseTCI"
+                aria-expanded="false"
+                aria-controls="collapseTCI"
+              >
+                3. Confidence Interval for μ (σ unknown → t-CI)
+              </button>
+            </h2>
+            <div
+              id="collapseTCI"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingTCI"
+              data-bs-parent="#recipesAccordion"
+            >
+              <div class="accordion-body">
+                <p class="mb-2">
+                  This is the <strong>most common CI in real life</strong>:
+                  we estimate μ using X̄ when σ is unknown and we only have the sample sd s.
+                </p>
+                <p class="mb-1"><strong>Formula:</strong></p>
+                <div class="formula mb-2">
+                  CI: X̄ ± t<sub>α/2, df</sub> · ( s / √n ),&nbsp;&nbsp; df = n − 1
+                </div>
+
+                <ol class="list-unstyled list-steps">
+                  <li>
+                    <span class="step-number">1</span>
+                    <strong>Write down the sample summary.</strong><br />
+                    X̄ (sample mean), s (sample sd), n (sample size).
+                  </li>
+                  <li>
+                    <span class="step-number">2</span>
+                    <strong>Find degrees of freedom.</strong><br />
+                    df = n − 1.  
+                    Then use df to find t<sub>α/2, df</sub> from the t-table or calculator.
+                  </li>
+                  <li>
+                    <span class="step-number">3</span>
+                    <strong>Compute the standard error.</strong><br />
+                    SE = s / √n.
+                  </li>
+                  <li>
+                    <span class="step-number">4</span>
+                    <strong>Compute the margin of error.</strong><br />
+                    ME = t<sub>α/2, df</sub> × SE.
+                  </li>
+                  <li>
+                    <span class="step-number">5</span>
+                    <strong>Build the interval.</strong><br />
+                    CI = ( X̄ − ME, X̄ + ME ).
+                  </li>
+                  <li>
+                    <span class="step-number">6</span>
+                    <strong>Interpret clearly.</strong><br />
+                    Example: "We are 95% confident that the true average waiting time for all customers
+                    is between 11.16 and 12.85 minutes."
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hypothesis tests -->
+          <div class="accordion-item bg-transparent text-light border-soft">
+            <h2 class="accordion-header" id="headingTests">
+              <button
+                class="accordion-button collapsed bg-transparent text-light"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseTests"
+                aria-expanded="false"
+                aria-controls="collapseTests"
+              >
+                4. Hypothesis Test for μ (Z or t)
+              </button>
+            </h2>
+            <div
+              id="collapseTests"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingTests"
+              data-bs-parent="#recipesAccordion"
+            >
+              <div class="accordion-body">
+                <p class="mb-2">
+                  A hypothesis test answers: <strong>"Is the observed difference big enough to be unlikely
+                  by chance?"</strong>
+                </p>
+                <p class="mb-1">
+                  Use the same 4-step structure every time. The only difference is whether you plug into the Z formula or the t formula.
+                </p>
+                <ol class="list-unstyled list-steps">
+                  <li>
+                    <span class="step-number">1</span>
+                    <strong>State the hypotheses.</strong><br />
+                    Null (no effect): H₀: μ = μ₀.<br />
+                    Alternative (what you're testing):<br />
+                    &nbsp;&nbsp;• H₁: μ ≠ μ₀ (two-sided – "different")<br />
+                    &nbsp;&nbsp;• H₁: μ &gt; μ₀ (right-tailed – "bigger")<br />
+                    &nbsp;&nbsp;• H₁: μ &lt; μ₀ (left-tailed – "smaller")
+                  </li>
+                  <li>
+                    <span class="step-number">2</span>
+                    <strong>Choose the test statistic.</strong><br />
+                    Decide if σ is known or unknown:
+                    <ul class="mb-1">
+                      <li><strong>σ known → Z-test:</strong></li>
+                    </ul>
+                    <div class="formula mt-1 mb-1">
+                      Z = ( X̄ − μ₀ ) / ( σ / √n )
+                    </div>
+                    <ul class="mb-1">
+                      <li><strong>σ unknown → t-test:</strong></li>
+                    </ul>
+                    <div class="formula mt-1 mb-1">
+                      T = ( X̄ − μ₀ ) / ( s / √n ), &nbsp; df = n − 1
+                    </div>
+                    <span class="text-soft">This step is basically: "Which formula do I plug into?"</span>
+                  </li>
+                  <li>
+                    <span class="step-number">3</span>
+                    <strong>Compute the test statistic &amp; p-value.</strong><br />
+                    <ul class="mb-1">
+                      <li>Compute Z or T using your data.</li>
+                      <li>Use the Z or t distribution to get the p-value:
+                        <ul>
+                          <li>Two-sided: p = 2 × P(|Z| &gt; |z<sub>obs</sub>|) or 2 × P(|T| &gt; |t<sub>obs</sub>|).</li>
+                          <li>Right-tailed: p = P(Z &gt; z<sub>obs</sub>) or P(T &gt; t<sub>obs</sub>).</li>
+                          <li>Left-tailed: p = P(Z &lt; z<sub>obs</sub>) or P(T &lt; t<sub>obs</sub>).</li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li>
+                    <span class="step-number">4</span>
+                    <strong>Compare p to α and conclude.</strong><br />
+                    <ul class="mb-1">
+                      <li>If p ≤ α → <strong>reject H₀</strong> (the result is statistically significant).</li>
+                      <li>If p &gt; α → <strong>fail to reject H₀</strong> (not enough evidence).</li>
+                    </ul>
+                    Then write a sentence in context, for example:<br />
+                    "At the 5% significance level, there <strong>is</strong> evidence that the new system
+                    has a different average waiting time than 10 minutes."<br />
+                    or<br />
+                    "At the 5% level, there <strong>is not</strong> enough evidence to say that the mean
+                    is larger than 18 kg."
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+
+          <!-- CI for difference between two means -->
+          <div class="accordion-item bg-transparent text-light border-soft">
+            <h2 class="accordion-header" id="headingDiffCI">
+              <button
+                class="accordion-button collapsed bg-transparent text-light"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#collapseDiffCI"
+                aria-expanded="false"
+                aria-controls="collapseDiffCI"
+              >
+                5. CI for Difference Between Two Means (independent samples, large n)
+              </button>
+            </h2>
+            <div
+              id="collapseDiffCI"
+              class="accordion-collapse collapse"
+              aria-labelledby="headingDiffCI"
+              data-bs-parent="#recipesAccordion"
+            >
+              <div class="accordion-body">
+                <p class="mb-2">
+                  Use this when you compare <strong>two independent groups</strong> (e.g. software engineers vs. JAVA programmers)
+                  and want a CI for μ<sub>1</sub> − μ<sub>2</sub>.
+                </p>
+                <p class="mb-1"><strong>Formula (large samples):</strong></p>
+                <div class="formula mb-2">
+                  CI: ( X̄<sub>1</sub> − X̄<sub>2</sub> ) ± z<sub>α/2</sub> · √( s<sub>1</sub>² / n<sub>1</sub> + s<sub>2</sub>² / n<sub>2</sub> )
+                </div>
+
+                <ol class="list-unstyled list-steps">
+                  <li>
+                    <span class="step-number">1</span>
+                    <strong>Define the groups and order.</strong><br />
+                    Decide who is group 1 and who is group 2 (e.g. 1 = engineers, 2 = JAVA programmers).  
+                    You are estimating μ<sub>1</sub> − μ<sub>2</sub>, so keep this order consistent.
+                  </li>
+                  <li>
+                    <span class="step-number">2</span>
+                    <strong>Write the sample summaries.</strong><br />
+                    For each group: n<sub>1</sub>, X̄<sub>1</sub>, s<sub>1</sub> and n<sub>2</sub>, X̄<sub>2</sub>, s<sub>2</sub>.
+                  </li>
+                  <li>
+                    <span class="step-number">3</span>
+                    <strong>Compute the point estimate.</strong><br />
+                    d̂ = X̄<sub>1</sub> − X̄<sub>2</sub> (the observed difference between the sample means).
+                  </li>
+                  <li>
+                    <span class="step-number">4</span>
+                    <strong>Compute the standard error of the difference.</strong><br />
+                    SE<sub>diff</sub> = √( s<sub>1</sub>² / n<sub>1</sub> + s<sub>2</sub>² / n<sub>2</sub> ).  
+                    <span class="text-soft">Square each sd, divide by its n, add, then take the square root.</span>
+                  </li>
+                  <li>
+                    <span class="step-number">5</span>
+                    <strong>Find z<sub>α/2</sub> and the margin of error.</strong><br />
+                    Pick the confidence level (e.g. 95% → z<sub>α/2</sub> = 1.96).<br />
+                    ME = z<sub>α/2</sub> × SE<sub>diff</sub>.
+                  </li>
+                  <li>
+                    <span class="step-number">6</span>
+                    <strong>Build the interval.</strong><br />
+                    CI = ( d̂ − ME, d̂ + ME ).
+                  </li>
+                  <li>
+                    <span class="step-number">7</span>
+                    <strong>Interpret in context.</strong><br />
+                    Example: "With 95% confidence, software engineers earn between 404 NIS and 2,596 NIS
+                    <strong>more</strong> on average than JAVA programmers (same experience)."<br />
+                    <span class="text-soft">If the entire CI is above 0 → group 1 mean > group 2 mean (significant difference).</span>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Test Selector Helper Widget (Z / t / χ²) -->
+  <section class="mb-5 mt-5">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <div class="pill-title">HELPER</div>
+          <h4 class="mb-0">Test Selector (Z, t, χ²)</h4>
+        </div>
+        <span class="badge badge-pill" style="background-color:rgba(14,165,233,0.2);border:1px solid #0ea5e9;color:#38bdf8;">
+          <i class="fa-solid fa-wand-magic-sparkles me-1"></i>
+          Interactive Guide
+        </span>
+      </div>
+      <div class="card-body">
+        <p class="text-secondary mb-3">
+          Answer a few questions and get a suggestion for which statistical test to use.
+        </p>
+
+        <!-- Inputs -->
+        <div class="row g-3">
+          <!-- Variable type -->
+          <div class="col-md-4">
+            <label class="form-label small">Type of variable</label>
+            <select id="tsVarType" class="form-select">
+              <option value="numerical" selected>Numerical (height, time, weight)</option>
+              <option value="categorical">Categorical (yes/no, colors, brands)</option>
+            </select>
+          </div>
+
+          <!-- Measurement focus (for numerical) -->
+          <div class="col-md-4" id="tsMeasureWrapper">
+            <label class="form-label small">What are you analyzing?</label>
+            <select id="tsMeasureType" class="form-select">
+              <option value="mean" selected>Mean (μ)</option>
+              <option value="proportion">Proportion (p)</option>
+            </select>
+          </div>
+
+          <!-- Sample size (for numerical) -->
+          <div class="col-md-4" id="tsNWrapper">
+            <label class="form-label small">Total sample size (n)</label>
+            <input id="tsSampleSize" type="number" min="1" step="1" class="form-control" />
+            <div class="form-text text-secondary" style="font-size:.75rem;">
+              Rough rule: n ≥ 30 is "large".
+            </div>
+          </div>
+
+          <!-- Sigma known? (for numerical mean) -->
+          <div class="col-md-4" id="tsSigmaWrapper">
+            <label class="form-label small">Population σ known?</label>
+            <select id="tsSigmaKnown" class="form-select">
+              <option value="no" selected>No (use sample SD)</option>
+              <option value="yes">Yes (given in the question)</option>
+            </select>
+          </div>
+
+          <!-- Categorical scenario -->
+          <div class="col-md-8" id="tsCatWrapper" style="display:none;">
+            <label class="form-label small">What is your question about categories?</label>
+            <select id="tsCatScenario" class="form-select">
+              <option value="gof" selected>
+                Compare observed counts to a claimed distribution (Goodness-of-fit)
+              </option>
+              <option value="independence">
+                Check association between two variables (Independence in contingency table)
+              </option>
+            </select>
+          </div>
+        </div>
+
+        <div class="d-flex gap-2 mt-3">
+          <button id="tsSuggestBtn" class="btn btn-primary flex-grow-1">
+            <i class="fa-solid fa-wand-magic-sparkles me-1"></i> Suggest test
+          </button>
+          <button id="tsClearBtn" class="btn btn-outline-secondary">
+            Clear
+          </button>
+        </div>
+
+        <!-- Suggestion output -->
+        <div id="tsSuggestionBox" class="mini-example mt-3" style="display:none;">
+          <div class="fw-semibold mb-1">✓ Suggested test:</div>
+          <div id="tsSuggestionMain" class="mb-1" style="color:#0ea5e9;font-weight:500;"></div>
+          <div id="tsSuggestionDetails" class="small text-secondary"></div>
+        </div>
+
+        <div id="tsErrorBox" class="alert alert-warning mt-3" style="display:none;"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick "Which test do I use?" checklist accordion -->
+  <section class="mb-5">
+    <div class="accordion" id="whichTestAccordion">
+      <div class="accordion-item bg-transparent text-light border-soft">
+        <h2 class="accordion-header" id="whichTestHeading">
+          <button
+            class="accordion-button collapsed bg-transparent text-light"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#whichTestCollapse"
+            aria-expanded="false"
+            aria-controls="whichTestCollapse"
+          >
+            <i class="fa-solid fa-list-check me-2" style="color:#38bdf8;"></i>
+            Quick "Which test do I use?" checklist
+          </button>
+        </h2>
+        <div
+          id="whichTestCollapse"
+          class="accordion-collapse collapse"
+          aria-labelledby="whichTestHeading"
+          data-bs-parent="#whichTestAccordion"
+        >
+          <div class="accordion-body">
+            <ol class="list-unstyled list-steps">
+              <li>
+                <span class="step-number">1</span>
+                <strong>Is the variable numerical or categorical?</strong><br>
+                • Numerical (height, time, weight) → think <strong>Z</strong> or <strong>t</strong>.<br>
+                • Categorical counts (yes/no, colors, brands) → think <strong>χ²</strong>.
+              </li>
+              <li>
+                <span class="step-number">2</span>
+                <strong>If numerical and you're dealing with a mean:</strong><br>
+                • Population σ known (or large n and your teacher says to treat it like known) → use a
+                <strong>Z-test / Z-confidence interval for μ</strong>.<br>
+                • Population σ unknown → use a <strong>t-test / t-confidence interval for μ</strong>.
+              </li>
+              <li>
+                <span class="step-number">3</span>
+                <strong>If numerical and you're dealing with a proportion:</strong><br>
+                • Large sample (n·p and n·(1−p) reasonably big) → use a <strong>Z-test / Z-CI for p</strong>.<br>
+                • Very small sample → consider <strong>exact/binomial methods</strong> (often beyond intro courses).
+              </li>
+              <li>
+                <span class="step-number">4</span>
+                <strong>If categorical:</strong><br>
+                • Comparing observed frequencies to expected distribution (e.g. dice fairness)? →
+                <strong>χ² goodness-of-fit</strong> test.<br>
+                • Testing association between two categorical variables (e.g. gender vs smoking)? →
+                <strong>χ² test of independence</strong>.
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Excel functions reference card -->
+  <div class="mt-4">
+    <div class="card dist-card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-semibold">Excel Functions for Normal &amp; t Distributions</div>
+          <div class="small text-secondary">Quick reference for working in Microsoft Excel</div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <span class="badge-tag">
+            <i class="fa-solid fa-file-excel"></i>
+            <span>Formula cheat sheet</span>
+          </span>
+          <i class="fa-solid fa-chevron-down dist-toggle-icon"></i>
+        </div>
+      </div>
+      <div class="card-body">
+        <p class="mb-0 dist-toggle-hint">
+          Click this card to show or hide the Excel formulas table.
+        </p>
+
+        <div class="dist-details mt-3">
+          <p class="text-secondary mb-3" style="font-size:.85rem;">
+            Use these built-in Excel functions to compute probabilities, densities and critical values
+            that match the calculators above.
+          </p>
+
+          <div class="table-responsive">
+            <table class="table table-sm table-dark align-middle mb-0">
+              <thead>
+                <tr>
+                  <th style="width:12%;">Distribution</th>
+                  <th style="width:26%;">Excel function</th>
+                  <th style="width:32%;">What it does</th>
+                  <th style="width:30%;">Key arguments</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- Normal distribution -->
+                <tr>
+                  <td><strong>Normal</strong></td>
+                  <td><code>=NORM.S.DIST(z, cumulative)</code></td>
+                  <td>
+                    Standard normal distribution (mean 0, σ=1). Returns PDF or CDF.
+                  </td>
+                  <td>
+                    <code>z</code> – z-score<br/>
+                    <code>cumulative</code> – <code>TRUE</code> for CDF P(Z ≤ z), <code>FALSE</code> for PDF f(z)
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Normal</strong></td>
+                  <td><code>=NORM.S.INV(probability)</code></td>
+                  <td>
+                    Inverse standard normal. Returns z such that P(Z ≤ z) = probability.
+                  </td>
+                  <td>
+                    <code>probability</code> – left-tail probability between 0 and 1
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Normal</strong></td>
+                  <td><code>=NORM.DIST(x, mean, sd, cumulative)</code></td>
+                  <td>
+                    Normal distribution with arbitrary mean and σ. PDF or CDF.
+                  </td>
+                  <td>
+                    <code>x</code> – value<br/>
+                    <code>mean</code> – μ<br/>
+                    <code>sd</code> – σ (&gt;0)<br/>
+                    <code>cumulative</code> – <code>TRUE</code> for CDF, <code>FALSE</code> for PDF
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>Normal</strong></td>
+                  <td><code>=NORM.INV(prob, mean, sd)</code></td>
+                  <td>
+                    Inverse normal. Returns x such that P(X ≤ x) = prob.
+                  </td>
+                  <td>
+                    <code>prob</code> – left-tail probability<br/>
+                    <code>mean</code> – μ, <code>sd</code> – σ
+                  </td>
+                </tr>
+
+                <!-- t distribution -->
+                <tr>
+                  <td><strong>t Distribution</strong></td>
+                  <td><code>=T.DIST(x, deg_freedom, cumulative)</code></td>
+                  <td>
+                    Left-tail t distribution with ν degrees of freedom (PDF or CDF).
+                  </td>
+                  <td>
+                    <code>x</code> – t-statistic<br/>
+                    <code>deg_freedom</code> – ν (&gt;0)<br/>
+                    <code>cumulative</code> – <code>TRUE</code> for CDF P(T ≤ x), <code>FALSE</code> for PDF
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>t Distribution</strong></td>
+                  <td><code>=T.DIST.RT(x, deg_freedom)</code></td>
+                  <td>
+                    Right-tail probability P(T &gt; x) for a t distribution.
+                  </td>
+                  <td>
+                    <code>x</code> – t-statistic<br/>
+                    <code>deg_freedom</code> – ν
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>t Distribution</strong></td>
+                  <td><code>=T.DIST.2T(x, deg_freedom)</code></td>
+                  <td>
+                    Two-tailed probability P(|T| &gt; |x|).
+                  </td>
+                  <td>
+                    <code>x</code> – |t| value<br/>
+                    <code>deg_freedom</code> – ν
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>t Distribution</strong></td>
+                  <td><code>=T.INV(probability, deg_freedom)</code></td>
+                  <td>
+                    Inverse left-tail t: returns t such that P(T ≤ t) = probability.
+                  </td>
+                  <td>
+                    <code>probability</code> – left-tail probability<br/>
+                    <code>deg_freedom</code> – ν
+                  </td>
+                </tr>
+                <tr>
+                  <td><strong>t Distribution</strong></td>
+                  <td><code>=T.INV.2T(probability, deg_freedom)</code></td>
+                  <td>
+                    Two-tailed critical value: returns t with total tail area = probability.
+                  </td>
+                  <td>
+                    <code>probability</code> – total two-sided tail area (e.g. 0.05)<br/>
+                    <code>deg_freedom</code> – ν
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div> <!-- /dist-details -->
+      </div>
+    </div>
+  </div>
+
+  
+  <!-- Quick navigation / rule of thumb -->
+  <div class="mt-5">
+    <h5 class="mb-2" style="font-size:.95rem;">How to choose a distribution?</h5>
+    <p class="text-secondary mb-1" style="font-size:.85rem;">
+      A very rough rule of thumb:
+    </p>
+    <ul class="text-secondary" style="font-size:.85rem;">
+      <li><strong>Normal</strong>: continuous, symmetric, known σ or large n.</li>
+      <li><strong>t</strong>: continuous, symmetric, <em>unknown</em> σ and smaller n, especially in t-tests for means.</li>
+    </ul>
+  </div>
+</div>
+
+<footer>
+  <div class="hm-foot-icon mb-2">
+    <a href="https://www.facebook.com/dror.mor.9" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://github.com/ColgateSmile" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://www.linkedin.com/in/dror-mor-%D7%93%D7%A8%D7%95%D7%A8-%D7%9E%D7%95%D7%A8-90865a201/" target="_blank"><i class="fab fa-linkedin"></i></a>
+    <a href="https://www.instagram.com/drmor1994/" target="_blank"><i class="fab fa-instagram"></i></a>
+  </div>
+  <small>
+    Created by <span style="color:#38bdf8;">Dror Mor</span> |
+    <a href="https://colgatesmile.github.io/DrorMorResume/" target="_blank">Website</a> |
+    <a href="https://github.com/ColgateSmile" target="_blank">GitHub</a>
+  </small>
+</footer>
+
+<!-- Custom script -->
+<script src="/js/Index_Script.js"></script>
+
+<!-- Test Selector Helper Script -->
+<script>
+  const tsVarType = document.getElementById("tsVarType");
+  const tsMeasureWrapper = document.getElementById("tsMeasureWrapper");
+  const tsNWrapper = document.getElementById("tsNWrapper");
+  const tsSigmaWrapper = document.getElementById("tsSigmaWrapper");
+  const tsCatWrapper = document.getElementById("tsCatWrapper");
+
+  const tsMeasureType = document.getElementById("tsMeasureType");
+  const tsSampleSize = document.getElementById("tsSampleSize");
+  const tsSigmaKnown = document.getElementById("tsSigmaKnown");
+  const tsCatScenario = document.getElementById("tsCatScenario");
+
+  const tsSuggestBtn = document.getElementById("tsSuggestBtn");
+  const tsClearBtn = document.getElementById("tsClearBtn");
+
+  const tsSuggestionBox = document.getElementById("tsSuggestionBox");
+  const tsSuggestionMain = document.getElementById("tsSuggestionMain");
+  const tsSuggestionDetails = document.getElementById("tsSuggestionDetails");
+  const tsErrorBox = document.getElementById("tsErrorBox");
+
+  function tsShowError(msg) {
+    tsErrorBox.textContent = msg;
+    tsErrorBox.style.display = "block";
+    tsSuggestionBox.style.display = "none";
+  }
+
+  function tsClearError() {
+    tsErrorBox.style.display = "none";
+  }
+
+  function updateTsVisibility() {
+    const vType = tsVarType.value;
+    if (vType === "numerical") {
+      tsMeasureWrapper.style.display = "block";
+      tsNWrapper.style.display = "block";
+      tsSigmaWrapper.style.display = tsMeasureType.value === "mean" ? "block" : "none";
+      tsCatWrapper.style.display = "none";
+    } else {
+      tsMeasureWrapper.style.display = "none";
+      tsNWrapper.style.display = "none";
+      tsSigmaWrapper.style.display = "none";
+      tsCatWrapper.style.display = "block";
+    }
+    tsSuggestionBox.style.display = "none";
+    tsClearError();
+  }
+
+  tsVarType.addEventListener("change", updateTsVisibility);
+  tsMeasureType.addEventListener("change", updateTsVisibility);
+
+  function suggestTest() {
+    tsClearError();
+    tsSuggestionBox.style.display = "none";
+    tsSuggestionMain.textContent = "";
+    tsSuggestionDetails.textContent = "";
+
+    const vType = tsVarType.value;
+
+    if (vType === "numerical") {
+      const measure = tsMeasureType.value;
+      let n = parseFloat(tsSampleSize.value);
+      if (!isFinite(n) || n <= 0) {
+        tsShowError("Please enter a valid sample size n for numerical data.");
+        return;
+      }
+      const largeN = n >= 30;
+      const sigmaKnown = tsSigmaKnown.value === "yes";
+
+      if (measure === "mean") {
+        if (sigmaKnown || largeN) {
+          tsSuggestionMain.textContent = "Z-test / Z-confidence interval for μ";
+          tsSuggestionDetails.innerHTML =
+            "Numerical variable, analyzing a mean, with " +
+            (sigmaKnown ? "population σ known" : "large sample size (n ≥ 30)") +
+            ".<br>" +
+            "Use a Z-test (or Z-CI) for the population mean μ. Formula looks like Z = (X̄ − μ₀) / (σ / √n).";
+        } else {
+          tsSuggestionMain.textContent = "t-test / t-confidence interval for μ";
+          tsSuggestionDetails.innerHTML =
+            "Numerical variable, analyzing a mean, population σ unknown and sample size is not very large.<br>" +
+            "Use a t-test (or t-CI) for μ with df = n − 1. Formula looks like T = (X̄ − μ₀) / (s / √n).";
+        }
+      } else if (measure === "proportion") {
+        if (largeN) {
+          tsSuggestionMain.textContent = "Z-test / Z-confidence interval for a proportion p";
+          tsSuggestionDetails.innerHTML =
+            "Numerical summary is a proportion, with a reasonably large sample (rule of thumb: n·p and n·(1−p) not tiny).<br>" +
+            "Use a Z-proportion test / Z-CI. Typical formula: Z = (p̂ − p₀) / √(p₀(1−p₀)/n).";
+        } else {
+          tsSuggestionMain.textContent = "Exact / binomial-based methods for proportions";
+          tsSuggestionDetails.innerHTML =
+            "Proportion with a very small sample. Normal (Z) approximations may be poor.<br>" +
+            "In more advanced courses, you would use exact/binomial methods. In many intro courses this case is avoided.";
+        }
+      } else {
+        tsShowError("Unknown numerical measurement type.");
+        return;
+      }
+    } else if (vType === "categorical") {
+      const scenario = tsCatScenario.value;
+      if (scenario === "gof") {
+        tsSuggestionMain.textContent = "χ² (chi-square) goodness-of-fit test";
+        tsSuggestionDetails.innerHTML =
+          "Categorical counts, checking if observed frequencies match a claimed distribution (e.g. fair dice, expected percentages).<br>" +
+          "Use χ² = Σ (O − E)² / E across categories. Make sure expected counts are not too small (rule of thumb: at least ~5).";
+      } else if (scenario === "independence") {
+        tsSuggestionMain.textContent = "χ² (chi-square) test of independence";
+        tsSuggestionDetails.innerHTML =
+          "Categorical counts in a contingency table (e.g. gender vs preference), testing if the two variables are independent.<br>" +
+          "Use χ² = Σ (O − E)² / E across table cells, with df = (rows − 1)(columns − 1).";
+      } else {
+        tsShowError("Unknown categorical scenario.");
+        return;
+      }
+    } else {
+      tsShowError("Unknown variable type.");
+      return;
+    }
+
+    tsSuggestionBox.style.display = "block";
+  }
+
+  function clearTsWidget() {
+    tsVarType.value = "numerical";
+    tsMeasureType.value = "mean";
+    tsSampleSize.value = "";
+    tsSigmaKnown.value = "no";
+    tsCatScenario.value = "gof";
+    tsSuggestionBox.style.display = "none";
+    tsClearError();
+    updateTsVisibility();
+  }
+
+  tsSuggestBtn.addEventListener("click", suggestTest);
+  tsClearBtn.addEventListener("click", clearTsWidget);
+
+  // Initial state
+  updateTsVisibility();
+</script>
+
+</body>
+</html>

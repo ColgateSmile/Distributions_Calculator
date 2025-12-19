@@ -1,0 +1,327 @@
+/* === Shared layout & theme (same style as calculators) === */
+body {
+  background-color: #0f172a;
+  color: #f8fafc;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", Roboto, "Segoe UI", sans-serif;
+  min-height: 100vh;
+  padding-top: 2rem;
+  padding-bottom: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+.page-wrapper { flex: 1 0 auto; }
+
+.card {
+  background:#1e253b;
+  border:1px solid #334155;
+  border-radius:1rem;
+  box-shadow:0 30px 80px rgba(0,0,0,0.6);
+  color:#f8fafc;
+}
+
+.card-header {
+  background: radial-gradient(circle at 0% 0%, rgba(56,189,248,0.08) 0%, rgba(30,37,59,0) 60%);
+  border-bottom:1px solid #334155;
+  border-radius:1rem 1rem 0 0 !important;
+  color:#f8fafc;
+}
+
+.text-secondary {
+  color:#94a3b8 !important;
+  font-size:.9rem;
+}
+
+.badge-tag {
+  background-color:#0f172a;
+  border:1px solid #334155;
+  border-radius:999px;
+  padding:.15rem .6rem;
+  font-size:.7rem;
+  color:#e5e7eb;
+  display:inline-flex;
+  align-items:center;
+  gap:.35rem;
+}
+
+.badge-tag i {
+  font-size:.7rem;
+  color:#38bdf8;
+}
+
+.dist-card-body ul {
+  padding-left:1.1rem;
+  margin-bottom:.75rem;
+  font-size:.9rem;
+  color:#e2e8f0;
+}
+
+.dist-card-body li + li {
+  margin-top:.25rem;
+}
+
+.btn-outline-light {
+  border-color:#38bdf8;
+  color:#e5e7eb;
+}
+.btn-outline-light:hover {
+  background-color:#38bdf8;
+  color:#0f172a;
+  border-color:#38bdf8;
+}
+
+footer {
+  border-top:1px solid #334155;
+  margin-top:3rem;
+  padding-top:1rem;
+  padding-bottom:1rem;
+  color:#94a3b8;
+  text-align:center;
+}
+
+.hm-foot-icon a {
+  color:#38bdf8;
+  font-size:1.2rem;
+  display:inline-flex;
+  width:2rem;
+  height:2rem;
+  align-items:center;
+  justify-content:center;
+  transition:.3s;
+  text-decoration:none;
+}
+
+.hm-foot-icon a:hover {
+  color:#0ea5e9;
+  text-shadow:0 0 8px rgba(56,189,248,.8);
+}
+
+footer a {
+  color:#38bdf8;
+  text-decoration:none;
+  font-weight:500;
+}
+
+footer a:hover {
+  color:#0ea5e9;
+  text-shadow:0 0 8px rgba(56,189,248,.8);
+}
+
+.hero-pill {
+  display:inline-flex;
+  align-items:center;
+  gap:.4rem;
+  border-radius:999px;
+  border:1px solid #334155;
+  padding:.2rem .8rem;
+  font-size:.75rem;
+  color:#e5e7eb;
+  background:rgba(15,23,42,0.8);
+}
+.hero-pill i {
+  color:#38bdf8;
+  font-size:.8rem;
+}
+
+/* === Interactive distribution cards === */
+.dist-card {
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.dist-card:hover {
+  transform: translateY(-2px);
+  box-shadow:0 40px 80px rgba(0,0,0,0.75);
+}
+
+.dist-details {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+}
+.dist-card.open .dist-details {
+  max-height: 2000px; /* large enough for long content like the Excel table */
+}
+
+.dist-toggle-icon {
+  font-size: .8rem;
+  margin-left:.4rem;
+  transition: transform 0.3s ease;
+  color:#e5e7eb;
+}
+.dist-card.open .dist-toggle-icon {
+  transform: rotate(180deg);
+}
+
+.dist-toggle-hint {
+  font-size:.75rem;
+  color:#64748b !important;
+}
+
+/* Excel table tweaks */
+.table-dark {
+  --bs-table-bg: #020617;
+  --bs-table-border-color: #1f2937;
+  --bs-table-striped-bg: #02081f;
+  --bs-table-striped-color: #e5e7eb;
+  color:#e5e7eb;
+  font-size:.82rem;
+}
+code {
+  background-color:#020617;
+  border-radius:4px;
+  padding:0 .25rem;
+  font-size:.8rem;
+  color:#e5e7eb;
+}
+
+
+    body {
+      background-color: #0f172a;
+      color: #e5e7eb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+        Roboto, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+
+    .page-wrapper {
+      max-width: 1100px;
+    }
+
+    h1,
+    h2,
+    h3,
+    h4 {
+      color: #f9fafb;
+    }
+
+    .text-soft {
+      color: #e5e7eb; /* brighter for better contrast on dark background */
+    }
+
+    .card {
+      border-radius: 1rem;
+      background: radial-gradient(circle at top left, #1f2937, #020617);
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      box-shadow: 0 18px 45px rgba(15, 23, 42, 0.9);
+    }
+
+    .card-header {
+      border-bottom: 1px solid rgba(148, 163, 184, 0.25);
+      background: rgba(15, 23, 42, 0.7);
+    }
+
+    .badge-pill {
+      border-radius: 999px;
+      padding: 0.25rem 0.7rem;
+      font-size: 0.75rem;
+    }
+
+    .badge-normal {
+      background-color: rgba(34, 197, 94, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.4);
+    }
+
+    .badge-t {
+      background-color: rgba(59, 130, 246, 0.1);
+      color: #60a5fa;
+      border: 1px solid rgba(96, 165, 250, 0.4);
+    }
+
+    .badge-steps {
+      background-color: rgba(248, 250, 252, 0.04);
+      color: #e5e7eb;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+    }
+
+    .formula {
+      font-family: "SF Mono", ui-monospace, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9rem;
+      background-color: rgba(15, 23, 42, 0.9);
+      border-radius: 0.5rem;
+      padding: 0.5rem 0.75rem;
+      border: 1px solid rgba(148, 163, 184, 0.35);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+
+    .pill-title {
+      font-size: 0.8rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #fbfbfb;
+    }
+
+    .divider-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #fdfefe;
+    }
+
+    .mini-example {
+      background: rgba(15, 23, 42, 0.8);
+      border-radius: 0.75rem;
+      border: 1px dashed rgba(148, 163, 184, 0.6);
+      padding: 0.85rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .step-number {
+      width: 1.6rem;
+      height: 1.6rem;
+      border-radius: 999px;
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      margin-right: 0.4rem;
+      color: #e5e7eb;
+    }
+
+    .list-steps li {
+      margin-bottom: 0.4rem;
+    }
+
+    .shortcut-chip {
+      font-size: 0.8rem;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.4);
+      color: #e5e7eb;
+      background: radial-gradient(circle at top, #111827, #020617);
+    }
+
+    .border-soft {
+      border-color: rgba(148, 163, 184, 0.5) !important;
+    }
+
+    a.link-soft {
+      color: #ffffff;
+      text-decoration: none;
+    }
+
+    a.link-soft:hover {
+      text-decoration: underline;
+      color: #fefefe;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+        color: #000000;
+      }
+      .card {
+        box-shadow: none;
+        background: #ffffff;
+        border-color: #000000;
+      }
+      .formula {
+        background: #f3f4f6;
+        border-color: #9ca3af;
+      }
+    }

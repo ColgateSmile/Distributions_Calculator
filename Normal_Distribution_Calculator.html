@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Normal Distribution Calculator</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    body {
+      background-color: #0f172a;
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", Roboto, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .page-wrapper { flex: 1 0 auto; }
+
+    .card {
+      background:#1e253b;
+      border:1px solid #334155;
+      border-radius:1rem;
+      box-shadow:0 30px 80px rgba(0,0,0,0.6);
+      color:#f8fafc;
+    }
+
+    .card-header {
+      background: radial-gradient(circle at 0% 0%, rgba(56,189,248,0.08) 0%, rgba(30,37,59,0) 60%);
+      border-bottom:1px solid #334155;
+      border-radius:1rem 1rem 0 0 !important;
+      color:#f8fafc;
+    }
+
+    .chart-container {
+      position: relative;
+      height: 300px;
+    }
+
+    .highlight-num {
+      color:#38bdf8;
+      font-weight:600;
+    }
+
+    .text-secondary {
+      color:#94a3b8 !important;
+      font-size:.9rem;
+    }
+
+    .metric-row {
+      margin-bottom:.5rem;
+      display:flex;
+      flex-wrap:wrap;
+      align-items:baseline;
+      gap:.5rem;
+    }
+
+    .metric-label {
+      font-weight:600;
+      color:#f8fafc;
+      display:flex;
+      align-items:center;
+      gap:.4rem;
+    }
+
+    .metric-label .info-icon {
+      color:#38bdf8;
+      font-size:.8rem;
+      cursor:pointer;
+    }
+
+    .metric-value {
+      color:#38bdf8;
+      font-weight:600;
+    }
+
+    .stats-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+      gap:.75rem;
+      margin-top:1rem;
+    }
+
+    .stat-tile {
+      background-color:#0f172a;
+      border:1px solid #334155;
+      border-radius:.75rem;
+      padding:.75rem .9rem;
+      min-height:72px;
+      font-size:.85rem;
+      line-height:1.3;
+    }
+
+    .stat-title {
+      font-weight:600;
+      color:#f8fafc;
+      display:flex;
+      align-items:center;
+      gap:.4rem;
+      margin-bottom:.25rem;
+      font-size:.8rem;
+    }
+
+    .stat-title .info-icon {
+      color:#38bdf8;
+      font-size:.7rem;
+      cursor:pointer;
+    }
+
+    .stat-main {
+      font-size:.9rem;
+      font-weight:600;
+      color:#38bdf8;
+    }
+
+    .stat-desc {
+      font-size:.7rem;
+      color:#94a3b8;
+    }
+
+    footer {
+      border-top:1px solid #334155;
+      margin-top:3rem;
+      padding-top:1rem;
+      padding-bottom:1rem;
+      color:#94a3b8;
+      text-align:center;
+    }
+
+    .hm-foot-icon a {
+      color:#38bdf8;
+      font-size:1.2rem;
+      display:inline-flex;
+      width:2rem;
+      height:2rem;
+      align-items:center;
+      justify-content:center;
+      transition:.3s;
+      text-decoration:none;
+    }
+
+    .hm-foot-icon a:hover {
+      color:#0ea5e9;
+      text-shadow:0 0 8px rgba(56,189,248,.8);
+    }
+
+    footer a {
+      color:#38bdf8;
+      text-decoration:none;
+      font-weight:500;
+    }
+
+    footer a:hover {
+      color:#0ea5e9;
+      text-shadow:0 0 8px rgba(56,189,248,.8);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container page-wrapper">
+  <div class="text-center mb-4">
+    <h1 class="h3 mb-1">Normal Distribution Calculator</h1>
+    <div class="text-secondary">
+      <!-- This subtitle is updated in JS to explain which distribution you are using (X or X̄). -->
+      <span id="globalFormulaText">X ~ N(μ, σ²). Use for a single observation.</span>
+    </div>
+  </div>
+
+  <div class="row g-4">
+    <!-- LEFT PANEL -->
+    <div class="col-lg-4">
+      <div class="card h-100">
+        <div class="card-header">
+          <div class="fw-semibold">Inputs</div>
+          <div class="small text-secondary">Enter μ, σ, x, and (optionally) sample size n.</div>
+        </div>
+        <div class="card-body">
+
+          <!-- MODE TOGGLE: choose if you work with a single X or a sample mean X̄ -->
+          <div class="mb-3">
+            <label class="form-label d-flex justify-content-between align-items-center">
+              <span>Mode</span>
+              <span class="text-secondary small">General X vs. Sample mean X̄</span>
+            </label>
+            <div class="btn-group w-100" role="group" aria-label="Calculator mode">
+              <!-- General (single value) mode -->
+              <input type="radio" class="btn-check" name="mode" id="modeSingle" autocomplete="off" checked>
+              <label class="btn btn-outline-light" for="modeSingle">General X</label>
+
+              <!-- Sample mean mode -->
+              <input type="radio" class="btn-check" name="mode" id="modeSample" autocomplete="off">
+              <label class="btn btn-outline-light" for="modeSample">Sample mean X̄</label>
+            </div>
+            <div class="form-text text-secondary" style="font-size:.7rem;">
+              In <strong>Sample mean</strong> mode we treat X̄ as normal with
+              standard error σ / √n and use that for all probabilities.
+            </div>
+          </div>
+
+          <!-- Population mean μ -->
+          <div class="mb-3">
+            <label class="form-label">μ (mean)</label>
+            <input id="muInput" type="number" step="0.1" value="0" class="form-control" />
+            <div class="form-text text-secondary" style="font-size:.7rem;">
+              Population mean (for both a single X and the sample mean X̄).
+            </div>
+          </div>
+
+          <!-- Population standard deviation σ -->
+          <div class="mb-3">
+            <label class="form-label">σ (std dev)</label>
+            <input id="sigmaInput" type="number" step="0.1" min="0.0001" value="1" class="form-control" />
+            <div class="form-text text-secondary" style="font-size:.7rem;">
+              Population standard deviation. In sample mode we use σ / √n as the
+              standard deviation of X̄.
+            </div>
+          </div>
+
+          <!-- Sample size n: shown only in "Sample mean X̄" mode -->
+          <div class="mb-3" id="sampleSizeGroup" style="display:none;">
+            <label class="form-label">Sample size n</label>
+            <input id="nInput" type="number" min="1" step="1" value="30" class="form-control" />
+            <div class="form-text text-secondary" style="font-size:.7rem;">
+              Number of observations in the sample (e.g., 200 passengers).  
+              The standard error will be σ / √n.
+            </div>
+          </div>
+
+          <!-- x-value (for X or for X̄) -->
+          <div class="mb-3">
+            <label class="form-label">x (highlight)</label>
+            <input id="xInput" type="number" step="0.1" value="0" class="form-control" />
+            <div class="form-text text-secondary" style="font-size:.7rem;">
+              In General mode: a single observed value X.  
+              In Sample mode: a sample mean value X̄.
+            </div>
+          </div>
+
+          <div class="d-flex gap-2">
+            <button id="calcBtn" class="btn btn-primary flex-grow-1">Calculate</button>
+            <button id="resetBtn" class="btn btn-outline-secondary flex-grow-1">Reset</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="col-lg-8 d-flex flex-column gap-4">
+      <!-- CHART CARD -->
+      <div class="card">
+        <div class="card-header">
+          <div class="fw-semibold">Density Curve (PDF)</div>
+          <div class="small text-secondary" id="chartSubtitle">
+            Blue area = P(X ≤ x). Red area = P(X &gt; x).
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="chart-container">
+            <canvas id="distChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- RESULTS CARD -->
+      <div class="card p-3">
+        <!-- PDF -->
+        <div class="metric-row">
+          <div class="metric-label">
+            <span>PDF(x)</span>
+            <i class="fa-solid fa-circle-info info-icon"
+               data-bs-toggle="tooltip"
+               data-bs-placement="top"
+               title="PDF (Probability Density Function): the HEIGHT of the curve at x. Not a probability by itself, but how dense values are around x."></i>
+          </div>
+          <div class="metric-value" id="pdfVal">–</div>
+        </div>
+
+        <!-- CDF -->
+        <div class="metric-row">
+          <div class="metric-label">
+            <span>CDF(x) = P(X ≤ x)</span>
+            <i class="fa-solid fa-circle-info info-icon"
+               data-bs-toggle="tooltip"
+               data-bs-placement="top"
+               title="CDF (Cumulative Distribution Function): the probability that the random variable is LESS THAN OR EQUAL to x. This is the blue shaded area."></i>
+          </div>
+          <div class="metric-value" id="cdfVal">–</div>
+        </div>
+
+        <!-- ABOVE -->
+        <div class="metric-row">
+          <div class="metric-label">
+            <span>P(X &gt; x)</span>
+            <i class="fa-solid fa-circle-info info-icon"
+               data-bs-toggle="tooltip"
+               data-bs-placement="top"
+               title="Probability that the value is ABOVE x. This is 1 − CDF(x), and it's shown as the red shaded area."></i>
+          </div>
+          <div class="metric-value" id="aboveVal">–</div>
+        </div>
+
+        <!-- Z-SCORE -->
+        <div class="metric-row">
+          <div class="metric-label">
+            <span>z-score</span>
+            <i class="fa-solid fa-circle-info info-icon"
+               data-bs-toggle="tooltip"
+               data-bs-placement="top"
+               title="z-score: how many standard deviations (or standard errors in sample mode) x is away from the mean. z = (x − μ) / σ_eff."></i>
+          </div>
+          <div class="metric-value" id="zVal">–</div>
+        </div>
+
+        <!-- STATS GRID -->
+        <div class="stats-grid">
+          <!-- Mean -->
+          <div class="stat-tile">
+            <div class="stat-title">
+              <span>Mean (μ)</span>
+              <i class="fa-solid fa-circle-info info-icon"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 title="Mean (μ): the center of the distribution. Same for X and X̄."></i>
+            </div>
+            <div class="stat-main" id="meanVal">–</div>
+            <div class="stat-desc">Average / expected value</div>
+          </div>
+
+          <!-- Std Dev / Std Error -->
+          <div class="stat-tile">
+            <div class="stat-title">
+              <span id="stdTitleLabel">Std Dev (σ)</span>
+              <i class="fa-solid fa-circle-info info-icon"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 title="In General mode: standard deviation of X. In Sample mode: standard error σ / √n of the sample mean X̄."></i>
+            </div>
+            <div class="stat-main" id="stdVal">–</div>
+            <div class="stat-desc" id="stdDesc">Spread in original units</div>
+          </div>
+
+          <!-- Variance -->
+          <div class="stat-tile">
+            <div class="stat-title">
+              <span id="varTitleLabel">Variance (σ²)</span>
+              <i class="fa-solid fa-circle-info info-icon"
+                 data-bs-toggle="tooltip"
+                 data-bs-placement="top"
+                 title="In General mode: variance of X, σ². In Sample mode: variance of X̄, σ² / n."></i>
+            </div>
+            <div class="stat-main" id="varVal">–</div>
+            <div class="stat-desc" id="varDesc">Spread in squared units</div>
+          </div>
+        </div>
+
+        <!-- SHORT TEXT EXPLAINING CURRENT MODE -->
+        <div class="small text-secondary mt-3" id="modeNote">
+          Mode: General X (single observation). Using σ as the standard deviation.
+        </div>
+      </div>
+    </div>
+  </div> <!-- /row -->
+</div> <!-- /container -->
+
+<footer>
+  <div class="hm-foot-icon mb-2">
+    <a href="https://www.facebook.com/dror.mor.9" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://github.com/ColgateSmile" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://www.linkedin.com/in/dror-mor-%D7%93%D7%A8%D7%95%D7%A8-%D7%9E%D7%95%D7%A8-90865a201/" target="_blank"><i class="fab fa-linkedin"></i></a>
+    <a href="https://www.instagram.com/drmor1994/" target="_blank"><i class="fab fa-instagram"></i></a>
+  </div>
+  <small>
+    Created by <span style="color:#38bdf8;">Dror Mor</span> |
+    <a href="https://colgatesmile.github.io/DrorMorResume/" target="_blank">Website</a> |
+    <a href="https://github.com/ColgateSmile" target="_blank">GitHub</a>
+  </small>
+</footer>
+
+<script>
+  //
+  // ---- Math helpers ----
+  //
+  function pdfNormal(x, mu, sigma) {
+    const coeff = 1 / (sigma * Math.sqrt(2 * Math.PI));
+    const exponent = -Math.pow(x - mu, 2) / (2 * sigma * sigma);
+    return coeff * Math.exp(exponent);
+  }
+
+  function erf(z) {
+    const sign = z >= 0 ? 1 : -1;
+    const absZ = Math.abs(z);
+
+    const a1 = 0.254829592;
+    const a2 = -0.284496736;
+    const a3 = 1.421413741;
+    const a4 = -1.453152027;
+    const a5 = 1.061405429;
+    const p  = 0.3275911;
+
+    const t = 1 / (1 + p * absZ);
+    const y =
+      1 -
+      (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) *
+        t *
+        Math.exp(-absZ * absZ);
+
+    return sign * y;
+  }
+
+  function cdfNormal(x, mu, sigma) {
+    const z = (x - mu) / (sigma * Math.sqrt(2));
+    return 0.5 * (1 + erf(z));
+  }
+
+  function fmt4(v) {
+    return Number(v).toFixed(4);
+  }
+
+  //
+  // ---- Curve sampling ----
+  //
+  function buildCurve(mu, sigma) {
+    const pts = [];
+    const start = mu - 4 * sigma;
+    const end   = mu + 4 * sigma;
+    const steps = 200;
+    const stepSize = (end - start) / steps;
+    for (let i = 0; i <= steps; i++) {
+      const xVal = start + i * stepSize;
+      pts.push({ x: xVal, y: pdfNormal(xVal, mu, sigma) });
+    }
+    return pts;
+  }
+
+  function splitAreas(points, xCut) {
+    const left = [];
+    const right = [];
+
+    for (let i = 0; i < points.length; i++) {
+      const pt = points[i];
+      if (pt.x <= xCut) {
+        left.push({ x: pt.x, y: pt.y });
+        right.push({ x: pt.x, y: null });
+      } else {
+        left.push({ x: pt.x, y: null });
+        right.push({ x: pt.x, y: pt.y });
+      }
+    }
+    return { left, right };
+  }
+
+  //
+  // ---- DOM refs ----
+  //
+  const muInput     = document.getElementById('muInput');
+  const sigmaInput  = document.getElementById('sigmaInput');
+  const xInput      = document.getElementById('xInput');
+
+  const modeSingleInput = document.getElementById('modeSingle');
+  const modeSampleInput = document.getElementById('modeSample');
+  const sampleSizeGroup = document.getElementById('sampleSizeGroup');
+  const nInput      = document.getElementById('nInput');
+
+  const calcBtn     = document.getElementById('calcBtn');
+  const resetBtn    = document.getElementById('resetBtn');
+
+  const pdfValEl    = document.getElementById('pdfVal');
+  const cdfValEl    = document.getElementById('cdfVal');
+  const aboveValEl  = document.getElementById('aboveVal');
+  const zValEl      = document.getElementById('zVal');
+
+  const meanValEl   = document.getElementById('meanVal');
+  const stdValEl    = document.getElementById('stdVal');
+  const varValEl    = document.getElementById('varVal');
+
+  const stdTitleLabel = document.getElementById('stdTitleLabel');
+  const stdDescEl     = document.getElementById('stdDesc');
+  const varTitleLabel = document.getElementById('varTitleLabel');
+  const varDescEl     = document.getElementById('varDesc');
+
+  const modeNoteEl  = document.getElementById('modeNote');
+  const globalFormulaText = document.getElementById('globalFormulaText');
+  const chartSubtitle = document.getElementById('chartSubtitle');
+
+  const ctx         = document.getElementById('distChart').getContext('2d');
+  let chartInstance = null;
+
+  function isSampleMode() {
+    return modeSampleInput.checked;
+  }
+
+  //
+  // ---- Render numbers (uses effective sigma) ----
+  //
+  function renderNumbers(mu, sigmaEff, x, options = {}) {
+    const sampleMode = options.sampleMode || false;
+    const popSigma   = options.popSigma || sigmaEff;
+    const n          = options.n || 1;
+
+    const pdf = pdfNormal(x, mu, sigmaEff);
+    const cdf = cdfNormal(x, mu, sigmaEff);
+    const above = 1 - cdf;
+    const z = (x - mu) / sigmaEff;
+
+    pdfValEl.textContent   = fmt4(pdf);
+    cdfValEl.textContent   = fmt4(cdf);
+    aboveValEl.textContent = fmt4(above);
+    zValEl.textContent     = fmt4(z);
+
+    // stats tiles: we show the distribution parameters actually used
+    meanValEl.textContent = fmt4(mu);
+    stdValEl.textContent  = fmt4(sigmaEff);
+    varValEl.textContent  = fmt4(sigmaEff * sigmaEff);
+
+    // Explain the current mode briefly
+    if (sampleMode) {
+      modeNoteEl.textContent =
+        `Mode: Sample mean X̄ with n = ${n}. ` +
+        `Using standard error σ/√n = ${fmt4(sigmaEff)} for all calculations.`;
+    } else {
+      modeNoteEl.textContent =
+        'Mode: General X (single observation). Using population standard deviation σ.';
+    }
+  }
+
+  //
+  // ---- Render chart (also uses effective sigma) ----
+  //
+  function renderChart(mu, sigmaEff, xCut) {
+    const curvePts = buildCurve(mu, sigmaEff);
+    const { left, right } = splitAreas(curvePts, xCut);
+
+    const data = {
+      datasets: [
+        {
+          label: 'PDF',
+          data: curvePts,
+          parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+          borderColor: 'rgba(148,163,184,1)',
+          backgroundColor: 'rgba(148,163,184,1)',
+          borderWidth: 2,
+          pointRadius: 0,
+          tension: 0.2,
+          fill: false
+        },
+        {
+          label: 'Area ≤ x',
+          data: left,
+          parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+          borderColor: 'rgba(56,189,248,0)',
+          backgroundColor: 'rgba(56,189,248,0.4)',
+          pointRadius: 0,
+          showLine: true,
+          tension: 0.2,
+          fill: 'origin'
+        },
+        {
+          label: 'Area > x',
+          data: right,
+          parsing: { xAxisKey: 'x', yAxisKey: 'y' },
+          borderColor: 'rgba(248,113,113,0)',
+          backgroundColor: 'rgba(248,113,113,0.4)',
+          pointRadius: 0,
+          showLine: true,
+          tension: 0.2,
+          fill: 'origin'
+        }
+      ]
+    };
+
+    const options = {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          type: 'linear',
+          title: { display: true, text: 'x', color: '#f8fafc' },
+          ticks: {
+            color: '#f8fafc',
+            callback: (val) => fmt4(val)
+          },
+          grid: { display: false }
+        },
+        y: {
+          title: { display: true, text: 'PDF', color: '#f8fafc' },
+          ticks: {
+            color: '#f8fafc',
+            callback: (val) => fmt4(val)
+          },
+          grid: { color: 'rgba(148,163,184,0.2)' }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: { color: '#f8fafc' }
+        },
+        tooltip: {
+          callbacks: {
+            label: function(ctx) {
+              const xv = ctx.parsed.x;
+              const yv = ctx.parsed.y;
+              if (xv === undefined || yv === undefined) return null;
+              return `x=${fmt4(xv)}, pdf=${fmt4(yv)}`;
+            }
+          }
+        }
+      }
+    };
+
+    if (chartInstance) {
+      chartInstance.data = data;
+      chartInstance.options = options;
+      chartInstance.update();
+    } else {
+      chartInstance = new Chart(ctx, {
+        type: 'line',
+        data,
+        options
+      });
+    }
+  }
+
+  //
+  // ---- Update UI when switching modes ----
+  //
+  function updateModeUI() {
+    const sampleMode = isSampleMode();
+
+    if (sampleMode) {
+      // Show sample size input
+      sampleSizeGroup.style.display = 'block';
+
+      // Titles / descriptions reflect SE and σ²/n
+      stdTitleLabel.textContent = 'Std Error (σ / √n)';
+      stdDescEl.textContent = 'Spread of the sample mean X̄ (smaller when n is large).';
+      varTitleLabel.textContent = 'Variance (σ² / n)';
+      varDescEl.textContent = 'Variance of the sample mean distribution X̄.';
+
+      globalFormulaText.textContent =
+        'X̄ ~ N(μ, σ²/n). Use for questions about the sample mean (e.g., mean luggage weight of 200 passengers).';
+      chartSubtitle.textContent =
+        'Blue area = P(X̄ ≤ x̄). Red area = P(X̄ > x̄).';
+    } else {
+      // Hide sample size input
+      sampleSizeGroup.style.display = 'none';
+
+      stdTitleLabel.textContent = 'Std Dev (σ)';
+      stdDescEl.textContent = 'Spread in original units.';
+      varTitleLabel.textContent = 'Variance (σ²)';
+      varDescEl.textContent = 'Spread in squared units.';
+
+      globalFormulaText.textContent =
+        'X ~ N(μ, σ²). Use for a single observation.';
+      chartSubtitle.textContent =
+        'Blue area = P(X ≤ x). Red area = P(X > x).';
+    }
+
+    // Recalculate with the new mode (if inputs are valid)
+    calculateAndRender();
+  }
+
+  //
+  // ---- Master calculate & render ----
+  //
+  function calculateAndRender() {
+    const mu    = parseFloat(muInput.value);
+    const sigma = parseFloat(sigmaInput.value);
+    const x     = parseFloat(xInput.value);
+
+    if (isNaN(mu)) return;
+    if (isNaN(sigma) || sigma <= 0) return;
+    if (isNaN(x)) return;
+
+    const sampleMode = isSampleMode();
+    let n = 1;
+    let sigmaEff = sigma;
+
+    if (sampleMode) {
+      n = parseFloat(nInput.value);
+      if (isNaN(n) || n <= 0) {
+        // basic guard: if n is invalid, do not attempt calculation
+        return;
+      }
+      sigmaEff = sigma / Math.sqrt(n);
+    }
+
+    renderNumbers(mu, sigmaEff, x, { sampleMode, popSigma: sigma, n });
+    renderChart(mu, sigmaEff, x);
+
+    // (re)activate Bootstrap tooltips after DOM update
+    const tooltipTriggerList = [].slice.call(
+      document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    );
+    tooltipTriggerList.forEach(function (el) {
+      new bootstrap.Tooltip(el);
+    });
+  }
+
+  //
+  // ---- Events ----
+  //
+  calcBtn.addEventListener('click', calculateAndRender);
+
+  resetBtn.addEventListener('click', () => {
+    // Reset to a simple standard normal, general mode
+    modeSingleInput.checked = true;
+    modeSampleInput.checked = false;
+    muInput.value = 0;
+    sigmaInput.value = 1;
+    xInput.value = 0;
+    nInput.value = 30;
+    updateModeUI();
+  });
+
+  modeSingleInput.addEventListener('change', updateModeUI);
+  modeSampleInput.addEventListener('change', updateModeUI);
+
+  // Initial render
+  updateModeUI();
+</script>
+</body>
+</html>

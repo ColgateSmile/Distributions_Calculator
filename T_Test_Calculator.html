@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hypothesis Test Calculator (t-test for Mean)</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- jStat for t-distribution (CDF & inverse) -->
+  <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.6/dist/jstat.min.js"></script>
+
+  <style>
+    body {
+      background:
+        radial-gradient(circle at top, rgba(45,212,191,0.16), transparent 55%),
+        radial-gradient(circle at bottom, rgba(56,189,248,0.10), #020617 60%);
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+        Roboto, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .page-wrapper {
+      flex: 1 0 auto;
+    }
+
+    .card {
+      background: rgba(15,23,42,0.96);
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      color: #f8fafc;
+      backdrop-filter: blur(10px);
+    }
+
+    .card-header {
+      background: radial-gradient(
+        circle at 0% 0%,
+        rgba(45, 212, 191, 0.14) 0%,
+        rgba(30, 37, 59, 0) 60%
+      );
+      border-bottom: 1px solid #334155;
+      border-radius: 1rem 1rem 0 0 !important;
+      color: #f8fafc;
+    }
+
+    .text-secondary {
+      color: #94a3b8 !important;
+      font-size: 0.9rem;
+    }
+
+    .badge-soft {
+      background-color: rgba(94, 234, 212, 0.12);
+      color: #5eead4;
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display:inline-flex;
+      align-items:center;
+      gap:.25rem;
+    }
+
+    .form-control,
+    .form-select {
+      background-color: #020617;
+      border-color: #334155;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      background-color: #020617;
+      color: #e2e8f0;
+      border-color: #5eead4;
+      box-shadow: 0 0 0 0.2rem rgba(45, 212, 191, 0.3);
+    }
+
+    .form-text {
+      font-size: 0.75rem;
+    }
+
+    .small-label {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    .alert-soft {
+      background-color: rgba(248, 113, 113, 0.08);
+      border: 1px solid rgba(248, 113, 113, 0.5);
+      color: #fecaca;
+      border-radius: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .result-box {
+      background-color: #020617;
+      border-radius: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid #334155;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .summary-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .summary-label {
+      color: #cbd5f5;
+    }
+
+    .summary-value {
+      color: #5eead4;
+      font-weight: 600;
+    }
+
+    .result-highlight {
+      color: #5eead4;
+      font-weight: 600;
+    }
+
+    .step-list {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 0;
+    }
+
+    .step-list li {
+      margin-bottom: 0.75rem;
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .step-number {
+      flex-shrink: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 999px;
+      background-color: #0f172a;
+      border: 1px solid #5eead4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #5eead4;
+      margin-top: 0.05rem;
+    }
+
+    .step-text {
+      font-size: 0.9rem;
+      color: #e2e8f0;
+    }
+    .step-text strong {
+      color: #f9fafb;
+    }
+
+    footer {
+      border-top: 1px solid #334155;
+      margin-top: 3rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .hm-foot-icon a {
+      color: #38bdf8;
+      font-size: 1.2rem;
+      display: inline-flex;
+      width: 2rem;
+      height: 2rem;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      text-decoration: none;
+    }
+
+    .hm-foot-icon a:hover {
+      color: #0ea5e9;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+    }
+
+    footer a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      color: #0ea5e9;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+    }
+
+    .pill-hero {
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      padding:.25rem .9rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.7);
+      background:rgba(15,23,42,0.95);
+      font-size:.8rem;
+      color:#e5e7eb;
+    }
+
+    .pill-hero i {
+      color:#5eead4;
+    }
+
+    .info-icon {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-left:0.25rem;
+      width:1.15rem;
+      height:1.15rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.8);
+      color:#cbd5f5;
+      font-size:.65rem;
+      cursor:pointer;
+      background:rgba(15,23,42,0.8);
+    }
+
+    .info-icon i {
+      font-size:.6rem;
+    }
+
+    .pvalue-highlight {
+      display:inline-flex;
+      align-items:center;
+      gap:.35rem;
+      padding:.15rem .45rem;
+      border-radius:999px;
+      background:rgba(94,234,212,0.12);
+      color:#ccfbf1;
+      font-weight:600;
+      border:1px solid rgba(94,234,212,0.5);
+      margin-top:.25rem;
+    }
+
+    .pvalue-highlight i {
+      font-size:.8rem;
+      color:#5eead4;
+    }
+
+    .decision-strong {
+      font-weight:600;
+      color:#fef9c3;
+    }
+
+    .decision-reject {
+      color:#f97373;
+    }
+
+    .decision-keep {
+      color:#4ade80;
+    }
+  </style>
+</head>
+<body>
+<div class="container page-wrapper">
+  <!-- Header / Hero -->
+  <div class="text-center mb-4">
+    <div class="pill-hero mb-2">
+      <i class="fa-solid fa-scale-balanced"></i>
+      <span>Hypothesis Testing – t-test for a Mean (σ unknown)</span>
+    </div>
+    <h1 class="h3 mb-2">t-test Calculator (One-Sample Mean)</h1>
+    <p class="text-secondary mb-1">
+      Use this when the population standard deviation is <strong>unknown</strong>
+      and you only have the sample standard deviation s.
+    </p>
+    <p class="text-secondary" style="font-size:.8rem;">
+      Choose left / right / two-tailed, set α, and enter μ₀, s, n, and (optionally) X̄.
+      The calculator will give you the critical t, critical region, p-value, and a full explanation.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <!-- LEFT: Inputs -->
+    <div class="col-lg-4">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">Inputs</div>
+            <div class="small text-secondary">
+              One-sample t-test for the mean (σ unknown, use sample sd s).
+            </div>
+          </div>
+          <span class="badge-soft">
+            <i class="fa-solid fa-t"></i> t-test
+          </span>
+        </div>
+        <div class="card-body">
+          <!-- Hypotheses type -->
+          <div class="mb-3">
+            <label class="form-label">
+              Hypothesis type
+              <span
+                class="info-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="Choose the alternative H₁: left-tailed (μ < μ₀), right-tailed (μ > μ₀), or two-tailed (μ ≠ μ₀). This sets which tail(s) of the t distribution are ‘extreme’.">
+                <i class="fa-solid fa-question"></i>
+              </span>
+            </label>
+            <select id="tailType" class="form-select">
+              <option value="left" selected>Left-tailed (H₁: μ &lt; μ₀)</option>
+              <option value="right">Right-tailed (H₁: μ &gt; μ₀)</option>
+              <option value="two">Two-tailed (H₁: μ ≠ μ₀)</option>
+            </select>
+            <div class="form-text text-secondary">
+              Example: “new teaching method improves scores” → often right-tailed (μ &gt; μ₀).
+            </div>
+          </div>
+
+          <!-- Alpha -->
+          <div class="mb-3">
+            <label class="form-label">
+              Significance level α (%)
+              <span
+                class="info-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="α is the Type I error rate: P(reject H₀ | H₀ true). Common choices: 5% or 1%. We compare the p-value to α.">
+                <i class="fa-solid fa-question"></i>
+              </span>
+            </label>
+            <input id="alphaInput" type="number" step="0.1" value="5" min="0.1" max="50" class="form-control" />
+            <div class="form-text text-secondary">
+              Common choices: 5%, 1%.
+            </div>
+          </div>
+
+          <!-- μ0, s, n -->
+          <div class="mb-3 border-top pt-3">
+            <div class="mb-2">
+              <label class="form-label small-label">
+                Null hypothesis mean μ₀
+                <span
+                  class="info-icon"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="μ₀ is the benchmark mean assumed under H₀. Example: current average = 100 → H₀: μ = 100.">
+                  <i class="fa-solid fa-question"></i>
+                </span>
+              </label>
+              <input id="mu0Input" type="number" step="0.01" class="form-control" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small-label">
+                Sample standard deviation s
+                <span
+                  class="info-icon"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="s is the sample standard deviation. Because σ is unknown, the test statistic uses s and follows a t distribution with df = n − 1.">
+                  <i class="fa-solid fa-question"></i>
+                </span>
+              </label>
+              <input id="sInput" type="number" step="0.01" min="0" class="form-control" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small-label">
+                Sample size n
+                <span
+                  class="info-icon"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="Number of observations in your sample. Degrees of freedom are df = n − 1 for the one-sample t-test.">
+                  <i class="fa-solid fa-question"></i>
+                </span>
+              </label>
+              <input id="nInput" type="number" min="2" step="1" class="form-control" />
+              <div class="form-text text-secondary">
+                df = n − 1 degrees of freedom for the t-distribution.
+              </div>
+            </div>
+          </div>
+
+          <!-- Xbar (optional) -->
+          <div class="mb-3 border-top pt-3">
+            <label class="form-label">
+              Sample mean X̄
+              <span class="small-label">(optional but recommended)</span>
+              <span
+                class="info-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="X̄ is your sample mean. The t statistic is t = (X̄ − μ₀) / (s / √n). If you leave this blank, the tool only shows critical region and t*.">
+                <i class="fa-solid fa-question"></i>
+              </span>
+            </label>
+            <input id="xbarInput" type="number" step="0.01" class="form-control" />
+            <div class="form-text text-secondary">
+              If provided, the calculator will compute t, the p-value, and tell you whether to reject H₀.
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mt-3">
+            <button id="calcBtn" class="btn btn-primary flex-grow-1">
+              <i class="fa-solid fa-calculator me-1"></i> Run t-test
+            </button>
+            <button id="resetBtn" class="btn btn-outline-secondary flex-grow-1">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Results -->
+    <div class="col-lg-8">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">Result & Step-by-Step Explanation</div>
+            <div class="small text-secondary" id="resultSubtitle">
+              Fill in the inputs on the left and click “Run t-test”.
+            </div>
+          </div>
+          <span class="badge-soft">
+            <i class="fa-solid fa-notes-medical"></i> t, SE, p-value
+          </span>
+        </div>
+        <div class="card-body">
+          <div id="errorBox" style="display:none;" class="alert-soft"></div>
+
+          <!-- Summary -->
+          <div id="summaryBox" style="display:none;">
+            <div class="result-box">
+              <div class="summary-row">
+                <div>
+                  <span class="summary-label">
+                    Test type
+                    <span
+                      class="info-icon"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Left-tailed: one lower tail. Right-tailed: one upper tail. Two-tailed: both tails of the t distribution.">
+                      <i class="fa-solid fa-question"></i>
+                    </span>
+                    :
+                  </span>
+                  <span class="summary-value" id="summaryTestType"></span>
+                </div>
+                <div>
+                  <span class="summary-label">
+                    α
+                    <span
+                      class="info-icon"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Significance level: the cutoff for ‘small’ p-values.">
+                      <i class="fa-solid fa-question"></i>
+                    </span>
+                    :
+                  </span>
+                  <span class="summary-value" id="summaryAlpha"></span>
+                </div>
+                <div>
+                  <span class="summary-label">
+                    df
+                    <span
+                      class="info-icon"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Degrees of freedom for one-sample t-test: df = n − 1.">
+                      <i class="fa-solid fa-question"></i>
+                    </span>
+                    :
+                  </span>
+                  <span class="summary-value" id="summaryDf"></span>
+                </div>
+                <div>
+                  <span class="summary-label">
+                    t critical
+                    <span
+                      class="info-icon"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="t-critical t* is such that only α (or α/2 in each tail) of the t distribution lies beyond it.">
+                      <i class="fa-solid fa-question"></i>
+                    </span>
+                    :
+                  </span>
+                  <span class="summary-value" id="summaryTcrit"></span>
+                </div>
+                <div>
+                  <span class="summary-label">
+                    SE
+                    <span
+                      class="info-icon"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Standard error of X̄: SE = s / √n. It measures typical sampling variation of the mean.">
+                      <i class="fa-solid fa-question"></i>
+                    </span>
+                    :
+                  </span>
+                  <span class="summary-value" id="summarySE"></span>
+                </div>
+              </div>
+              <div id="summaryHypotheses" class="small text-secondary"></div>
+            </div>
+
+            <!-- Critical region -->
+            <div class="result-box mb-3">
+              <div class="mb-1 fw-semibold">Critical region (in terms of sample mean X̄)</div>
+              <div id="critRegionText" class="mb-1">
+                –
+              </div>
+              <div id="critRuleText" class="small text-secondary"></div>
+            </div>
+
+            <!-- Test statistic and decision (if Xbar provided) -->
+            <div id="testStatBox" class="result-box mb-3" style="display:none;">
+              <div class="mb-1 fw-semibold">Test statistic, p-value & decision</div>
+              <div id="testStatText" class="mb-1"></div>
+              <div id="decisionText" class="small text-secondary"></div>
+            </div>
+          </div>
+
+          <!-- Steps -->
+          <ol id="stepsList" class="step-list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="hm-foot-icon mb-2">
+    <a href="https://www.facebook.com/dror.mor.9" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://github.com/ColgateSmile" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://www.linkedin.com/in/dror-mor-%D7%93%D7%A8%D7%95%D7%A8-%D7%9E%D7%95%D7%A8-90865a201/" target="_blank"><i class="fab fa-linkedin"></i></a>
+    <a href="https://www.instagram.com/drmor1994/" target="_blank"><i class="fab fa-instagram"></i></a>
+  </div>
+  <small>
+    Created by <span style="color:#38bdf8;">Dror Mor</span> |
+    <a href="https://colgatesmile.github.io/DrorMorResume/" target="_blank">Website</a> |
+    <a href="https://github.com/ColgateSmile" target="_blank">GitHub</a>
+  </small>
+</footer>
+
+<script>
+  // ---------- Helpers ----------
+  function fmt(v, decimals = 3) {
+    if (!isFinite(v)) return "–";
+    return Number(v).toFixed(decimals);
+  }
+
+  // ---------- DOM Elements ----------
+  const tailTypeEl = document.getElementById("tailType");
+  const alphaInputEl = document.getElementById("alphaInput");
+  const mu0InputEl = document.getElementById("mu0Input");
+  const sInputEl = document.getElementById("sInput");
+  const nInputEl = document.getElementById("nInput");
+  const xbarInputEl = document.getElementById("xbarInput");
+
+  const calcBtn = document.getElementById("calcBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
+  const errorBox = document.getElementById("errorBox");
+  const summaryBox = document.getElementById("summaryBox");
+  const resultSubtitle = document.getElementById("resultSubtitle");
+
+  const summaryTestType = document.getElementById("summaryTestType");
+  const summaryAlpha = document.getElementById("summaryAlpha");
+  const summaryDf = document.getElementById("summaryDf");
+  const summaryTcrit = document.getElementById("summaryTcrit");
+  const summarySE = document.getElementById("summarySE");
+  const summaryHypotheses = document.getElementById("summaryHypotheses");
+
+  const critRegionText = document.getElementById("critRegionText");
+  const critRuleText = document.getElementById("critRuleText");
+
+  const testStatBox = document.getElementById("testStatBox");
+  const testStatText = document.getElementById("testStatText");
+  const decisionText = document.getElementById("decisionText");
+
+  const stepsList = document.getElementById("stepsList");
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.style.display = "block";
+    summaryBox.style.display = "none";
+    stepsList.innerHTML = "";
+  }
+
+  function clearError() {
+    errorBox.style.display = "none";
+  }
+
+  function renderSteps(steps) {
+    stepsList.innerHTML = "";
+    steps.forEach((s, idx) => {
+      const li = document.createElement("li");
+
+      const numSpan = document.createElement("span");
+      numSpan.className = "step-number";
+      numSpan.textContent = (idx + 1).toString();
+
+      const textDiv = document.createElement("div");
+      textDiv.className = "step-text";
+      textDiv.innerHTML = "<strong>" + s.title + "</strong><br />" + s.text;
+
+      li.appendChild(numSpan);
+      li.appendChild(textDiv);
+      stepsList.appendChild(li);
+    });
+  }
+
+  function calculateTest() {
+    clearError();
+    summaryBox.style.display = "none";
+    stepsList.innerHTML = "";
+    testStatBox.style.display = "none";
+
+    const tail = tailTypeEl.value;
+    const alphaPercent = parseFloat(alphaInputEl.value);
+    const mu0 = parseFloat(mu0InputEl.value);
+    const s = parseFloat(sInputEl.value);
+    const n = parseFloat(nInputEl.value);
+    const xbar = parseFloat(xbarInputEl.value);
+
+    if (!isFinite(alphaPercent) || alphaPercent <= 0 || alphaPercent >= 100) {
+      showError("Please enter a valid significance level α between 0 and 100.");
+      return;
+    }
+    if (!isFinite(mu0) || !isFinite(s) || !isFinite(n) || n <= 1 || s <= 0) {
+      showError("Please enter valid values for μ₀, s > 0, and n > 1.");
+      return;
+    }
+
+    const alpha = alphaPercent / 100;
+    const df = n - 1;
+    const SE = s / Math.sqrt(n);
+
+    // t critical(s)
+    let tCritLower = null;
+    let tCritUpper = null;
+    let testTypeLabel = "";
+
+    try {
+      if (tail === "left") {
+        const t = jStat.studentt.inv(alpha, df); // negative
+        tCritLower = t;
+        testTypeLabel = "Left-tailed (H₁: μ < μ₀)";
+      } else if (tail === "right") {
+        const t = jStat.studentt.inv(1 - alpha, df); // positive
+        tCritUpper = t;
+        testTypeLabel = "Right-tailed (H₁: μ > μ₀)";
+      } else if (tail === "two") {
+        const t = jStat.studentt.inv(1 - alpha / 2, df); // positive
+        tCritUpper = t;
+        tCritLower = -t;
+        testTypeLabel = "Two-tailed (H₁: μ ≠ μ₀)";
+      } else {
+        showError("Unknown hypothesis type.");
+        return;
+      }
+    } catch (e) {
+      showError("Error computing critical t value. Please check inputs.");
+      return;
+    }
+
+    // Critical region in terms of X̄
+    let critRegionStr = "";
+    let critRuleStr = "";
+    let tCritDisplay = "";
+
+    if (tail === "left") {
+      const xCrit = mu0 + tCritLower * SE;
+      critRegionStr =
+        "Reject H₀ if X̄ < " +
+        "<span class='result-highlight'>" + fmt(xCrit, 3) + "</span>.";
+      critRuleStr =
+        "Because this is a left-tailed t-test at α = " + fmt(alpha, 3) +
+        " with df = " + df +
+        ", the critical t is " + fmt(tCritLower, 3) +
+        " and the rejection region is all sample means smaller than " +
+        fmt(xCrit, 3) + ".";
+      tCritDisplay = "t_crit = " + fmt(tCritLower, 3);
+    } else if (tail === "right") {
+      const xCrit = mu0 + tCritUpper * SE;
+      critRegionStr =
+        "Reject H₀ if X̄ > " +
+        "<span class='result-highlight'>" + fmt(xCrit, 3) + "</span>.";
+      critRuleStr =
+        "Because this is a right-tailed t-test at α = " + fmt(alpha, 3) +
+        " with df = " + df +
+        ", the critical t is " + fmt(tCritUpper, 3) +
+        " and the rejection region is all sample means larger than " +
+        fmt(xCrit, 3) + ".";
+      tCritDisplay = "t_crit = " + fmt(tCritUpper, 3);
+    } else {
+      const tPos = tCritUpper;
+      const lowerX = mu0 + tCritLower * SE;
+      const upperX = mu0 + tCritUpper * SE;
+      critRegionStr =
+        "Reject H₀ if X̄ < " +
+        "<span class='result-highlight'>" + fmt(lowerX, 3) + "</span> " +
+        "or X̄ > " +
+        "<span class='result-highlight'>" + fmt(upperX, 3) + "</span>.";
+      critRuleStr =
+        "Because this is a two-tailed t-test at α = " + fmt(alpha, 3) +
+        " with df = " + df +
+        ", the critical t values are ±" + fmt(tPos, 3) +
+        ", giving two rejection regions in the lower and upper tails.";
+      tCritDisplay = "t_crit = (" + fmt(tCritLower, 3) + ", " + fmt(tCritUpper, 3) + ")";
+    }
+
+    // Fill summary box
+    summaryTestType.textContent = testTypeLabel;
+    summaryAlpha.textContent = fmt(alpha, 3);
+    summaryDf.textContent = df;
+    summaryTcrit.textContent = tCritDisplay;
+    summarySE.textContent = fmt(SE, 3);
+
+    const h1Text =
+      tail === "left"
+        ? "H₁: μ < μ₀ (we suspect the mean is smaller)."
+        : tail === "right"
+        ? "H₁: μ > μ₀ (we suspect the mean is larger)."
+        : "H₁: μ ≠ μ₀ (we suspect the mean is different, either larger or smaller).";
+
+    summaryHypotheses.innerHTML =
+      "Null hypothesis: H₀: μ = μ₀ = " + fmt(mu0, 3) + ". " +
+      "Alternative: " + h1Text.replace("μ₀", fmt(mu0, 3));
+
+    critRegionText.innerHTML = critRegionStr;
+    critRuleText.textContent = critRuleStr;
+
+    summaryBox.style.display = "block";
+
+    // Steps (without using Xbar yet)
+    const steps = [];
+
+    steps.push({
+      title: "State the hypotheses.",
+      text:
+        "We test H₀: μ = " + fmt(mu0, 3) +
+        " against " + h1Text.replace("μ₀", fmt(mu0, 3)) +
+        " using a one-sample t-test for the mean with unknown σ (we use s and df = n − 1)."
+    });
+
+    steps.push({
+      title: "Choose the significance level and find the critical t-value(s).",
+      text:
+        "We use significance level α = " + fmt(alpha, 3) +
+        ". For this " +
+        (tail === "two" ? "two-tailed" : "one-tailed") +
+        " t-test with df = " + df +
+        ", we find the critical t-value(s) from the t distribution and obtain " +
+        tCritDisplay + "."
+    });
+
+    steps.push({
+      title: "Compute the standard error of the mean.",
+      text:
+        "Standard error SE = s / √n = " +
+        fmt(s, 3) +
+        " / √" + fmt(n, 0) +
+        " ≈ " + fmt(SE, 3) + "."
+    });
+
+    steps.push({
+      title: "Translate the critical t-value(s) into critical value(s) of X̄.",
+      text:
+        "Using X̄_crit = μ₀ + t_crit · SE, we obtain the rejection region in terms of the sample mean X̄, as shown above."
+    });
+
+    // If sample mean provided, compute test statistic and decision
+    const hasSampleMean = isFinite(xbar);
+    if (hasSampleMean) {
+      const tObs = (xbar - mu0) / SE;
+
+      // p-value depending on tail
+      let pVal;
+      if (tail === "left") {
+        pVal = jStat.studentt.cdf(tObs, df);
+      } else if (tail === "right") {
+        pVal = 1 - jStat.studentt.cdf(tObs, df);
+      } else {
+        const leftTail = jStat.studentt.cdf(Math.abs(tObs), df);
+        pVal = 2 * (1 - leftTail);
+      }
+
+      let decision, explain, decisionClass;
+      if (tail === "left") {
+        if (tObs < tCritLower) {
+          decision = "Reject H₀.";
+          explain =
+            "Because the observed t = " + fmt(tObs, 3) +
+            " is smaller than the critical value " + fmt(tCritLower, 3) +
+            ", the result falls in the rejection region. At this α level, we have evidence that the true mean is smaller than μ₀.";
+          decisionClass = "decision-reject";
+        } else {
+          decision = "Fail to reject H₀.";
+          explain =
+            "Because the observed t = " + fmt(tObs, 3) +
+            " is not smaller than the critical value " + fmt(tCritLower, 3) +
+            ", the result does not fall in the rejection region. We do not have enough evidence to say the mean is smaller than μ₀.";
+          decisionClass = "decision-keep";
+        }
+      } else if (tail === "right") {
+        if (tObs > tCritUpper) {
+          decision = "Reject H₀.";
+          explain =
+            "Because the observed t = " + fmt(tObs, 3) +
+            " is greater than the critical value " + fmt(tCritUpper, 3) +
+            ", the result falls in the rejection region. At this α level, we have evidence that the true mean is larger than μ₀.";
+          decisionClass = "decision-reject";
+        } else {
+          decision = "Fail to reject H₀.";
+          explain =
+            "Because the observed t = " + fmt(tObs, 3) +
+            " is not greater than the critical value " + fmt(tCritUpper, 3) +
+            ", the result does not fall in the rejection region. We do not have enough evidence to say the mean is larger than μ₀.";
+          decisionClass = "decision-keep";
+        }
+      } else {
+        const tPos = tCritUpper;
+        if (Math.abs(tObs) > tPos) {
+          decision = "Reject H₀.";
+          explain =
+            "Because |t| = " + fmt(Math.abs(tObs), 3) +
+            " is greater than the two-tailed critical value " + fmt(tPos, 3) +
+            ", the result falls in one of the rejection tails. We have evidence that the true mean differs from μ₀.";
+          decisionClass = "decision-reject";
+        } else {
+          decision = "Fail to reject H₀.";
+          explain =
+            "Because |t| = " + fmt(Math.abs(tObs), 3) +
+            " is not greater than the critical value " + fmt(tPos, 3) +
+            ", the result does not fall in the rejection region. We do not have enough evidence that the mean differs from μ₀.";
+          decisionClass = "decision-keep";
+        }
+      }
+
+      testStatText.innerHTML =
+        "Observed sample mean: X̄ = " + fmt(xbar, 3) + ".<br>" +
+        "Test statistic: t = (X̄ − μ₀) / (s / √n) = " +
+        fmt(tObs, 3) + ".<br>" +
+        "<span class='pvalue-highlight' " +
+        "data-bs-toggle='tooltip' data-bs-placement='top' " +
+        "title='The p-value is the probability of obtaining a result at least this extreme if H₀ is true.'>" +
+        "<i class='fa-solid fa-droplet'></i>" +
+        "p-value: p ≈ " + fmt(pVal, 4) +
+        "</span>";
+
+      decisionText.innerHTML =
+        "<span class='decision-strong " + decisionClass + "'>" +
+        decision + "</span> " + explain;
+
+      testStatBox.style.display = "block";
+
+      steps.push({
+        title: "Compute the test statistic.",
+        text:
+          "Using the observed sample mean X̄ = " + fmt(xbar, 3) +
+          ", the test statistic is t = (X̄ − μ₀) / (s / √n) ≈ " +
+          fmt(tObs, 3) + "."
+      });
+
+      steps.push({
+        title: "Compute the p-value and compare it to α.",
+        text:
+          "From the t distribution with df = " + df +
+          ", the p-value corresponding to t = " + fmt(tObs, 3) +
+          " is p ≈ " + fmt(pVal, 4) +
+          ". We compare this p-value to α to decide whether the result is statistically significant."
+      });
+
+      steps.push({
+        title: "Make a conclusion in context.",
+        text:
+          decision + " " + explain +
+          " In words: we " +
+          (decision.startsWith("Reject") ? "have" : "do not have") +
+          " enough evidence at α = " + fmt(alpha, 3) +
+          " to support the alternative hypothesis H₁."
+      });
+
+    } else {
+      steps.push({
+        title: "Note about the sample mean.",
+        text:
+          "No sample mean X̄ was entered. We have found the critical value(s) and rejection region. " +
+          "If you later observe a sample mean, you can compare it to the critical value(s): " +
+          "if it falls in the rejection region, you reject H₀; otherwise, you fail to reject H₀."
+      });
+    }
+
+    renderSteps(steps);
+
+    resultSubtitle.textContent =
+      "One-sample t-test for the mean: critical region and (if X̄ is given) conclusion about H₀ and p-value.";
+
+    // Re-activate tooltips for dynamically added elements (like the p-value bubble)
+    const tooltipTriggerList2 = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList2.forEach(el => new bootstrap.Tooltip(el));
+  }
+
+  function resetAll() {
+    tailTypeEl.value = "left";
+    alphaInputEl.value = 5;
+    mu0InputEl.value = "";
+    sInputEl.value = "";
+    nInputEl.value = "";
+    xbarInputEl.value = "";
+
+    clearError();
+    summaryBox.style.display = "none";
+    stepsList.innerHTML = "";
+    testStatBox.style.display = "none";
+    resultSubtitle.textContent =
+      'Fill in the inputs on the left and click “Run t-test”.';
+  }
+
+  calcBtn.addEventListener("click", calculateTest);
+  resetBtn.addEventListener("click", resetAll);
+
+  // ---------- Bootstrap tooltips init ----------
+  document.addEventListener("DOMContentLoaded", () => {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+  });
+</script>
+</body>
+</html>

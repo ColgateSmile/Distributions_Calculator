@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hypothesis Test Calculator (Z-test for Mean)</title>
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <style>
+    body {
+      background:
+        radial-gradient(circle at top, rgba(56,189,248,0.12), transparent 55%),
+        radial-gradient(circle at bottom, rgba(45,212,191,0.08), #020617 60%);
+      color: #f8fafc;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
+        Roboto, "Segoe UI", sans-serif;
+      min-height: 100vh;
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .page-wrapper {
+      flex: 1 0 auto;
+    }
+
+    .card {
+      background: rgba(15,23,42,0.96);
+      border: 1px solid #334155;
+      border-radius: 1rem;
+      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
+      color: #f8fafc;
+      backdrop-filter: blur(10px);
+    }
+
+    .card-header {
+      background: radial-gradient(
+        circle at 0% 0%,
+        rgba(56, 189, 248, 0.14) 0%,
+        rgba(30, 37, 59, 0) 60%
+      );
+      border-bottom: 1px solid #334155;
+      border-radius: 1rem 1rem 0 0 !important;
+      color: #f8fafc;
+    }
+
+    .text-secondary {
+      color: #94a3b8 !important;
+      font-size: 0.9rem;
+    }
+
+    .badge-soft {
+      background-color: rgba(56, 189, 248, 0.12);
+      color: #38bdf8;
+      border-radius: 999px;
+      padding: 0.15rem 0.6rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: .25rem;
+    }
+
+    .form-control,
+    .form-select {
+      background-color: #020617;
+      border-color: #334155;
+      color: #e2e8f0;
+      font-size: 0.9rem;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      background-color: #020617;
+      color: #e2e8f0;
+      border-color: #38bdf8;
+      box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.25);
+    }
+
+    .form-text {
+      font-size: 0.75rem;
+    }
+
+    .small-label {
+      font-size: 0.8rem;
+      color: #94a3b8;
+    }
+
+    .alert-soft {
+      background-color: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fecaca;
+      border-radius: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .result-box {
+      background-color: #020617;
+      border-radius: 0.75rem;
+      padding: 0.75rem 0.9rem;
+      border: 1px solid #334155;
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .summary-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem 1.5rem;
+      font-size: 0.85rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .summary-label {
+      color: #cbd5f5;
+    }
+
+    .summary-value {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .result-highlight {
+      color: #38bdf8;
+      font-weight: 600;
+    }
+
+    .step-list {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 0;
+    }
+
+    .step-list li {
+      margin-bottom: 0.75rem;
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .step-number {
+      flex-shrink: 0;
+      width: 1.5rem;
+      height: 1.5rem;
+      border-radius: 999px;
+      background-color: #0f172a;
+      border: 1px solid #38bdf8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #38bdf8;
+      margin-top: 0.05rem;
+    }
+
+    .step-text {
+      font-size: 0.9rem;
+      color: #e2e8f0;
+    }
+    .step-text strong {
+      color: #f9fafb;
+    }
+
+    footer {
+      border-top: 1px solid #334155;
+      margin-top: 3rem;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+      color: #94a3b8;
+      text-align: center;
+    }
+
+    .hm-foot-icon a {
+      color: #38bdf8;
+      font-size: 1.2rem;
+      display: inline-flex;
+      width: 2rem;
+      height: 2rem;
+      align-items: center;
+      justify-content: center;
+      transition: 0.3s;
+      text-decoration: none;
+    }
+
+    .hm-foot-icon a:hover {
+      color: #0ea5e9;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+    }
+
+    footer a {
+      color: #38bdf8;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    footer a:hover {
+      color: #0ea5e9;
+      text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+    }
+
+    .pill-hero {
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      padding:.25rem .9rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.7);
+      background:rgba(15,23,42,0.95);
+      font-size:.8rem;
+      color:#e5e7eb;
+    }
+
+    .pill-hero i {
+      color:#38bdf8;
+    }
+
+    .info-icon {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      margin-left:0.25rem;
+      width:1.15rem;
+      height:1.15rem;
+      border-radius:999px;
+      border:1px solid rgba(148,163,184,0.8);
+      color:#cbd5f5;
+      font-size:.65rem;
+      cursor:pointer;
+      background:rgba(15,23,42,0.8);
+    }
+
+    .info-icon i {
+      font-size:.6rem;
+    }
+
+    .pvalue-highlight {
+      display:inline-flex;
+      align-items:center;
+      gap:.35rem;
+      padding:.15rem .45rem;
+      border-radius:999px;
+      background:rgba(56,189,248,0.12);
+      color:#e0f2fe;
+      font-weight:600;
+      border:1px solid rgba(56,189,248,0.5);
+      margin-top:.25rem;
+    }
+
+    .pvalue-highlight i {
+      font-size:.8rem;
+      color:#38bdf8;
+    }
+
+    .decision-strong {
+      font-weight:600;
+      color:#fef9c3;
+    }
+
+    .decision-reject {
+      color:#f97373;
+    }
+
+    .decision-keep {
+      color:#4ade80;
+    }
+  </style>
+</head>
+<body>
+<div class="container page-wrapper">
+  <!-- Header / Hero -->
+  <div class="text-center mb-4">
+    <div class="pill-hero mb-2">
+      <i class="fa-solid fa-scale-balanced"></i>
+      <span>Hypothesis Testing – Z-test for a Mean (σ known or large n)</span>
+    </div>
+    <h1 class="h3 mb-2">Hypothesis Test Calculator</h1>
+    <p class="text-secondary mb-1">
+      Plug in μ₀, σ, n, choose left / right / two-tailed, and (optionally) your sample mean X̄.
+    </p>
+    <p class="text-secondary" style="font-size:.8rem;">
+      The calculator will compute the critical value(s), show the rejection rule, and report the test statistic and p-value.
+    </p>
+  </div>
+
+  <div class="row g-4">
+    <!-- LEFT: Inputs -->
+    <div class="col-lg-4">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">Inputs</div>
+            <div class="small text-secondary">
+              One-sample Z-test for a population mean (σ known, or large sample with s ≈ σ).
+            </div>
+          </div>
+          <span class="badge-soft">
+            <i class="fa-solid fa-z"></i> Z-test
+          </span>
+        </div>
+        <div class="card-body">
+          <!-- Hypotheses type -->
+          <div class="mb-3">
+            <label class="form-label">
+              Hypothesis type
+              <span
+                class="info-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="Choose the shape of H₁: left-tailed (μ < μ₀), right-tailed (μ > μ₀), or two-tailed (μ ≠ μ₀). This controls which tail(s) of the normal curve count as ‘extreme’.">
+                <i class="fa-solid fa-question"></i>
+              </span>
+            </label>
+            <select id="tailType" class="form-select">
+              <option value="left" selected>Left-tailed (H₁: μ &lt; μ₀)</option>
+              <option value="right">Right-tailed (H₁: μ &gt; μ₀)</option>
+              <option value="two">Two-tailed (H₁: μ ≠ μ₀)</option>
+            </select>
+            <div class="form-text text-secondary">
+              Example: “new method improves” → often right-tailed (μ &gt; μ₀) or left-tailed if it should be smaller.
+            </div>
+          </div>
+
+          <!-- Alpha -->
+          <div class="mb-3">
+            <label class="form-label">
+              Significance level α (%)
+              <span
+                class="info-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="α is the Type I error rate: P(reject H₀ | H₀ is true). You choose it (commonly 5% or 1%). The test compares the p-value to α.">
+                <i class="fa-solid fa-question"></i>
+              </span>
+            </label>
+            <input id="alphaInput" type="number" step="0.1" value="5" min="0.1" max="50" class="form-control" />
+            <div class="form-text text-secondary">
+              Common choices: 5%, 1%.
+            </div>
+          </div>
+
+          <!-- μ0, σ, n -->
+          <div class="mb-3 border-top pt-3">
+            <div class="mb-2">
+              <label class="form-label small-label">
+                Null hypothesis mean μ₀
+                <span
+                  class="info-icon"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="μ₀ is the mean assumed under H₀. Example: current average = 100, so H₀: μ = 100.">
+                  <i class="fa-solid fa-question"></i>
+                </span>
+              </label>
+              <input id="mu0Input" type="number" step="0.01" class="form-control" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small-label">
+                Population standard deviation σ
+                <span
+                  class="info-icon"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="σ is the population standard deviation. In many exercises it is given; for large samples you may plug in the sample SD as an approximation.">
+                  <i class="fa-solid fa-question"></i>
+                </span>
+              </label>
+              <input id="sigmaInput" type="number" step="0.01" min="0" class="form-control" />
+            </div>
+            <div class="mb-2">
+              <label class="form-label small-label">
+                Sample size n
+                <span
+                  class="info-icon"
+                  data-bs-toggle="tooltip"
+                  data-bs-placement="right"
+                  title="Number of observations in your sample. The standard error is σ / √n. Larger n → smaller SE → more precise mean.">
+                  <i class="fa-solid fa-question"></i>
+                </span>
+              </label>
+              <input id="nInput" type="number" min="1" step="1" class="form-control" />
+              <div class="form-text text-secondary">
+                Large n (e.g. n ≥ 30) makes the Z-approximation safe.
+              </div>
+            </div>
+          </div>
+
+          <!-- Xbar (optional) -->
+          <div class="mb-3 border-top pt-3">
+            <label class="form-label">
+              Sample mean X̄
+              <span class="small-label">(optional but recommended)</span>
+              <span
+                class="info-icon"
+                data-bs-toggle="tooltip"
+                data-bs-placement="right"
+                title="X̄ is the mean of your sample. The Z statistic is Z = (X̄ − μ₀) / (σ / √n). If you leave this blank, the tool only shows the critical region.">
+                <i class="fa-solid fa-question"></i>
+              </span>
+            </label>
+            <input id="xbarInput" type="number" step="0.01" class="form-control" />
+            <div class="form-text text-secondary">
+              If provided, the calculator will compute the test statistic Z and p-value, and tell you whether to reject H₀.
+            </div>
+          </div>
+
+          <div class="d-flex gap-2 mt-3">
+            <button id="calcBtn" class="btn btn-primary flex-grow-1">
+              <i class="fa-solid fa-calculator me-1"></i> Run test
+            </button>
+            <button id="resetBtn" class="btn btn-outline-secondary flex-grow-1">
+              Reset
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Results -->
+    <div class="col-lg-8">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">Result & Step-by-Step Explanation</div>
+            <div class="small text-secondary" id="resultSubtitle">
+              Fill in the inputs on the left and click “Run test”.
+            </div>
+          </div>
+          <span class="badge-soft">
+            <i class="fa-solid fa-notes-medical"></i> Z, SE, p-value
+          </span>
+        </div>
+        <div class="card-body">
+          <div id="errorBox" style="display:none;" class="alert-soft"></div>
+
+          <!-- Summary -->
+          <div id="summaryBox" style="display:none;">
+            <div class="result-box">
+              <div class="summary-row">
+                <div>
+                  <span class="summary-label">
+                    Test type
+                    <span
+                      class="info-icon"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Left-tailed: one lower tail. Right-tailed: one upper tail. Two-tailed: both tails.">
+                      <i class="fa-solid fa-question"></i>
+                    </span>
+                    :
+                  </span>
+                  <span class="summary-value" id="summaryTestType"></span>
+                </div>
+                <div>
+                  <span class="summary-label">
+                    α
+                    <span
+                      class="info-icon"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Significance level: the cutoff used to decide if a p-value is ‘small enough’.">
+                      <i class="fa-solid fa-question"></i>
+                    </span>
+                    :
+                  </span>
+                  <span class="summary-value" id="summaryAlpha"></span>
+                </div>
+                <div>
+                  <span class="summary-label">
+                    z critical
+                    <span
+                      class="info-icon"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="z-critical is the threshold z* such that only α (or α/2 in each tail) of the standard normal lies beyond it.">
+                      <i class="fa-solid fa-question"></i>
+                    </span>
+                    :
+                  </span>
+                  <span class="summary-value" id="summaryZcrit"></span>
+                </div>
+                <div>
+                  <span class="summary-label">
+                    SE
+                    <span
+                      class="info-icon"
+                      data-bs-toggle="tooltip"
+                      data-bs-placement="top"
+                      title="Standard error of X̄: SE = σ / √n. It measures the typical sampling fluctuation of the sample mean.">
+                      <i class="fa-solid fa-question"></i>
+                    </span>
+                    :
+                  </span>
+                  <span class="summary-value" id="summarySE"></span>
+                </div>
+              </div>
+              <div id="summaryHypotheses" class="small text-secondary"></div>
+            </div>
+
+            <!-- Critical region -->
+            <div class="result-box mb-3">
+              <div class="mb-1 fw-semibold">
+                Critical region (in terms of sample mean X̄)
+              </div>
+              <div id="critRegionText" class="mb-1">
+                –
+              </div>
+              <div id="critRuleText" class="small text-secondary"></div>
+            </div>
+
+            <!-- Test statistic and decision (if Xbar provided) -->
+            <div id="testStatBox" class="result-box mb-3" style="display:none;">
+              <div class="mb-1 fw-semibold">
+                Test statistic, p-value & decision
+              </div>
+              <div id="testStatText" class="mb-1"></div>
+              <div id="decisionText" class="small text-secondary"></div>
+            </div>
+          </div>
+
+          <!-- Steps -->
+          <ol id="stepsList" class="step-list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div class="hm-foot-icon mb-2">
+    <a href="https://www.facebook.com/dror.mor.9" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://github.com/ColgateSmile" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://www.linkedin.com/in/dror-mor-%D7%93%D7%A8%D7%95%D7%A8-%D7%9E%D7%95%D7%A8-90865a201/" target="_blank"><i class="fab fa-linkedin"></i></a>
+    <a href="https://www.instagram.com/drmor1994/" target="_blank"><i class="fab fa-instagram"></i></a>
+  </div>
+  <small>
+    Created by <span style="color:#38bdf8;">Dror Mor</span> |
+    <a href="https://colgatesmile.github.io/DrorMorResume/" target="_blank">Website</a> |
+    <a href="https://github.com/ColgateSmile" target="_blank">GitHub</a>
+  </small>
+</footer>
+
+<script>
+  // ---------- Helpers ----------
+  function fmt(v, decimals = 3) {
+    if (!isFinite(v)) return "–";
+    return Number(v).toFixed(decimals);
+  }
+
+  // Inverse standard normal CDF (Acklam approximation)
+  function inverseNormalCDF(p) {
+    if (p <= 0 || p >= 1) return NaN;
+
+    const a1 = -39.69683028665376;
+    const a2 = 220.9460984245205;
+    const a3 = -275.9285104469687;
+    const a4 = 138.3577518672690;
+    const a5 = -30.66479806614716;
+    const a6 = 2.506628277459239;
+
+    const b1 = -54.47609879822406;
+    const b2 = 161.5858368580409;
+    const b3 = -155.6989798598866;
+    const b4 = 66.80131188771972;
+    const b5 = -13.28068155288572;
+
+    const c1 = -0.007784894002430293;
+    const c2 = -0.3223964580411365;
+    const c3 = -2.400758277161838;
+    const c4 = -2.549732539343734;
+    const c5 = 4.374664141464968;
+    const c6 = 2.938163982698783;
+
+    const d1 = 0.007784695709041462;
+    const d2 = 0.3224671290700398;
+    const d3 = 2.445134137142996;
+    const d4 = 3.754408661907416;
+
+    const plow = 0.02425;
+    const phigh = 1 - plow;
+    let q, r;
+
+    if (p < plow) {
+      q = Math.sqrt(-2 * Math.log(p));
+      return (
+        (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
+        ((((d1 * q + d2) * q + d3) * q + d4) * q + 1)
+      );
+    }
+
+    if (p > phigh) {
+      q = Math.sqrt(-2 * Math.log(1 - p));
+      return (
+        -(((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
+        ((((d1 * q + d2) * q + d3) * q + d4) * q + 1)
+      );
+    }
+
+    q = p - 0.5;
+    r = q * q;
+    return (
+      (((((a1 * r + a2) * r + a3) * r + a4) * r + a5) * r + a6) * q /
+      (((((b1 * r + b2) * r + b3) * r + b4) * r + b5) * r + 1)
+    );
+  }
+
+  // Standard normal CDF using erf approximation
+  function normalCDF(z) {
+    return 0.5 * (1 + erf(z / Math.SQRT2));
+  }
+
+  function erf(x) {
+    const sign = x < 0 ? -1 : 1;
+    const a1 =  0.254829592;
+    const a2 = -0.284496736;
+    const a3 =  1.421413741;
+    const a4 = -1.453152027;
+    const a5 =  1.061405429;
+    const p  =  0.3275911;
+
+    const t = 1.0 / (1.0 + p * Math.abs(x));
+    const y = 1.0 - (((((a5 * t + a4) * t) + a3) * t + a2) * t + a1) * t * Math.exp(-x * x);
+    return sign * y;
+  }
+
+  // ---------- DOM Elements ----------
+  const tailTypeEl = document.getElementById("tailType");
+  const alphaInputEl = document.getElementById("alphaInput");
+  const mu0InputEl = document.getElementById("mu0Input");
+  const sigmaInputEl = document.getElementById("sigmaInput");
+  const nInputEl = document.getElementById("nInput");
+  const xbarInputEl = document.getElementById("xbarInput");
+
+  const calcBtn = document.getElementById("calcBtn");
+  const resetBtn = document.getElementById("resetBtn");
+
+  const errorBox = document.getElementById("errorBox");
+  const summaryBox = document.getElementById("summaryBox");
+  const resultSubtitle = document.getElementById("resultSubtitle");
+
+  const summaryTestType = document.getElementById("summaryTestType");
+  const summaryAlpha = document.getElementById("summaryAlpha");
+  const summaryZcrit = document.getElementById("summaryZcrit");
+  const summarySE = document.getElementById("summarySE");
+  const summaryHypotheses = document.getElementById("summaryHypotheses");
+
+  const critRegionText = document.getElementById("critRegionText");
+  const critRuleText = document.getElementById("critRuleText");
+
+  const testStatBox = document.getElementById("testStatBox");
+  const testStatText = document.getElementById("testStatText");
+  const decisionText = document.getElementById("decisionText");
+
+  const stepsList = document.getElementById("stepsList");
+
+  function showError(msg) {
+    errorBox.textContent = msg;
+    errorBox.style.display = "block";
+    summaryBox.style.display = "none";
+    stepsList.innerHTML = "";
+  }
+
+  function clearError() {
+    errorBox.style.display = "none";
+  }
+
+  function renderSteps(steps) {
+    stepsList.innerHTML = "";
+    steps.forEach((s, idx) => {
+      const li = document.createElement("li");
+
+      const numSpan = document.createElement("span");
+      numSpan.className = "step-number";
+      numSpan.textContent = (idx + 1).toString();
+
+      const textDiv = document.createElement("div");
+      textDiv.className = "step-text";
+      textDiv.innerHTML = "<strong>" + s.title + "</strong><br />" + s.text;
+
+      li.appendChild(numSpan);
+      li.appendChild(textDiv);
+      stepsList.appendChild(li);
+    });
+  }
+
+  function calculateTest() {
+    clearError();
+    summaryBox.style.display = "none";
+    stepsList.innerHTML = "";
+    testStatBox.style.display = "none";
+
+    const tail = tailTypeEl.value;
+    const alphaPercent = parseFloat(alphaInputEl.value);
+    const mu0 = parseFloat(mu0InputEl.value);
+    const sigma = parseFloat(sigmaInputEl.value);
+    const n = parseFloat(nInputEl.value);
+    const xbar = parseFloat(xbarInputEl.value);
+
+    if (!isFinite(alphaPercent) || alphaPercent <= 0 || alphaPercent >= 100) {
+      showError("Please enter a valid significance level α between 0 and 100.");
+      return;
+    }
+    if (!isFinite(mu0) || !isFinite(sigma) || !isFinite(n) || n <= 0 || sigma <= 0) {
+      showError("Please enter valid values for μ₀, σ > 0, and n > 0.");
+      return;
+    }
+
+    const alpha = alphaPercent / 100;
+    const SE = sigma / Math.sqrt(n);
+
+    // z critical(s)
+    let zCritLower = null;
+    let zCritUpper = null;
+    let testTypeLabel = "";
+
+    if (tail === "left") {
+      const z = inverseNormalCDF(alpha); // negative
+      zCritLower = z;
+      testTypeLabel = "Left-tailed (H₁: μ < μ₀)";
+    } else if (tail === "right") {
+      const z = inverseNormalCDF(1 - alpha); // positive
+      zCritUpper = z;
+      testTypeLabel = "Right-tailed (H₁: μ > μ₀)";
+    } else if (tail === "two") {
+      const z = inverseNormalCDF(1 - alpha / 2); // positive
+      zCritLower = -z;
+      zCritUpper = z;
+      testTypeLabel = "Two-tailed (H₁: μ ≠ μ₀)";
+    } else {
+      showError("Unknown hypothesis type.");
+      return;
+    }
+
+    // Critical region in terms of Xbar
+    let critRegionStr = "";
+    let critRuleStr = "";
+    let zCritDisplay = "";
+
+    if (tail === "left") {
+      const xCrit = mu0 + zCritLower * SE;
+      critRegionStr =
+        "Reject H₀ if X̄ < " +
+        "<span class='result-highlight'>" + fmt(xCrit, 3) + "</span>.";
+      critRuleStr =
+        "Because this is a left-tailed test at α = " + fmt(alpha, 3) +
+        ", the critical z is " + fmt(zCritLower, 3) +
+        " and the rejection region is all sample means smaller than " +
+        fmt(xCrit, 3) + ".";
+      zCritDisplay = "z_crit = " + fmt(zCritLower, 3);
+    } else if (tail === "right") {
+      const xCrit = mu0 + zCritUpper * SE;
+      critRegionStr =
+        "Reject H₀ if X̄ > " +
+        "<span class='result-highlight'>" + fmt(xCrit, 3) + "</span>.";
+      critRuleStr =
+        "Because this is a right-tailed test at α = " + fmt(alpha, 3) +
+        ", the critical z is " + fmt(zCritUpper, 3) +
+        " and the rejection region is all sample means larger than " +
+        fmt(xCrit, 3) + ".";
+      zCritDisplay = "z_crit = " + fmt(zCritUpper, 3);
+    } else {
+      const zPos = zCritUpper;
+      const lowerX = mu0 + zCritLower * SE;
+      const upperX = mu0 + zCritUpper * SE;
+      critRegionStr =
+        "Reject H₀ if X̄ < " +
+        "<span class='result-highlight'>" + fmt(lowerX, 3) + "</span> " +
+        "or X̄ > " +
+        "<span class='result-highlight'>" + fmt(upperX, 3) + "</span>.";
+      critRuleStr =
+        "Because this is a two-tailed test at α = " + fmt(alpha, 3) +
+        ", the critical z values are ±" + fmt(zPos, 3) +
+        ", giving two rejection regions in the lower and upper tails.";
+      zCritDisplay = "z_crit = (" + fmt(zCritLower, 3) + ", " + fmt(zCritUpper, 3) + ")";
+    }
+
+    // Fill summary box
+    summaryTestType.textContent = testTypeLabel;
+    summaryAlpha.textContent = fmt(alpha, 3);
+    summaryZcrit.textContent = zCritDisplay;
+    summarySE.textContent = fmt(SE, 3);
+
+    const h1Text =
+      tail === "left"
+        ? "H₁: μ < μ₀ (we suspect the mean is smaller)."
+        : tail === "right"
+        ? "H₁: μ > μ₀ (we suspect the mean is larger)."
+        : "H₁: μ ≠ μ₀ (we suspect the mean is different, either larger or smaller).";
+
+    summaryHypotheses.innerHTML =
+      "Null hypothesis: H₀: μ = μ₀ = " + fmt(mu0, 3) + ". " +
+      "Alternative: " + h1Text.replace("μ₀", fmt(mu0, 3));
+
+    critRegionText.innerHTML = critRegionStr;
+    critRuleText.textContent = critRuleStr;
+
+    summaryBox.style.display = "block";
+
+    // Steps (without using Xbar yet)
+    const steps = [];
+
+    steps.push({
+      title: "State the hypotheses.",
+      text:
+        "We test H₀: μ = " + fmt(mu0, 3) +
+        " against " + h1Text.replace("μ₀", fmt(mu0, 3)) +
+        " using a one-sample Z-test for the mean (σ known or approximated)."
+    });
+
+    steps.push({
+      title: "Choose the significance level and find the critical z-value(s).",
+      text:
+        "We use significance level α = " + fmt(alpha, 3) +
+        ". For this " +
+        (tail === "two" ? "two-tailed" : "one-tailed") +
+        " test, we find the critical z-value(s) from the standard normal distribution and obtain " + zCritDisplay + "."
+    });
+
+    steps.push({
+      title: "Compute the standard error of the mean.",
+      text:
+        "Standard error SE = σ / √n = " +
+        fmt(sigma, 3) +
+        " / √" + fmt(n, 0) +
+        " ≈ " + fmt(SE, 3) + "."
+    });
+
+    steps.push({
+      title: "Translate the z-critical value(s) into critical value(s) of X̄.",
+      text:
+        "Using X̄_crit = μ₀ + z_crit · SE, we obtain the rejection region in terms of the sample mean X̄, as shown above."
+    });
+
+    // If sample mean provided, compute test statistic and decision
+    const hasSampleMean = isFinite(xbar);
+    if (hasSampleMean) {
+      const zObs = (xbar - mu0) / SE;
+
+      // p-value depending on tail
+      let pVal;
+      if (tail === "left") {
+        pVal = normalCDF(zObs);
+      } else if (tail === "right") {
+        pVal = 1 - normalCDF(zObs);
+      } else {
+        pVal = 2 * (1 - normalCDF(Math.abs(zObs)));
+      }
+
+      let decision, explain, decisionClass;
+      if (tail === "left") {
+        if (zObs < zCritLower) {
+          decision = "Reject H₀.";
+          explain =
+            "Because the observed z = " + fmt(zObs, 3) +
+            " is smaller than the critical value " + fmt(zCritLower, 3) +
+            ", the result falls in the rejection region. At this α level, we have evidence that the true mean is smaller than μ₀.";
+          decisionClass = "decision-reject";
+        } else {
+          decision = "Fail to reject H₀.";
+          explain =
+            "Because the observed z = " + fmt(zObs, 3) +
+            " is not smaller than the critical value " + fmt(zCritLower, 3) +
+            ", the result does not fall in the rejection region. We do not have enough evidence to say the mean is smaller than μ₀.";
+          decisionClass = "decision-keep";
+        }
+      } else if (tail === "right") {
+        if (zObs > zCritUpper) {
+          decision = "Reject H₀.";
+          explain =
+            "Because the observed z = " + fmt(zObs, 3) +
+            " is greater than the critical value " + fmt(zCritUpper, 3) +
+            ", the result falls in the rejection region. At this α level, we have evidence that the true mean is larger than μ₀.";
+          decisionClass = "decision-reject";
+        } else {
+          decision = "Fail to reject H₀.";
+          explain =
+            "Because the observed z = " + fmt(zObs, 3) +
+            " is not greater than the critical value " + fmt(zCritUpper, 3) +
+            ", the result does not fall in the rejection region. We do not have enough evidence to say the mean is larger than μ₀.";
+          decisionClass = "decision-keep";
+        }
+      } else {
+        const zPos = zCritUpper;
+        if (Math.abs(zObs) > zPos) {
+          decision = "Reject H₀.";
+          explain =
+            "Because |z| = " + fmt(Math.abs(zObs), 3) +
+            " is greater than the two-tailed critical value " + fmt(zPos, 3) +
+            ", the result falls in one of the rejection tails. We have evidence that the true mean differs from μ₀.";
+          decisionClass = "decision-reject";
+        } else {
+          decision = "Fail to reject H₀.";
+          explain =
+            "Because |z| = " + fmt(Math.abs(zObs), 3) +
+            " is not greater than the critical value " + fmt(zPos, 3) +
+            ", the result does not fall in the rejection region. We do not have enough evidence that the mean differs from μ₀.";
+          decisionClass = "decision-keep";
+        }
+      }
+
+      testStatText.innerHTML =
+        "Observed sample mean: X̄ = " + fmt(xbar, 3) + ".<br>" +
+        "Test statistic: Z = (X̄ − μ₀) / (σ / √n) = " +
+        fmt(zObs, 3) + ".<br>" +
+        "<span class='pvalue-highlight' " +
+        "data-bs-toggle='tooltip' data-bs-placement='top' " +
+        "title='The p-value is the probability of obtaining a result at least as extreme as this one if H₀ is true.'>" +
+        "<i class='fa-solid fa-droplet'></i>" +
+        "p-value: p ≈ " + fmt(pVal, 4) +
+        "</span>";
+
+      decisionText.innerHTML =
+        "<span class='decision-strong " + decisionClass + "'>" +
+        decision + "</span> " + explain;
+
+      testStatBox.style.display = "block";
+
+      steps.push({
+        title: "Compute the test statistic.",
+        text:
+          "Using the observed sample mean X̄ = " + fmt(xbar, 3) +
+          ", the test statistic is Z = (X̄ − μ₀) / (σ / √n) ≈ " +
+          fmt(zObs, 3) + "."
+      });
+
+      steps.push({
+        title: "Compute the p-value and compare it to α.",
+        text:
+          "From the standard normal distribution, the p-value corresponding to z = " +
+          fmt(zObs, 3) + " is p ≈ " + fmt(pVal, 4) +
+          ". We compare this p-value to α to decide whether the result is statistically significant."
+      });
+
+      steps.push({
+        title: "Make a conclusion in context.",
+        text:
+          decision + " " + explain +
+          " In words: we " +
+          (decision.startsWith("Reject") ? "have" : "do not have") +
+          " enough evidence at α = " + fmt(alpha, 3) +
+          " to support the alternative hypothesis H₁."
+      });
+
+    } else {
+      steps.push({
+        title: "Note about the sample mean.",
+        text:
+          "No sample mean X̄ was entered. We have found the critical value(s) and rejection region. " +
+          "If you later observe a sample mean, you can compare it to the critical value(s): " +
+          "if it falls in the rejection region, you reject H₀; otherwise, you fail to reject H₀."
+      });
+    }
+
+    renderSteps(steps);
+
+    resultSubtitle.textContent =
+      "One-sample Z-test for the mean: critical region and (if X̄ is given) conclusion about H₀ and p-value.";
+    
+    // Re-activate tooltips for dynamically added elements (like p-value bubble)
+    const tooltipTriggerList2 = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList2.forEach(el => new bootstrap.Tooltip(el));
+  }
+
+  function resetAll() {
+    tailTypeEl.value = "left";
+    alphaInputEl.value = 5;
+    mu0InputEl.value = "";
+    sigmaInputEl.value = "";
+    nInputEl.value = "";
+    xbarInputEl.value = "";
+
+    clearError();
+    summaryBox.style.display = "none";
+    stepsList.innerHTML = "";
+    testStatBox.style.display = "none";
+    resultSubtitle.textContent =
+      'Fill in the inputs on the left and click “Run test”.';
+  }
+
+  calcBtn.addEventListener("click", calculateTest);
+  resetBtn.addEventListener("click", resetAll);
+
+  // ---------- Bootstrap tooltips init ----------
+  document.addEventListener("DOMContentLoaded", () => {
+    const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    tooltipTriggerList.forEach(el => new bootstrap.Tooltip(el));
+  });
+</script>
+</body>
+</html>
