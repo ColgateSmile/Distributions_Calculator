@@ -1,10 +1,18 @@
 |-- CheatSheet.html
 |-- Confidence_Interval_Calculator.html
 |-- css
+    |-- bootstrap.min.css
+    |-- font-awesome.min.css
+    |-- fonts
+        |-- fa-brands-400.ttf
+        |-- fa-brands-400.woff2
+        |-- fa-solid-900.ttf
+        |-- fa-solid-900.woff2
     |-- Index_Style.css
 |-- Hypothesis_Testing_Calculator.html
 |-- index.html
 |-- js
+    |-- bootstrap.bundle.min.js
     |-- Index_Script.js
 |-- Normal_Distribution_Calculator.html
 |-- t_distribution.html
