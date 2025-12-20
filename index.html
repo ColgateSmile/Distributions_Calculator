@@ -339,6 +339,72 @@
         </div>
       </div>
     </div>
+
+    <!-- Chi-Square Test card -->
+    <div class="col-md-6">
+      <div class="card h-100 dist-card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <div>
+            <div class="fw-semibold">Chi-Square Test</div>
+            <div class="small text-secondary">Test of independence for categorical data</div>
+          </div>
+          <div class="d-flex align-items-center gap-2">
+            <span class="badge-tag">
+              <i class="fa-solid fa-chart-column"></i>
+              <span>Contingency tables</span>
+            </span>
+            <i class="fa-solid fa-chevron-down dist-toggle-icon"></i>
+          </div>
+        </div>
+        <div class="card-body dist-card-body">
+          <div class="d-flex justify-content-between align-items-center">
+            <p class="mb-0 dist-toggle-hint">
+              Click this card to learn about chi-square tests for categorical data.
+            </p>
+            <a
+              href="Chi_Square_Calculator.html"
+              class="btn btn-outline-light btn-sm"
+              onclick="event.stopPropagation();"
+            >
+              <i class="fa-solid fa-calculator me-1"></i>
+              Open Chi-Square Calculator
+            </a>
+          </div>
+
+          <!-- Hidden explanation -->
+          <div class="dist-details mt-3">
+            <p class="text-secondary mb-2">
+              The chi-square (χ²) test is used to determine whether there is a statistically significant 
+              association between two categorical variables in a contingency table. It tests whether the 
+              observed frequencies differ significantly from the frequencies expected under independence.
+            </p>
+
+            <h6 class="mb-1" style="font-size:.85rem;">Use it when:</h6>
+            <ul>
+              <li>Both variables are <strong>categorical</strong> (not continuous).</li>
+              <li>You have data organized in a <strong>contingency table</strong> (rows × columns of counts).</li>
+              <li>You want to test independence: H₀: variables are independent vs. H₁: variables are associated.</li>
+              <li>Expected cell counts are generally at least 5 (rule of thumb).</li>
+            </ul>
+
+            <h6 class="mb-1" style="font-size:.85rem;">Typical exam questions:</h6>
+            <ul>
+              <li>"Is there an association between gender and preference for a new product?"</li>
+              <li>"Are political affiliation and income level independent?"</li>
+              <li>"Do survival rates differ by treatment group in a clinical trial?"</li>
+            </ul>
+
+            <h6 class="mb-1" style="font-size:.85rem;">What this calculator does:</h6>
+            <ul>
+              <li>Accepts observed counts in a contingency table of any size (r × c).</li>
+              <li>Computes expected frequencies under independence: E<sub>ij</sub> = (Row Total × Col Total) / n.</li>
+              <li>Calculates the chi-square statistic: χ² = Σ[(O − E)² / E].</li>
+              <li>Provides the <strong>p-value</strong> and a full step-by-step explanation with decision.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div> <!-- /row -->
 
   <!-- Step-by-step recipes -->

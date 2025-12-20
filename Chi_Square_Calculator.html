@@ -1,0 +1,1308 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chi-Square Test for Independence — Calculator</title>
+
+  <!-- Bootstrap (local) -->
+  <link href="./css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="./js/bootstrap.bundle.min.js"></script>
+
+  <!-- Font Awesome (local) -->
+  <link rel="stylesheet" href="./css/font-awesome.min.css"/>
+
+  <style>
+    :root{
+      --bg:#0f172a;
+      --card:#111c33;
+      --card2:#0b1224;
+      --text:#f8fafc;
+      --muted:#94a3b8;
+      --border:rgba(148,163,184,0.25);
+      --accent:#38bdf8;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+
+      /* New: stronger "surface" colors for headings */
+      --surface-1: rgba(17, 28, 51, 0.92);
+      --surface-2: rgba(11, 18, 36, 0.96);
+      --surface-3: rgba(2, 6, 23, 0.92);
+    }
+
+    body{
+      background: radial-gradient(1100px 700px at 20% 0%, rgba(56,189,248,0.15), transparent 60%),
+                  radial-gradient(900px 600px at 80% 20%, rgba(34,197,94,0.10), transparent 55%),
+                  var(--bg);
+      color:var(--text);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Inter", Arial, sans-serif;
+      min-height:100vh;
+    }
+
+    .container{ max-width: 1180px; }
+
+    /* ===== Make all headings/headers consistently readable ===== */
+    h1,h2,h3,h4,h5,h6{
+      color: rgba(248,250,252,0.96);
+      text-shadow: 0 1px 12px rgba(0,0,0,0.35);
+    }
+
+    /* Any Bootstrap "bold" header text inside cards/result boxes */
+    .card-header .fw-bold,
+    .card-header .fw-semibold,
+    .result-box .fw-bold,
+    .result-box .fw-semibold{
+      color: rgba(248,250,252,0.96) !important;
+    }
+
+    /* Make the top pill + small notes readable */
+    .subtle{ color: rgba(226, 232, 240, 0.78); }
+    .small-note{ color: rgba(226, 232, 240, 0.78); font-size: .92rem; }
+
+    .app-title{
+      letter-spacing: .2px;
+      font-weight: 800;
+      text-shadow: 0 1px 12px rgba(0,0,0,0.35);
+    }
+
+    /* ===== Surfaces / cards ===== */
+    .card{
+      background: var(--surface-1);
+      border: 1px solid rgba(148,163,184,0.25);
+      border-radius: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.25);
+      backdrop-filter: blur(10px);
+    }
+
+    /* Stronger header bar so text never "blends" with background */
+    .card-header{
+      border-bottom: 1px solid rgba(148,163,184,0.25);
+      background: linear-gradient(180deg, var(--surface-2), rgba(11,18,36,0.90));
+      border-top-left-radius: 18px;
+      border-top-right-radius: 18px;
+    }
+
+    /* Ensure any header text that inherits muted styles is still bright */
+    .card-header *{
+      color: rgba(248,250,252,0.94);
+    }
+
+    /* Form labels */
+    .form-label,
+    .form-check-label{
+      color: rgba(248, 250, 252, 0.92) !important;
+    }
+
+    /* Inputs */
+    .form-control, .form-select{
+      background-color: rgba(255,255,255,0.04);
+      color: var(--text);
+      border: 1px solid rgba(148,163,184,0.28);
+      border-radius: 12px;
+    }
+    .form-control::placeholder{ color: rgba(226,232,240,0.55); }
+    select option{ background-color: #0b1224; color: #f8fafc; }
+
+    .form-control:focus, .form-select:focus{
+      box-shadow: 0 0 0 .25rem rgba(56,189,248,.15);
+      border-color: rgba(56,189,248,.55);
+    }
+
+    /* Switch */
+    .form-check-input{
+      background-color: rgba(255,255,255,0.08);
+      border-color: rgba(148,163,184,0.55);
+    }
+    .form-check-input:checked{
+      background-color: rgba(56,189,248,0.85);
+      border-color: rgba(56,189,248,0.85);
+    }
+
+    /* Buttons */
+    .btn{ border-radius: 12px; font-weight: 650; }
+    .btn-primary{
+      background: linear-gradient(180deg, rgba(56,189,248,0.95), rgba(56,189,248,0.75));
+      border: none;
+    }
+    .btn-outline-light{
+      border-color: rgba(248,250,252,.35);
+      color: var(--text);
+    }
+    .btn-outline-light:hover{
+      border-color: rgba(56,189,248,.65);
+      color: var(--text);
+      background: rgba(56,189,248,.10);
+    }
+
+    /* Pill */
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      padding:.35rem .65rem;
+      border-radius: 999px;
+      border:1px solid rgba(148,163,184,0.25);
+      background: rgba(255,255,255,0.05);
+      color: rgba(248,250,252,0.90);
+      font-size:.9rem;
+    }
+
+    /* Tables */
+    .table-wrap{
+      overflow:auto;
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,0.30);
+      background: rgba(2, 6, 23, 0.58);
+    }
+    table{
+      margin:0;
+      min-width: 720px;
+      color: var(--text);
+    }
+
+    /* Stronger sticky header to prevent "dark blending" */
+    thead th{
+      position: sticky;
+      top:0;
+      background: linear-gradient(180deg, var(--surface-3), rgba(2,6,23,0.86)) !important;
+      color: rgba(248,250,252,0.96) !important;
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(148,163,184,0.30) !important;
+      z-index: 2;
+    }
+
+    td, th{
+      border-color: rgba(148,163,184,0.22) !important;
+      vertical-align: middle;
+    }
+
+    .cell-input{ min-width: 90px; max-width: 130px; }
+
+    /* Icons */
+    .help-i{
+      color: rgba(248,250,252,.85);
+      cursor: help;
+      margin-left:.35rem;
+    }
+
+    /* Mono */
+    .mono{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    }
+
+    /* Result boxes */
+    .result-box{
+      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(2,6,23,0.50));
+      border:1px solid rgba(148,163,184,0.22);
+      border-radius: 14px;
+      padding: 1rem;
+      backdrop-filter: blur(6px);
+    }
+
+    /* KPI */
+    .kpi{
+      display:flex;
+      flex-wrap: wrap;
+      gap:.6rem;
+    }
+    .kpi .k{
+      flex: 1 1 210px;
+      padding:.85rem;
+      border-radius: 14px;
+      border:1px solid rgba(148,163,184,0.25);
+      background: rgba(255,255,255,0.04);
+    }
+    .k .label{
+      color: rgba(248,250,252,0.92);
+      font-size: .95rem;
+      display:flex;
+      align-items:center;
+      gap:.35rem;
+    }
+    .k .value{
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-top:.25rem;
+      color: rgba(248,250,252,0.96);
+    }
+
+    .status-good{
+      color: var(--good);
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      padding: 0.65rem 0.95rem;
+      border-radius: 8px;
+      display: inline-block;
+      font-weight: 600;
+    }
+    
+    .status-warn{
+      color: var(--warn);
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      padding: 0.65rem 0.95rem;
+      border-radius: 8px;
+      display: inline-block;
+      font-weight: 600;
+    }
+    
+    .status-bad{
+      color: var(--bad);
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 0.65rem 0.95rem;
+      border-radius: 8px;
+      display: inline-block;
+      font-weight: 600;
+    }
+
+    /* Step-by-step blocks */
+    .step{
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(148,163,184,0.22);
+      border-left: 3px solid rgba(56,189,248,.55);
+      border-radius: 14px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .step .fw-semibold{ color: rgba(248,250,252,0.96) !important; }
+    .step .small-note{ color: rgba(226,232,240,0.84) !important; }
+
+    /* Badge */
+    .badge-soft{
+      border: 1px solid rgba(148,163,184,0.25);
+      background: rgba(255,255,255,0.05);
+      color: rgba(248,250,252,0.92);
+    }
+
+    .hr-soft{
+      border-color: rgba(148,163,184,.18);
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container py-4">
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+      <div>
+        <div class="pill mb-2">
+          <i class="fa-solid fa-square-poll-vertical"></i>
+          Chi-Square Independence
+          <span class="mx-1">•</span>
+          <span class="subtle">Contingency Tables</span>
+        </div>
+        <h1 class="app-title mb-1">Chi-Square Test for Independence — Calculator</h1>
+        <div class="subtle">
+          Input a contingency table of counts. The calculator returns χ², df, p-value, and a full step-by-step solution.
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button id="btnReset" class="btn btn-outline-light">
+          <i class="fa-solid fa-rotate-left me-2"></i>Reset
+        </button>
+        <button id="btnComputeTop" class="btn btn-primary">
+          <i class="fa-solid fa-calculator me-2"></i>Compute
+        </button>
+      </div>
+    </div>
+
+    <div class="row g-3">
+      <!-- Controls -->
+      <div class="col-12 col-lg-4">
+        <div class="card h-100">
+          <div class="card-header p-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="fw-bold">Inputs & Settings</div>
+              <span class="badge badge-soft">General r × c</span>
+            </div>
+          </div>
+          <div class="card-body p-3">
+            <div class="mb-3">
+              <label class="form-label">
+                Load Exercise Preset
+                <i class="fa-solid fa-circle-info help-i"
+                   data-bs-toggle="tooltip"
+                   title="Optional: loads a ready-made contingency table from your Exercise 3 (Q1–Q5). You can still edit the numbers afterwards."></i>
+              </label>
+              <select id="presetSelect" class="form-select">
+                <option value="">— Choose a preset —</option>
+                <option value="q1">Exercise 3 — Q1 (Trump approval × Age)</option>
+                <option value="q2">Exercise 3 — Q2 (Circumcision × HSV2 infection)</option>
+                <option value="q3">Exercise 3 — Q3 (A/B button color × Success)</option>
+                <option value="q4">Exercise 3 — Q4 (Treatment × Baby gender)</option>
+                <option value="q5">Exercise 3 — Q5 (Vaccine × COVID cases)</option>
+              </select>
+            </div>
+
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label">
+                  Rows (r)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Number of row categories (r). Example: Approve vs Disapprove → r=2."></i>
+                </label>
+                <div class="input-group">
+                  <button id="btnRowMinus" class="btn btn-outline-light" type="button">−</button>
+                  <input id="rowsInput" class="form-control text-center" type="number" min="2" max="10" value="2">
+                  <button id="btnRowPlus" class="btn btn-outline-light" type="button">+</button>
+                </div>
+              </div>
+              <div class="col-6">
+                <label class="form-label">
+                  Columns (c)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Number of column categories (c). Example: 4 age groups → c=4."></i>
+                </label>
+                <div class="input-group">
+                  <button id="btnColMinus" class="btn btn-outline-light" type="button">−</button>
+                  <input id="colsInput" class="form-control text-center" type="number" min="2" max="10" value="2">
+                  <button id="btnColPlus" class="btn btn-outline-light" type="button">+</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label class="form-label">
+                Significance level (α)
+                <i class="fa-solid fa-circle-info help-i"
+                   data-bs-toggle="tooltip"
+                   title="α is the probability of rejecting H0 when H0 is true (Type I error). Common values: 0.05 or 0.01."></i>
+              </label>
+              <div class="input-group">
+                <select id="alphaSelect" class="form-select">
+                  <option value="0.10">0.10</option>
+                  <option value="0.05" selected>0.05</option>
+                  <option value="0.01">0.01</option>
+                </select>
+                <button id="btnAlphaCustom" class="btn btn-outline-light" type="button"
+                        data-bs-toggle="tooltip"
+                        title="Switch to a custom α value (e.g., 0.025).">
+                  Custom
+                </button>
+              </div>
+              <input id="alphaCustom" class="form-control mt-2 d-none" type="number" step="0.001" min="0.0001" max="0.5" value="0.05">
+              <div class="small-note mt-2">
+                Decision rule: reject <span class="mono">H0</span> if <span class="mono">p-value &lt; α</span>.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" id="yatesToggle">
+                <label class="form-check-label" for="yatesToggle">
+                  Apply Yates correction (2×2 only)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Continuity correction sometimes used for 2×2 tables. Many courses do NOT require it. If unsure, leave OFF."></i>
+                </label>
+              </div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button id="btnCompute" class="btn btn-primary">
+                <i class="fa-solid fa-calculator me-2"></i>Compute χ²
+              </button>
+              <button id="btnFillZeros" class="btn btn-outline-light">
+                <i class="fa-solid fa-eraser me-2"></i>Fill empty cells with 0
+              </button>
+            </div>
+
+            <hr class="hr-soft my-3">
+
+            <div class="small-note">
+              <div class="fw-semibold mb-1">What to input</div>
+              Enter <span class="mono">counts</span> (not percentages). Each cell is an observed frequency <span class="mono">Oᵢⱼ</span>.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Table -->
+      <div class="col-12 col-lg-8">
+        <div class="card">
+          <div class="card-header p-3">
+            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
+              <div class="fw-bold">
+                Observed Counts (Oᵢⱼ)
+                <i class="fa-solid fa-circle-info help-i"
+                   data-bs-toggle="tooltip"
+                   title="Observed counts Oᵢⱼ are the actual measured frequencies in each category combination."></i>
+              </div>
+              <div class="small-note">
+                Tip: Edit row/column labels to match your question.
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-3">
+            <div class="table-wrap mb-2">
+              <div id="tableContainer"></div>
+            </div>
+            <div class="small-note">
+              Assumption check: expected counts should generally be ≥ 5 in most cells (rule of thumb). The solution will flag small expected values.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header p-3">
+            <div class="fw-bold">Results</div>
+          </div>
+          <div class="card-body p-3">
+            <div id="errorBox" class="alert alert-danger d-none mb-3"></div>
+
+            <div class="kpi mb-3">
+              <div class="k">
+                <div class="label">
+                  Total sample size (n)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="n is the grand total of all counts in the table."></i>
+                </div>
+                <div id="kpiN" class="value mono">—</div>
+              </div>
+              <div class="k">
+                <div class="label">
+                  Chi-square statistic (χ²)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="χ² = Σ (Oᵢⱼ − Eᵢⱼ)² / Eᵢⱼ. Large χ² indicates a stronger deviation from independence."></i>
+                </div>
+                <div id="kpiChi2" class="value mono">—</div>
+              </div>
+              <div class="k">
+                <div class="label">
+                  Degrees of freedom (df)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="df = (r−1)(c−1). It depends only on the table size."></i>
+                </div>
+                <div id="kpiDf" class="value mono">—</div>
+              </div>
+              <div class="k">
+                <div class="label">
+                  p-value
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="p-value = P(Χ²_df ≥ χ²_observed). Small p-value suggests evidence against independence."></i>
+                </div>
+                <div id="kpiP" class="value mono">—</div>
+              </div>
+              <div class="k">
+                <div class="label">
+                  Decision at α
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Reject H0 if p-value < α; otherwise fail to reject H0."></i>
+                </div>
+                <div id="kpiDecision" class="value">—</div>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-12 col-lg-6">
+                <div class="result-box">
+                  <div class="fw-semibold mb-2">
+                    Expected Counts (Eᵢⱼ)
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Eᵢⱼ = (RowTotalᵢ × ColTotalⱼ) / n, under the independence assumption."></i>
+                  </div>
+                  <div class="small-note mb-2">
+                    Under H0 (independence), these are the counts we would expect in each cell.
+                  </div>
+                  <div class="table-wrap">
+                    <div id="expectedContainer"></div>
+                  </div>
+                  <div id="expectedWarnings" class="small-note mt-2"></div>
+                </div>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <div class="result-box">
+                  <div class="fw-semibold mb-2">
+                    Cell Contributions: (O−E)² / E
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Each cell contributes (Oᵢⱼ − Eᵢⱼ)² / Eᵢⱼ to the total χ². Larger contributions indicate where the association comes from."></i>
+                  </div>
+                  <div class="small-note mb-2">
+                    The sum of all contributions equals χ².
+                  </div>
+                  <div class="table-wrap">
+                    <div id="contribContainer"></div>
+                  </div>
+                  <div class="small-note mt-2">
+                    Optional effect size (Cramer's V): <span id="cramersV" class="mono">—</span>
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Cramer's V = sqrt( χ² / (n × min(r−1, c−1)) ). It gives a scale-free measure of association strength."></i>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="result-box">
+                  <div class="fw-semibold mb-2">
+                    Step-by-step solution
+                    <span class="badge badge-soft ms-2">Homework style</span>
+                  </div>
+                  <div id="stepsContainer"></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+              <button id="btnComputeBottom" class="btn btn-primary">
+                <i class="fa-solid fa-calculator me-2"></i>Compute
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- row -->
+  </div><!-- container -->
+
+  <script>
+    /***************
+     * Utilities
+     ***************/
+    function clamp(n, min, max){ return Math.max(min, Math.min(max, n)); }
+    function fmt(x, digits=4){
+      if (!isFinite(x)) return "—";
+      const abs = Math.abs(x);
+      if (abs !== 0 && abs < 1e-6) return x.toExponential(3);
+      return Number(x).toFixed(digits);
+    }
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+
+    /***************
+     * Gamma / Chi-square survival function (Numerical Recipes style)
+     * p-value = Q(df/2, chi2/2)
+     ***************/
+    function gammaln(xx){
+      const cof = [
+        76.18009172947146, -86.50532032941677,
+        24.01409824083091, -1.231739572450155,
+        0.001208650973866179, -0.000005395239384953
+      ];
+      let x = xx - 1.0;
+      let tmp = x + 5.5;
+      tmp -= (x + 0.5) * Math.log(tmp);
+      let ser = 1.000000000190015;
+      for (let j=0; j<cof.length; j++){
+        x += 1;
+        ser += cof[j] / x;
+      }
+      return -tmp + Math.log(2.5066282746310005 * ser);
+    }
+
+    function gser(a, x){
+      const ITMAX = 1000;
+      const EPS = 3e-14;
+      if (x <= 0) return {P: 0, gln: gammaln(a)};
+      let gln = gammaln(a);
+      let ap = a;
+      let sum = 1.0 / a;
+      let del = sum;
+      for (let n=1; n<=ITMAX; n++){
+        ap += 1;
+        del *= x / ap;
+        sum += del;
+        if (Math.abs(del) < Math.abs(sum) * EPS) break;
+      }
+      const P = sum * Math.exp(-x + a * Math.log(x) - gln);
+      return {P, gln};
+    }
+
+    function gcf(a, x){
+      const ITMAX = 1000;
+      const EPS = 3e-14;
+      const FPMIN = 1e-300;
+      let gln = gammaln(a);
+      let b = x + 1 - a;
+      let c = 1 / FPMIN;
+      let d = 1 / b;
+      let h = d;
+      for (let i=1; i<=ITMAX; i++){
+        let an = -i * (i - a);
+        b += 2;
+        d = an * d + b;
+        if (Math.abs(d) < FPMIN) d = FPMIN;
+        c = b + an / c;
+        if (Math.abs(c) < FPMIN) c = FPMIN;
+        d = 1 / d;
+        let del = d * c;
+        h *= del;
+        if (Math.abs(del - 1.0) < EPS) break;
+      }
+      const Q = Math.exp(-x + a * Math.log(x) - gln) * h;
+      return {Q, gln};
+    }
+
+    function gammq(a, x){
+      if (x < 0 || a <= 0) return NaN;
+      if (x < a + 1){
+        const {P} = gser(a, x);
+        return 1 - P;
+      } else {
+        const {Q} = gcf(a, x);
+        return Q;
+      }
+    }
+
+    function chiSquarePValue(chi2, df){
+      const a = df / 2;
+      const x = chi2 / 2;
+      return gammq(a, x);
+    }
+
+    /***************
+     * State
+     ***************/
+    const state = {
+      rows: 2,
+      cols: 2,
+      rowLabels: ["Row 1", "Row 2"],
+      colLabels: ["Col 1", "Col 2"],
+      table: [
+        [0,0],
+        [0,0]
+      ]
+    };
+
+    /***************
+     * UI builders
+     ***************/
+    function initTooltips(){
+      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      tooltipTriggerList.forEach(el => {
+        const existing = bootstrap.Tooltip.getInstance(el);
+        if (existing) existing.dispose();
+        new bootstrap.Tooltip(el, {container: 'body', trigger: 'hover focus'});
+      });
+    }
+
+    function ensureLabels(){
+      while(state.rowLabels.length < state.rows) state.rowLabels.push(`Row ${state.rowLabels.length+1}`);
+      while(state.rowLabels.length > state.rows) state.rowLabels.pop();
+      while(state.colLabels.length < state.cols) state.colLabels.push(`Col ${state.colLabels.length+1}`);
+      while(state.colLabels.length > state.cols) state.colLabels.pop();
+    }
+
+    function ensureTableSize(){
+      const newTable = [];
+      for(let r=0;r<state.rows;r++){
+        const row = [];
+        for(let c=0;c<state.cols;c++){
+          const val = (state.table[r] && state.table[r][c] != null) ? state.table[r][c] : 0;
+          row.push(val);
+        }
+        newTable.push(row);
+      }
+      state.table = newTable;
+    }
+
+    function buildObservedTable(){
+      ensureLabels();
+      ensureTableSize();
+
+      const container = document.getElementById("tableContainer");
+      let html = `<table class="table table-dark table-bordered align-middle">
+        <thead>
+          <tr>
+            <th style="min-width:220px">Category</th>`;
+
+      for(let c=0;c<state.cols;c++){
+        html += `<th>
+          <div class="d-flex align-items-center gap-2">
+            <input class="form-control form-control-sm" type="text"
+                   value="${escapeHtml(state.colLabels[c])}"
+                   data-col-label="${c}"
+                   aria-label="Column label ${c+1}">
+          </div>
+        </th>`;
+      }
+      html += `</tr></thead><tbody>`;
+
+      for(let r=0;r<state.rows;r++){
+        html += `<tr>
+          <th>
+            <input class="form-control form-control-sm" type="text"
+                   value="${escapeHtml(state.rowLabels[r])}"
+                   data-row-label="${r}"
+                   aria-label="Row label ${r+1}">
+          </th>`;
+        for(let c=0;c<state.cols;c++){
+          const v = state.table[r][c];
+          html += `<td>
+            <input class="form-control form-control-sm mono cell-input"
+                   type="number" min="0" step="1"
+                   value="${Number.isFinite(v)? v : 0}"
+                   data-cell="${r},${c}"
+                   aria-label="Observed count row ${r+1} col ${c+1}">
+          </td>`;
+        }
+        html += `</tr>`;
+      }
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+
+      container.querySelectorAll("input[data-cell]").forEach(inp => {
+        inp.addEventListener("input", (e) => {
+          const [r,c] = e.target.getAttribute("data-cell").split(",").map(Number);
+          let val = parseInt(e.target.value, 10);
+          if (!Number.isFinite(val) || val < 0) val = 0;
+          state.table[r][c] = val;
+        });
+      });
+
+      container.querySelectorAll("input[data-row-label]").forEach(inp => {
+        inp.addEventListener("input", (e) => {
+          const r = Number(e.target.getAttribute("data-row-label"));
+          state.rowLabels[r] = e.target.value || `Row ${r+1}`;
+        });
+      });
+
+      container.querySelectorAll("input[data-col-label]").forEach(inp => {
+        inp.addEventListener("input", (e) => {
+          const c = Number(e.target.getAttribute("data-col-label"));
+          state.colLabels[c] = e.target.value || `Col ${c+1}`;
+        });
+      });
+
+      initTooltips();
+    }
+
+    function buildMatrixTable(containerId, matrix, rowLabels, colLabels, options={}){
+      const {digits=4, addTotals=false, totals=null} = options;
+      const container = document.getElementById(containerId);
+      let html = `<table class="table table-dark table-bordered align-middle">
+        <thead>
+          <tr>
+            <th style="min-width:220px">Category</th>`;
+      for(let c=0;c<colLabels.length;c++){
+        html += `<th>${escapeHtml(colLabels[c])}</th>`;
+      }
+      if (addTotals) html += `<th>Total</th>`;
+      html += `</tr></thead><tbody>`;
+
+      for(let r=0;r<rowLabels.length;r++){
+        html += `<tr><th>${escapeHtml(rowLabels[r])}</th>`;
+        for(let c=0;c<colLabels.length;c++){
+          html += `<td class="mono">${fmt(matrix[r][c], digits)}</td>`;
+        }
+        if (addTotals && totals){
+          html += `<td class="mono">${fmt(totals.rowTotals[r], 0)}</td>`;
+        }
+        html += `</tr>`;
+      }
+      if (addTotals && totals){
+        html += `<tr>
+          <th>Total</th>`;
+        for(let c=0;c<colLabels.length;c++){
+          html += `<td class="mono">${fmt(totals.colTotals[c], 0)}</td>`;
+        }
+        html += `<td class="mono">${fmt(totals.n, 0)}</td></tr>`;
+      }
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    function showError(msg){
+      const box = document.getElementById("errorBox");
+      box.textContent = msg;
+      box.classList.remove("d-none");
+    }
+    function clearError(){
+      const box = document.getElementById("errorBox");
+      box.textContent = "";
+      box.classList.add("d-none");
+    }
+
+    /***************
+     * Computation
+     ***************/
+    function getAlpha(){
+      const customVisible = !document.getElementById("alphaCustom").classList.contains("d-none");
+      if (customVisible){
+        let a = parseFloat(document.getElementById("alphaCustom").value);
+        if (!isFinite(a) || a <= 0 || a >= 1) a = 0.05;
+        return a;
+      }
+      return parseFloat(document.getElementById("alphaSelect").value);
+    }
+
+    function computeChiSquare(){
+      clearError();
+
+      const r = state.rows, c = state.cols;
+      if (r < 2 || c < 2){
+        showError("Table must be at least 2×2.");
+        return null;
+      }
+
+      document.querySelectorAll("input[data-cell]").forEach(inp => {
+        const [rr,cc] = inp.getAttribute("data-cell").split(",").map(Number);
+        let val = parseInt(inp.value, 10);
+        if (!Number.isFinite(val) || val < 0) val = 0;
+        state.table[rr][cc] = val;
+      });
+
+      const O = state.table.map(row => row.slice());
+      const rowTotals = new Array(r).fill(0);
+      const colTotals = new Array(c).fill(0);
+      let n = 0;
+
+      for(let i=0;i<r;i++){
+        for(let j=0;j<c;j++){
+          const v = O[i][j];
+          n += v;
+          rowTotals[i] += v;
+          colTotals[j] += v;
+        }
+      }
+
+      if (n <= 0){
+        showError("Total sample size n is 0. Please enter at least one positive count.");
+        return null;
+      }
+
+      const E = Array.from({length:r}, () => Array(c).fill(0));
+      for(let i=0;i<r;i++){
+        for(let j=0;j<c;j++){
+          E[i][j] = (rowTotals[i] * colTotals[j]) / n;
+        }
+      }
+
+      const useYates = document.getElementById("yatesToggle").checked && r===2 && c===2;
+      const contrib = Array.from({length:r}, () => Array(c).fill(0));
+      let chi2 = 0;
+
+      for(let i=0;i<r;i++){
+        for(let j=0;j<c;j++){
+          const o = O[i][j];
+          const e = E[i][j];
+          if (e <= 0){
+            showError("Encountered an expected count of 0. This usually indicates an empty row or column. Please adjust your table.");
+            return null;
+          }
+          let diff = Math.abs(o - e);
+          if (useYates) diff = Math.max(0, diff - 0.5);
+          const term = (diff*diff) / e;
+          contrib[i][j] = term;
+          chi2 += term;
+        }
+      }
+
+      const df = (r-1)*(c-1);
+      const p = chiSquarePValue(chi2, df);
+
+      const alpha = getAlpha();
+      const decision = (p < alpha)
+        ? "Reject H0 (evidence of association)"
+        : "Fail to reject H0 (no strong evidence of association)";
+
+      const minDim = Math.min(r-1, c-1);
+      const V = Math.sqrt(chi2 / (n * (minDim || 1)));
+
+      return {
+        O, E, contrib, rowTotals, colTotals, n,
+        chi2, df, p, alpha, decision,
+        useYates, V
+      };
+    }
+
+    function renderSteps(res){
+      const stepsEl = document.getElementById("stepsContainer");
+      const r = state.rows, c = state.cols;
+      const n = res.n;
+
+      // Format helpers
+      const fmt_val = (v, d) => fmt(v, d);
+      
+      // Build table HTML for observed counts
+      let tableHtml = '<div class="table-wrap my-2"><table class="table table-dark table-bordered"><thead><tr><th>Category</th>';
+      for(let j=0; j<c; j++) tableHtml += '<th>' + escapeHtml(state.colLabels[j]) + '</th>';
+      tableHtml += '<th>Total</th></tr></thead><tbody>';
+      
+      for(let i=0; i<r; i++){
+        tableHtml += '<tr><th>' + escapeHtml(state.rowLabels[i]) + '</th>';
+        for(let j=0; j<c; j++){
+          tableHtml += '<td class="mono">' + fmt_val(res.O[i][j], 0) + '</td>';
+        }
+        tableHtml += '<td class="mono"><b>' + fmt_val(res.rowTotals[i], 0) + '</b></td></tr>';
+      }
+      
+      tableHtml += '<tr><th>Total</th>';
+      for(let j=0; j<c; j++){
+        tableHtml += '<td class="mono"><b>' + fmt_val(res.colTotals[j], 0) + '</b></td>';
+      }
+      tableHtml += '<td class="mono"><b>' + fmt_val(n, 0) + '</b></td></tr>';
+      tableHtml += '</tbody></table></div>';
+
+      // Decision statement color coding
+      const pVal = fmt_val(res.p, 8);
+      const alphaVal = fmt_val(res.alpha, 4);
+      const chi2Val = fmt_val(res.chi2, 6);
+      const dfVal = res.df;
+      const cramerVal = fmt_val(res.V, 6);
+
+      let decisionHtml = '';
+      let decisionClass = 'status-warn';
+      let decisionText = 'Fail to reject H0';
+      let decisionExpl = 'does NOT provide statistically significant evidence of an association';
+      
+      if(res.p < res.alpha){
+        decisionClass = 'status-good';
+        decisionText = 'Reject H0';
+        decisionExpl = 'DOES provide statistically significant evidence of an association';
+      }
+
+      decisionHtml = '<span class="' + decisionClass + ' fw-bold">' + decisionText + '</span> (p = ' + pVal + ')';
+
+      // Build all steps
+      let html = '';
+      
+      html += '<div class="step">';
+      html += '<div class="fw-semibold mb-2">Step 1: Hypotheses</div>';
+      html += '<div class="small-note">';
+      html += 'H0 (Null): The two variables are independent (no association)<br>';
+      html += 'H1 (Alternative): The two variables are associated (not independent)<br>';
+      html += 'Significance level: alpha = ' + alphaVal;
+      html += '</div></div>';
+
+      html += '<div class="step">';
+      html += '<div class="fw-semibold mb-2">Step 2: Observed Contingency Table</div>';
+      html += '<div class="small-note">';
+      html += 'Below are the observed counts O(i,j) for each cell:';
+      html += tableHtml;
+      html += 'Total sample size n = ' + fmt_val(n, 0);
+      html += '</div></div>';
+
+      html += '<div class="step">';
+      html += '<div class="fw-semibold mb-2">Step 3: Expected Counts Under H0</div>';
+      html += '<div class="small-note">';
+      html += 'Under independence (H0), expected count in cell (i,j) is:<br>';
+      html += '<span class="mono">E(i,j) = (Row Total) * (Col Total) / n</span><br><br>';
+      html += '<table class="table table-dark table-sm table-bordered"><thead><tr><th>Cell</th><th>Formula</th><th>Expected</th></tr></thead><tbody>';
+      for(let i=0; i<r; i++){
+        for(let j=0; j<c; j++){
+          const cellLabel = '(' + (i+1) + ',' + (j+1) + ')';
+          const formula = '(' + fmt_val(res.rowTotals[i], 0) + ' * ' + fmt_val(res.colTotals[j], 0) + ') / ' + fmt_val(n, 0);
+          const expected = fmt_val(res.E[i][j], 4);
+          html += '<tr><td>' + cellLabel + '</td><td>' + formula + '</td><td>' + expected + '</td></tr>';
+        }
+      }
+      html += '</tbody></table>';
+      html += '</div></div>';
+
+      html += '<div class="step">';
+      html += '<div class="fw-semibold mb-2">Step 4: Chi-Square Test Statistic</div>';
+      html += '<div class="small-note">';
+      html += 'Formula: chi-square = SUM[(O - E)^2 / E]<br><br>';
+      html += '<table class="table table-dark table-sm table-bordered"><thead><tr><th>Cell</th><th>O</th><th>E</th><th>(O-E)^2/E</th></tr></thead><tbody>';
+      
+      let sumContrib = 0;
+      for(let i=0; i<r; i++){
+        for(let j=0; j<c; j++){
+          const O = res.O[i][j];
+          const E = res.E[i][j];
+          const contrib = res.contrib[i][j];
+          sumContrib += contrib;
+          const cellLabel = '(' + (i+1) + ',' + (j+1) + ')';
+          html += '<tr><td>' + cellLabel + '</td><td>' + fmt_val(O, 0) + '</td><td>' + fmt_val(E, 4) + '</td><td>' + fmt_val(contrib, 6) + '</td></tr>';
+        }
+      }
+      
+      html += '</tbody></table>';
+      html += '<br>Computed chi-square statistic: <span class="mono fw-bold">' + chi2Val + '</span><br>';
+      if(res.useYates) html += '(Yates continuity correction applied)<br>';
+      html += '</div></div>';
+
+      html += '<div class="step">';
+      html += '<div class="fw-semibold mb-2">Step 5: Degrees of Freedom</div>';
+      html += '<div class="small-note">';
+      html += 'df = (rows - 1) * (cols - 1) = (' + r + ' - 1) * (' + c + ' - 1) = ' + dfVal;
+      html += '</div></div>';
+
+      html += '<div class="step">';
+      html += '<div class="fw-semibold mb-2">Step 6: P-value</div>';
+      html += '<div class="small-note">';
+      html += 'p-value = P(chi-square(' + dfVal + ') >= ' + chi2Val + ')<br>';
+      html += '<span class="mono fw-bold">p-value = ' + pVal + '</span>';
+      html += '</div></div>';
+
+      html += '<div class="step">';
+      html += '<div class="fw-semibold mb-2">Step 7: Decision and Conclusion</div>';
+      html += '<div class="small-note">';
+      html += '<b>Decision:</b> ' + decisionHtml + '<br><br>';
+      html += '<b>Interpretation:</b> Since p-value ' + (res.p < res.alpha ? '&lt;' : '&gt;=') + ' alpha, we ' + decisionExpl + '.<br><br>';
+      html += '<b>Effect Size (Cramer\'s V):</b> ' + cramerVal + ' (0 = no association, 1 = perfect association)';
+      html += '</div></div>';
+
+      stepsEl.innerHTML = html;
+    }
+
+    function renderResults(res){
+      document.getElementById("kpiN").textContent = fmt(res.n, 0);
+      document.getElementById("kpiChi2").textContent = fmt(res.chi2, 6);
+      document.getElementById("kpiDf").textContent = fmt(res.df, 0);
+      document.getElementById("kpiP").textContent = fmt(res.p, 8);
+
+      const decisionEl = document.getElementById("kpiDecision");
+      decisionEl.textContent = res.decision;
+      decisionEl.classList.remove("status-good","status-warn","status-bad");
+      decisionEl.classList.add(res.p < res.alpha ? "status-good" : "status-warn");
+
+      buildMatrixTable(
+        "expectedContainer",
+        res.E,
+        state.rowLabels,
+        state.colLabels,
+        {digits: 4, addTotals: true, totals: {rowTotals: res.rowTotals, colTotals: res.colTotals, n: res.n}}
+      );
+
+      let smallE = [];
+      for(let i=0;i<res.E.length;i++){
+        for(let j=0;j<res.E[0].length;j++){
+          if (res.E[i][j] < 5) smallE.push({i,j,val:res.E[i][j]});
+        }
+      }
+      const warnEl = document.getElementById("expectedWarnings");
+      if (smallE.length === 0){
+        warnEl.innerHTML = `<span class="status-good"><i class="fa-solid fa-circle-check me-2"></i>No expected counts below 5 (rule-of-thumb check).</span>`;
+      } else {
+        const list = smallE.slice(0,12).map(x => {
+          return `<span class="mono">${escapeHtml(state.rowLabels[x.i])} × ${escapeHtml(state.colLabels[x.j])}: ${fmt(x.val,3)}</span>`;
+        }).join(", ");
+        warnEl.innerHTML = `<span class="status-warn"><i class="fa-solid fa-triangle-exclamation me-2"></i>
+          Some expected counts are below 5 (rule-of-thumb): ${list}${smallE.length>12 ? ", ..." : ""}</span>`;
+      }
+
+      buildMatrixTable(
+        "contribContainer",
+        res.contrib,
+        state.rowLabels,
+        state.colLabels,
+        {digits: 6, addTotals: false}
+      );
+
+      document.getElementById("cramersV").textContent = fmt(res.V, 6);
+      renderSteps(res);
+      initTooltips();
+    }
+
+    /***************
+     * Presets (Exercise 3 Q1–Q5)
+     ***************/
+    function loadPreset(key){
+      const presets = {
+        q1: {
+          rows: 2, cols: 4,
+          rowLabels: ["Approve Trump", "Disapprove Trump"],
+          colLabels: ["<30", "30-45", "45-60", ">60"],
+          table: [
+            [72, 90, 99, 75],
+            [78,160,151, 75]
+          ],
+          alpha: 0.05
+        },
+        q2: {
+          rows: 2, cols: 2,
+          rowLabels: ["Circumcised men", "Uncircumcised men"],
+          colLabels: ["HSV2+", "HSV2-"],
+          table: [
+            [130, 1670],
+            [175, 1625]
+          ],
+          alpha: 0.01
+        },
+        q3: {
+          rows: 2, cols: 2,
+          rowLabels: ["Green", "Blue"],
+          colLabels: ["Success", "No success"],
+          table: [
+            [30, 170],
+            [20, 180]
+          ],
+          alpha: 0.05
+        },
+        q4: {
+          rows: 2, cols: 2,
+          rowLabels: ["BSHW", "Tap water"],
+          colLabels: ["Baby boy", "Baby girl"],
+          table: [
+            [53, 47],
+            [73, 77]
+          ],
+          alpha: 0.05
+        },
+        q5: {
+          rows: 2, cols: 2,
+          rowLabels: ["Vaccine (mRNA-1273)", "Placebo"],
+          colLabels: ["COVID cases", "No COVID"],
+          table: [
+            [5, 14995],
+            [90, 14910]
+          ],
+          alpha: 0.05
+        }
+      };
+
+      const p = presets[key];
+      if (!p) return;
+
+      state.rows = p.rows;
+      state.cols = p.cols;
+      state.rowLabels = p.rowLabels.slice();
+      state.colLabels = p.colLabels.slice();
+      state.table = p.table.map(row => row.slice());
+
+      document.getElementById("rowsInput").value = state.rows;
+      document.getElementById("colsInput").value = state.cols;
+
+      document.getElementById("alphaCustom").classList.add("d-none");
+      document.getElementById("alphaSelect").classList.remove("d-none");
+      document.getElementById("btnAlphaCustom").textContent = "Custom";
+      document.getElementById("alphaSelect").value = String(p.alpha);
+
+      document.getElementById("yatesToggle").checked = false;
+
+      buildObservedTable();
+      const res = computeChiSquare();
+      if (res) renderResults(res);
+    }
+
+    /***************
+     * Events
+     ***************/
+    function setRowsCols(newRows, newCols){
+      state.rows = clamp(newRows, 2, 10);
+      state.cols = clamp(newCols, 2, 10);
+      document.getElementById("rowsInput").value = state.rows;
+      document.getElementById("colsInput").value = state.cols;
+      ensureLabels();
+      ensureTableSize();
+      buildObservedTable();
+    }
+
+    function computeAndRender(){
+      const res = computeChiSquare();
+      if (res) renderResults(res);
+    }
+
+    function resetAll(){
+      state.rows = 2;
+      state.cols = 2;
+      state.rowLabels = ["Row 1", "Row 2"];
+      state.colLabels = ["Col 1", "Col 2"];
+      state.table = [[0,0],[0,0]];
+
+      document.getElementById("rowsInput").value = 2;
+      document.getElementById("colsInput").value = 2;
+      document.getElementById("presetSelect").value = "";
+      document.getElementById("alphaSelect").value = "0.05";
+      document.getElementById("alphaCustom").value = "0.05";
+      document.getElementById("alphaCustom").classList.add("d-none");
+      document.getElementById("alphaSelect").classList.remove("d-none");
+      document.getElementById("btnAlphaCustom").textContent = "Custom";
+      document.getElementById("yatesToggle").checked = false;
+
+      buildObservedTable();
+      clearError();
+
+      ["kpiN","kpiChi2","kpiDf","kpiP","kpiDecision","cramersV"].forEach(id=>{
+        const el = document.getElementById(id);
+        if (el) el.textContent = "—";
+      });
+      document.getElementById("expectedContainer").innerHTML = "";
+      document.getElementById("contribContainer").innerHTML = "";
+      document.getElementById("expectedWarnings").innerHTML = "";
+      document.getElementById("stepsContainer").innerHTML = "";
+      initTooltips();
+    }
+
+    function fillEmptyWithZeros(){
+      document.querySelectorAll("input[data-cell]").forEach(inp => {
+        if (inp.value === "" || inp.value == null){
+          inp.value = "0";
+          const [r,c] = inp.getAttribute("data-cell").split(",").map(Number);
+          state.table[r][c] = 0;
+        }
+      });
+    }
+
+    /***************
+     * Bootstrap & initial render
+     ***************/
+    document.addEventListener("DOMContentLoaded", () => {
+      buildObservedTable();
+      initTooltips();
+
+      document.getElementById("btnRowMinus").addEventListener("click", ()=> setRowsCols(state.rows-1, state.cols));
+      document.getElementById("btnRowPlus").addEventListener("click", ()=> setRowsCols(state.rows+1, state.cols));
+      document.getElementById("btnColMinus").addEventListener("click", ()=> setRowsCols(state.rows, state.cols-1));
+      document.getElementById("btnColPlus").addEventListener("click", ()=> setRowsCols(state.rows, state.cols+1));
+
+      document.getElementById("rowsInput").addEventListener("change", (e)=> setRowsCols(parseInt(e.target.value,10), state.cols));
+      document.getElementById("colsInput").addEventListener("change", (e)=> setRowsCols(state.rows, parseInt(e.target.value,10)));
+
+      document.getElementById("btnCompute").addEventListener("click", computeAndRender);
+      document.getElementById("btnComputeTop").addEventListener("click", computeAndRender);
+      document.getElementById("btnComputeBottom").addEventListener("click", computeAndRender);
+
+      document.getElementById("btnReset").addEventListener("click", resetAll);
+      document.getElementById("btnFillZeros").addEventListener("click", fillEmptyWithZeros);
+
+      document.getElementById("presetSelect").addEventListener("change", (e)=>{
+        const key = e.target.value;
+        if (key) loadPreset(key);
+      });
+
+      document.getElementById("btnAlphaCustom").addEventListener("click", ()=>{
+        const custom = document.getElementById("alphaCustom");
+        const sel = document.getElementById("alphaSelect");
+        const isCustom = !custom.classList.contains("d-none");
+
+        if (isCustom){
+          custom.classList.add("d-none");
+          sel.classList.remove("d-none");
+          document.getElementById("btnAlphaCustom").textContent = "Custom";
+        } else {
+          custom.classList.remove("d-none");
+          sel.classList.add("d-none");
+          custom.value = sel.value;
+          document.getElementById("btnAlphaCustom").textContent = "Use preset";
+        }
+      });
+
+      document.getElementById("alphaSelect").addEventListener("change", ()=>{
+        if (document.getElementById("stepsContainer").innerHTML.trim()) computeAndRender();
+      });
+      document.getElementById("alphaCustom").addEventListener("input", ()=>{
+        if (document.getElementById("stepsContainer").innerHTML.trim()) computeAndRender();
+      });
+
+      document.getElementById("yatesToggle").addEventListener("change", ()=>{
+        if (document.getElementById("stepsContainer").innerHTML.trim()) computeAndRender();
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,4 +1,5 @@
 |-- CheatSheet.html
+|-- Chi_Square_Calculator.html
 |-- Confidence_Interval_Calculator.html
 |-- css
     |-- bootstrap.min.css
@@ -9,11 +10,17 @@
         |-- fa-solid-900.ttf
         |-- fa-solid-900.woff2
     |-- Index_Style.css
+|-- fix_all.ps1
+|-- fix_encoding.ps1
+|-- fix_rendersteps.py
+|-- fix_rendersteps_v2.py
 |-- Hypothesis_Testing_Calculator.html
 |-- index.html
 |-- js
     |-- bootstrap.bundle.min.js
+    |-- chart.min.js
     |-- Index_Script.js
+    |-- jstat.min.js
 |-- Normal_Distribution_Calculator.html
 |-- t_distribution.html
 |-- T_Test_Calculator.html
