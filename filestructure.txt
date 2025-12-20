@@ -12,8 +12,6 @@
     |-- Index_Style.css
 |-- fix_all.ps1
 |-- fix_encoding.ps1
-|-- fix_rendersteps.py
-|-- fix_rendersteps_v2.py
 |-- Hypothesis_Testing_Calculator.html
 |-- index.html
 |-- js
