@@ -20,5 +20,6 @@
     |-- Index_Script.js
     |-- jstat.min.js
 |-- Normal_Distribution_Calculator.html
+|-- Simple_Linear_Regression.html
 |-- t_distribution.html
 |-- T_Test_Calculator.html
