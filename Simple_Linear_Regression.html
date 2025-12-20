@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <!-- IMPORTANT: keep this file saved as UTF-8 in your editor -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Simple Linear Regression — Calculator (SLR)</title>
+  <title>Simple Linear Regression (SLR) — Calculator</title>
 
   <!-- Bootstrap (local) -->
   <link href="./css/bootstrap.min.css" rel="stylesheet"/>
@@ -16,6 +15,8 @@
   <style>
     :root{
       --bg:#0f172a;
+      --card:#111c33;
+      --card2:#0b1224;
       --text:#f8fafc;
       --muted:#94a3b8;
       --border:rgba(148,163,184,0.25);
@@ -23,28 +24,18 @@
       --good:#22c55e;
       --warn:#f59e0b;
       --bad:#ef4444;
-
-      --surface-1: rgba(17, 28, 51, 0.92);
-      --surface-2: rgba(11, 18, 36, 0.96);
-      --surface-3: rgba(2, 6, 23, 0.92);
     }
 
     body{
-      background:
-        radial-gradient(1100px 700px at 20% 0%, rgba(56,189,248,0.15), transparent 60%),
-        radial-gradient(900px 600px at 80% 20%, rgba(34,197,94,0.10), transparent 55%),
-        var(--bg);
+      background: radial-gradient(1100px 700px at 20% 0%, rgba(56,189,248,0.15), transparent 60%),
+                  radial-gradient(900px 600px at 80% 20%, rgba(34,197,94,0.10), transparent 55%),
+                  var(--bg);
       color:var(--text);
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Inter", Arial, sans-serif;
       min-height:100vh;
     }
 
     .container{ max-width: 1180px; }
-
-    h1,h2,h3,h4,h5,h6{
-      color: rgba(248,250,252,0.96);
-      text-shadow: 0 1px 12px rgba(0,0,0,0.35);
-    }
 
     .app-title{
       letter-spacing: .2px;
@@ -53,10 +44,9 @@
     }
 
     .subtle{ color: rgba(226, 232, 240, 0.78); }
-    .small-note{ color: rgba(226, 232, 240, 0.78); font-size: .92rem; }
 
     .card{
-      background: var(--surface-1);
+      background: rgba(17, 28, 51, 0.88);
       border: 1px solid rgba(148,163,184,0.25);
       border-radius: 18px;
       box-shadow: 0 10px 25px rgba(0,0,0,.25);
@@ -67,15 +57,10 @@
     .card-header{
       border-bottom: 1px solid rgba(148,163,184,0.25);
       position: relative;
-      background: linear-gradient(
-        180deg,
-        rgba(30, 41, 59, 0.92),
-        rgba(15, 23, 42, 0.88)
-      );
+      background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.88));
       border-top-left-radius: 18px;
       border-top-right-radius: 18px;
     }
-
     .card-header::after{
       content:"";
       position:absolute;
@@ -87,44 +72,30 @@
         radial-gradient(900px 220px at 80% 0%, rgba(34,197,94,0.12), transparent 55%);
       pointer-events:none;
     }
+    .card-header > *{ position: relative; z-index: 1; }
+    .card-header, .card-header *{ color: rgba(248,250,252,0.95) !important; }
+    .card-header .small-note{ color: rgba(226,232,240,0.82) !important; }
 
-    .card-header > *{
-      position: relative;
-      z-index: 1;
-    }
-
-    .card-header, .card-header *{
-      color: rgba(248,250,252,0.95) !important;
-    }
-
-    .card-header .small-note{
-      color: rgba(226,232,240,0.82) !important;
-    }
-
-    .form-label,.form-check-label{
+    .form-label, .form-check-label{
       color: rgba(248, 250, 252, 0.92) !important;
     }
 
-    .form-control, .form-select, textarea{
+    .form-control, .form-select, textarea.form-control{
       background-color: rgba(255,255,255,0.04);
       color: var(--text);
       border: 1px solid rgba(148,163,184,0.28);
       border-radius: 12px;
     }
-
-    .form-control::placeholder, textarea::placeholder{
-      color: rgba(226,232,240,0.55);
-    }
+    .form-control::placeholder{ color: rgba(226,232,240,0.55); }
 
     select option{
       background-color: #0b1224;
       color: #f8fafc;
     }
 
-    .form-control:focus, .form-select:focus, textarea:focus{
+    .form-control:focus, .form-select:focus{
       box-shadow: 0 0 0 .25rem rgba(56,189,248,.15);
       border-color: rgba(56,189,248,.55);
-      outline: none;
     }
 
     .btn{ border-radius: 12px; font-weight: 650; }
@@ -149,13 +120,13 @@
       padding:.35rem .65rem;
       border-radius: 999px;
       border:1px solid rgba(148,163,184,0.25);
-      background: rgba(255,255,255,0.05);
-      color: rgba(248,250,252,0.90);
+      background: rgba(255,255,255,0.03);
+      color: rgba(226,232,240,0.82);
       font-size:.9rem;
     }
 
     .help-i{
-      color: rgba(248,250,252,.85);
+      color: rgba(248,250,252,.80);
       cursor: help;
       margin-left:.35rem;
     }
@@ -165,17 +136,18 @@
     }
 
     .result-box{
-      background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(2,6,23,0.50));
-      border:1px solid rgba(148,163,184,0.22);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(2,6,23,0.66));
+      border:1px solid rgba(148,163,184,0.20);
       border-radius: 14px;
       padding: 1rem;
       backdrop-filter: blur(6px);
     }
 
-    .badge-soft{
-      border: 1px solid rgba(148,163,184,0.25);
-      background: rgba(255,255,255,0.05);
-      color: rgba(248,250,252,0.92);
+    /* Make result-box headers bright */
+    .result-box .fw-semibold,
+    .result-box .fw-bold {
+      color: rgba(248,250,252,0.96) !important;
+      text-shadow: 0 1px 8px rgba(0,0,0,0.35);
     }
 
     .kpi{
@@ -183,15 +155,14 @@
       flex-wrap: wrap;
       gap:.6rem;
     }
-
     .kpi .k{
       flex: 1 1 220px;
       padding:.85rem;
       border-radius: 14px;
       border:1px solid rgba(148,163,184,0.25);
-      background: rgba(255,255,255,0.04);
+      background: rgba(255,255,255,0.03);
+      min-height: 92px;
     }
-
     .k .label{
       color: rgba(248,250,252,0.92);
       font-size: .95rem;
@@ -199,21 +170,46 @@
       align-items:center;
       gap:.35rem;
     }
-
     .k .value{
       font-size: 1.2rem;
       font-weight: 800;
       margin-top:.25rem;
       color: rgba(248,250,252,0.96);
-      word-break: break-word;
     }
 
     .status-good{ color: var(--good); }
     .status-warn{ color: var(--warn); }
     .status-bad{ color: var(--bad); }
 
+    .small-note{
+      color: rgba(226, 232, 240, 0.80);
+      font-size: .92rem;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border-radius: 14px;
+      border: 1px solid rgba(148,163,184,0.30);
+      background: rgba(2, 6, 23, 0.55);
+    }
+    table{ margin:0; width:100%; color: var(--text); }
+    thead th{
+      position: sticky; top:0;
+      background: rgba(2, 6, 23, 0.92);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid rgba(148,163,184,0.30) !important;
+      z-index: 2;
+    }
+    td, th{
+      border-color: rgba(148,163,184,0.22) !important;
+      vertical-align: middle;
+    }
+
+    .hr-soft{ border-color: rgba(148,163,184,.18); opacity: 1; }
+
+    /* Steps */
     .step{
-      background: rgba(255,255,255,0.04);
+      background: rgba(255,255,255,0.03);
       border: 1px solid rgba(148,163,184,0.22);
       border-left: 3px solid rgba(56,189,248,.55);
       border-radius: 14px;
@@ -221,98 +217,9 @@
       margin-bottom: 1rem;
     }
     .step .fw-semibold{ color: rgba(248,250,252,0.96) !important; }
-    .step .small-note{ color: rgba(226,232,240,0.84) !important; }
+    .step .small-note{ color: rgba(226,232,240,0.86) !important; }
 
-    .hr-soft{
-      border-color: rgba(148,163,184,.18);
-      opacity: 1;
-    }
-
-    details summary{
-      list-style: none;
-    }
-    details summary::-webkit-details-marker{
-      display:none;
-    }
-
-    .summary-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:.5rem;
-      padding:.25rem .55rem;
-      border-radius: 999px;
-      border:1px solid rgba(148,163,184,0.22);
-      background: rgba(255,255,255,0.04);
-      color: rgba(226,232,240,0.86);
-      font-size:.88rem;
-    }
-
-    textarea{
-      min-height: 240px;
-      resize: vertical;
-    }
-
-    /* =========================================================
-       SLR Readability Patch — fixes dim headers + invisible text
-       ========================================================= */
-
-    /* 1) Make section headers inside result panels clearly visible */
-    .result-box .fw-semibold,
-    .result-box .fw-bold,
-    .result-box h1, .result-box h2, .result-box h3,
-    .result-box h4, .result-box h5, .result-box h6 {
-      color: rgba(248,250,252,0.96) !important;
-      text-shadow: 0 1px 10px rgba(0,0,0,0.35);
-    }
-
-    /* 2) Prevent Bootstrap "muted" utility classes from killing contrast */
-    .text-muted,
-    .text-secondary,
-    .opacity-75,
-    .opacity-50 {
-      color: rgba(226,232,240,0.82) !important;
-    }
-
-    /* 3) Slightly strengthen result-box surface (so text doesn't blend into bg) */
-    .result-box{
-      background: linear-gradient(
-        180deg,
-        rgba(255,255,255,0.05),
-        rgba(2,6,23,0.66)
-      );
-      border: 1px solid rgba(148,163,184,0.26);
-    }
-
-    /* 4) Step-by-step section (some themes can dim it via inherited opacity) */
-    #stepsContainer,
-    #stepsContainer *{
-      color: rgba(248,250,252,0.92);
-    }
-
-    /* 5) Details/Summary ("Show/Hide write-up") - ensure visible text + marker */
-    .result-box details > summary{
-      color: rgba(226,232,240,0.92) !important;
-    }
-    .result-box details > summary::marker{
-      color: rgba(226,232,240,0.92);
-    }
-    .result-box details > summary::-webkit-details-marker{
-      color: rgba(226,232,240,0.92);
-    }
-
-    /* If you used a "summary-pill" span, style it explicitly */
-    .summary-pill{
-      display:inline-flex;
-      align-items:center;
-      gap:.5rem;
-      padding:.35rem .65rem;
-      border-radius: 999px;
-      border:1px solid rgba(148,163,184,0.25);
-      background: rgba(255,255,255,0.05);
-      color: rgba(248,250,252,0.92);
-    }
-
-    /* 6) Write-up block: explicit surface + color + spacing */
+    /* Write-up */
     #writeupPreview{
       color: rgba(248,250,252,0.94);
       background: rgba(2,6,23,0.58);
@@ -321,26 +228,12 @@
       padding: 12px 14px;
       line-height: 1.5;
       overflow:auto;
+      white-space: pre-wrap;
+      margin:0;
     }
-
-    /* 7) Inline code/formula styling (prevents bright-pink bootstrap code on dark bg) */
-    code{
-      color: rgba(248,250,252,0.92);
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(148,163,184,0.18);
-      border-radius: 8px;
-      padding: .08rem .35rem;
-    }
-
-    /* 8) Copy button: keep it readable on darker headers */
-    #btnCopyWriteup{
-      border-color: rgba(248,250,252,0.35);
-      color: rgba(248,250,252,0.92);
-    }
-    #btnCopyWriteup:hover{
-      border-color: rgba(56,189,248,.65);
-      background: rgba(56,189,248,0.12);
-      color: rgba(248,250,252,0.96);
+    details > summary{
+      color: rgba(226,232,240,0.92) !important;
+      cursor:pointer;
     }
   </style>
 </head>
@@ -353,12 +246,11 @@
           <i class="fa-solid fa-chart-line"></i>
           Simple Linear Regression
           <span class="mx-1">•</span>
-          <span class="subtle">1 predictor (X) and 1 outcome (Y)</span>
+          <span class="subtle">SLR (one X, one Y)</span>
         </div>
-        <h1 class="app-title mb-1">Simple Linear Regression — Calculator</h1>
+        <h1 class="app-title mb-1">Simple Linear Regression (SLR) — Calculator</h1>
         <div class="subtle">
-          Works with raw data pairs, summary statistics, or population parameters (theoretical regression).
-          Returns regression line, hypothesis test, R<sup>2</sup>, RMSE, CI for slope, and step-by-step explanation.
+          Fit <span class="mono">Ŷ = b0 + b1X</span>, compute inference (t-test, CI), ANOVA, and compute intervals at <span class="mono">X0</span> (mean CI and prediction interval).
         </div>
       </div>
       <div class="d-flex gap-2">
@@ -372,380 +264,325 @@
     </div>
 
     <div class="row g-3">
-      <!-- Controls -->
+      <!-- Inputs -->
       <div class="col-12 col-lg-4">
         <div class="card h-100">
           <div class="card-header p-3">
             <div class="d-flex align-items-center justify-content-between">
               <div class="fw-bold">Inputs & Settings</div>
-              <span class="badge badge-soft">SLR</span>
+              <span class="pill"><i class="fa-solid fa-sliders"></i> Generic SLR</span>
             </div>
           </div>
           <div class="card-body p-3">
 
+            <!-- Mode -->
             <div class="mb-3">
               <label class="form-label">
-                Load Exercise Preset
+                Input mode
                 <i class="fa-solid fa-circle-info help-i"
                    data-bs-toggle="tooltip"
-                   title="Optional: loads preset values similar to Exercise #4 (Q1-Q4). You can still edit everything."></i>
+                   title="Choose how your problem provides data: (1) raw (x,y) pairs, (2) summary statistics, or (3) regression output/partial stats."></i>
               </label>
-              <select id="presetSelect" class="form-select">
-                <option value="">— Choose a preset —</option>
-                <option value="q1">Exercise 4 — Q1 (Heights: Father -> Son)</option>
-                <option value="q2">Exercise 4 — Q2 (Sport activity -> Heart rate)</option>
-                <option value="q3">Exercise 4 — Q3 (Population params: Income -> Newborn weight)</option>
-                <option value="q4">Exercise 4 — Q4 (Weight -> Blood pressure)</option>
+              <select id="modeSelect" class="form-select">
+                <option value="raw">Raw data: (x, y) pairs</option>
+                <option value="summary">Summary stats: n, x̄, ȳ, sₓ, sᵧ, r</option>
+                <option value="output">Regression output: b0, b1 + SE info</option>
               </select>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">
-                Input Mode
-                <i class="fa-solid fa-circle-info help-i"
-                   data-bs-toggle="tooltip"
-                   title="Choose how you provide the information: raw (X,Y) pairs, summary stats (n, means, SDs, r), or population params (mu, sigma, rho)."></i>
-              </label>
-
-              <div class="d-flex flex-wrap gap-2">
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="mode" id="modeRaw" value="raw" checked>
-                  <label class="form-check-label" for="modeRaw">Raw data</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="mode" id="modeSummary" value="summary">
-                  <label class="form-check-label" for="modeSummary">Summary stats</label>
-                </div>
-                <div class="form-check">
-                  <input class="form-check-input" type="radio" name="mode" id="modePopulation" value="population">
-                  <label class="form-check-label" for="modePopulation">Population model</label>
-                </div>
-              </div>
-
               <div class="small-note mt-2">
-                Tip: For most GMBA questions, <b>Summary stats</b> or <b>Population model</b> is enough.
+                Tip: Intervals at X0 require <span class="mono">x̄</span>, <span class="mono">Sxx</span>, and an estimate of <span class="mono">s</span> (RMSE).
+              </div>
+            </div>
+
+            <!-- Raw -->
+            <div id="modeRaw" class="mb-3">
+              <label class="form-label">
+                Data pairs (one per line)
+                <i class="fa-solid fa-circle-info help-i"
+                   data-bs-toggle="tooltip"
+                   title="Enter x and y for each observation. Examples: '12, 5' or '12 5'. The calculator will compute all needed statistics."></i>
+              </label>
+              <textarea id="rawPairs" class="form-control" rows="8"
+                        placeholder="Example:
+10, 72
+11, 74
+12, 79
+..."></textarea>
+              <div class="small-note mt-2">
+                Accepted separators: comma, space, or tab. Empty lines are ignored.
+              </div>
+            </div>
+
+            <!-- Summary -->
+            <div id="modeSummary" class="mb-3 d-none">
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label">
+                    n
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Sample size (number of observations)."></i>
+                  </label>
+                  <input id="nSummary" class="form-control" type="number" min="3" step="1" value="30">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">
+                    r
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Sample correlation coefficient between X and Y (−1 ≤ r ≤ 1)."></i>
+                  </label>
+                  <input id="rSummary" class="form-control" type="number" step="0.0001" value="0.6">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">
+                    x̄
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Sample mean of X (average X). Needed for intervals at X0 because they depend on (X0−x̄)."></i>
+                  </label>
+                  <input id="xbarSummary" class="form-control" type="number" step="0.0001" value="50">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">
+                    ȳ
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Sample mean of Y (average Y). Used to compute b0 = ȳ − b1·x̄."></i>
+                  </label>
+                  <input id="ybarSummary" class="form-control" type="number" step="0.0001" value="100">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">
+                    sₓ
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Sample standard deviation of X. Must be > 0. Determines Sxx = (n−1)sx²."></i>
+                  </label>
+                  <input id="sxSummary" class="form-control" type="number" step="0.0001" value="10">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">
+                    sᵧ
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Sample standard deviation of Y. Must be > 0. Determines SST = (n−1)sy²."></i>
+                  </label>
+                  <input id="sySummary" class="form-control" type="number" step="0.0001" value="20">
+                </div>
+              </div>
+              <div class="small-note mt-2">
+                In summary mode: <span class="mono">b1 = r·(sᵧ/sₓ)</span>, <span class="mono">b0 = ȳ − b1·x̄</span>, and ANOVA uses <span class="mono">R²=r²</span>.
+              </div>
+            </div>
+
+            <!-- Output mode -->
+            <div id="modeOutput" class="mb-3 d-none">
+              <div class="row g-2">
+                <div class="col-6">
+                  <label class="form-label">
+                    b0 (intercept)
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Intercept of the fitted line Ŷ = b0 + b1X."></i>
+                  </label>
+                  <input id="b0Out" class="form-control" type="number" step="0.000001" value="0">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">
+                    b1 (slope)
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Slope of the fitted line (change in Ŷ for +1 change in X)."></i>
+                  </label>
+                  <input id="b1Out" class="form-control" type="number" step="0.000001" value="1">
+                </div>
+
+                <div class="col-6">
+                  <label class="form-label">
+                    n
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Sample size. Used for degrees of freedom (df = n−2) and inference."></i>
+                  </label>
+                  <input id="nOut" class="form-control" type="number" min="3" step="1" value="30">
+                </div>
+                <div class="col-6">
+                  <label class="form-label">
+                    x̄
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Mean of X. Required for confidence/prediction intervals at X0 because they depend on (X0−x̄)."></i>
+                  </label>
+                  <input id="xbarOut" class="form-control" type="number" step="0.0001" placeholder="Provide if needed for intervals">
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">
+                    SSX = Σ(x−x̄)² (Sxx)
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="Sum of squares for X. Needed for SE(b1) and for intervals at X0. Must be > 0."></i>
+                  </label>
+                  <input id="ssxOut" class="form-control" type="number" step="0.0001" value="1000">
+                </div>
+
+                <div class="col-12">
+                  <label class="form-label">
+                    Provide ONE of these for uncertainty
+                    <i class="fa-solid fa-circle-info help-i"
+                       data-bs-toggle="tooltip"
+                       title="To compute t-tests and intervals, the calculator needs the regression error scale s (RMSE) or enough info to derive it. Provide SE(b1) OR RMSE OR SSE."></i>
+                  </label>
+
+                  <div class="row g-2">
+                    <div class="col-4">
+                      <input id="seB1Out" class="form-control" type="number" step="0.000001" placeholder="SE(b1)">
+                    </div>
+                    <div class="col-4">
+                      <input id="rmseOut" class="form-control" type="number" step="0.000001" placeholder="RMSE">
+                    </div>
+                    <div class="col-4">
+                      <input id="sseOut" class="form-control" type="number" step="0.000001" placeholder="SSE">
+                    </div>
+                  </div>
+                  <div class="small-note mt-2">
+                    Priority: SE(b1) → RMSE → SSE. If only SE(b1) is provided, the calculator derives <span class="mono">RMSE = SE(b1)·√Sxx</span>.
+                  </div>
+                </div>
               </div>
             </div>
 
             <hr class="hr-soft my-3">
 
-            <div id="testSettings" class="mb-3">
-              <label class="form-label">
-                Hypothesis test (for correlation/slope)
-                <i class="fa-solid fa-circle-info help-i"
-                   data-bs-toggle="tooltip"
-                   title="These GMBA exercises often test whether the correlation rho differs from 0 (or is positive/negative). The equivalent slope test uses t = b1 / SE(b1)."></i>
-              </label>
-
-              <div class="mb-2">
+            <!-- Test settings -->
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label">
+                  Significance level (α)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Type I error probability used in hypothesis testing. Common: 0.05 or 0.01."></i>
+                </label>
+                <div class="input-group">
+                  <select id="alphaSelect" class="form-select">
+                    <option value="0.10">0.10</option>
+                    <option value="0.05" selected>0.05</option>
+                    <option value="0.01">0.01</option>
+                  </select>
+                  <button id="btnAlphaCustom" class="btn btn-outline-light" type="button"
+                          data-bs-toggle="tooltip"
+                          title="Enter any α (for example 0.025).">
+                    Custom
+                  </button>
+                </div>
+                <input id="alphaCustom" class="form-control mt-2 d-none" type="number"
+                       step="0.001" min="0.0001" max="0.5" value="0.05">
+              </div>
+              <div class="col-6">
+                <label class="form-label">
+                  Alternative (H1)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Choose the direction of the test for association: two-sided, positive, or negative."></i>
+                </label>
                 <select id="h1Select" class="form-select">
-                  <option value="two">Two-sided: H1: rho != 0</option>
-                  <option value="gt">Right-tailed: H1: rho > 0</option>
-                  <option value="lt">Left-tailed: H1: rho < 0</option>
+                  <option value="two" selected>ρ ≠ 0 (two-sided)</option>
+                  <option value="gt">ρ > 0 (right-tailed)</option>
+                  <option value="lt">ρ < 0 (left-tailed)</option>
                 </select>
               </div>
+            </div>
 
-              <label class="form-label mt-2">
-                Significance level (alpha)
-                <i class="fa-solid fa-circle-info help-i"
-                   data-bs-toggle="tooltip"
-                   title="Alpha is the Type I error probability. Common values: 0.05 or 0.01. Decision rule: reject H0 if p-value < alpha."></i>
-              </label>
-
-              <div class="input-group">
-                <select id="alphaSelect" class="form-select">
-                  <option value="0.10">0.10</option>
-                  <option value="0.05" selected>0.05</option>
-                  <option value="0.01">0.01</option>
-                </select>
-                <button id="btnAlphaCustom" class="btn btn-outline-light" type="button"
-                        data-bs-toggle="tooltip"
-                        title="Switch to a custom alpha (e.g., 0.025).">
-                  Custom
-                </button>
+            <div class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label">
+                  Confidence level (for CIs/intervals)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="This confidence level is used for CI(b1), CI for mean response at X0, and prediction interval at X0."></i>
+                </label>
+                <div class="input-group">
+                  <select id="confSelect" class="form-select">
+                    <option value="0.90">90%</option>
+                    <option value="0.95" selected>95%</option>
+                    <option value="0.99">99%</option>
+                  </select>
+                  <button id="btnConfCustom" class="btn btn-outline-light" type="button"
+                          data-bs-toggle="tooltip"
+                          title="Enter any confidence level (for example 0.975).">
+                    Custom
+                  </button>
+                </div>
+                <input id="confCustom" class="form-control mt-2 d-none" type="number"
+                       step="0.001" min="0.50" max="0.9999" value="0.95">
               </div>
-              <input id="alphaCustom" class="form-control mt-2 d-none" type="number" step="0.001" min="0.0001" max="0.5" value="0.05">
-            </div>
-
-            <div id="ciSettings" class="mb-3">
-              <label class="form-label">
-                Confidence level for CI of slope (b1)
-                <i class="fa-solid fa-circle-info help-i"
-                   data-bs-toggle="tooltip"
-                   title="Confidence interval for b1: b1 +/- t_(1-alpha/2, df) * SE(b1). Choose 95% or 99% depending on the question."></i>
-              </label>
-              <div class="input-group">
-                <select id="confSelect" class="form-select">
-                  <option value="0.90">90%</option>
-                  <option value="0.95" selected>95%</option>
-                  <option value="0.99">99%</option>
-                </select>
-                <button id="btnConfCustom" class="btn btn-outline-light" type="button"
-                        data-bs-toggle="tooltip"
-                        title="Switch to a custom confidence level (e.g., 0.975).">
-                  Custom
-                </button>
+              <div class="col-6">
+                <label class="form-label">
+                  Predictions & intervals at X0
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Enable to compute Ŷ(X0), deltaŶ, CI for mean response at X0, and prediction interval at X0 (if inputs are sufficient)."></i>
+                </label>
+                <div class="form-check form-switch mt-2">
+                  <input class="form-check-input" type="checkbox" role="switch" id="predToggle" checked>
+                  <label class="form-check-label" for="predToggle">Enable</label>
+                </div>
               </div>
-              <input id="confCustom" class="form-control mt-2 d-none" type="number" step="0.001" min="0.5" max="0.999" value="0.95">
             </div>
 
-            <hr class="hr-soft my-3">
-
-            <div class="mb-2">
-              <label class="form-label">
-                Prediction input (X0)
-                <i class="fa-solid fa-circle-info help-i"
-                   data-bs-toggle="tooltip"
-                   title="Compute predicted Y at X = X0 using Yhat = b0 + b1*X0."></i>
-              </label>
-              <input id="x0Input" type="number" class="form-control" placeholder="Example: 85" value="">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">
-                Change in X (deltaX)
-                <i class="fa-solid fa-circle-info help-i"
-                   data-bs-toggle="tooltip"
-                   title="Compute predicted change in Y when X changes by deltaX: deltaYhat = b1*deltaX. Example: deltaX = -10 kg."></i>
-              </label>
-              <input id="dxInput" type="number" class="form-control" placeholder="Example: -10" value="">
+            <div id="predBlock" class="row g-2 mb-3">
+              <div class="col-6">
+                <label class="form-label">
+                  X0
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Point where you want the prediction Ŷ(X0) and intervals. Intervals require x̄, Sxx, and RMSE (or equivalent)."></i>
+                </label>
+                <input id="x0Input" class="form-control" type="number" step="0.0001" placeholder="e.g., 60">
+              </div>
+              <div class="col-6">
+                <label class="form-label">
+                  deltaX
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="For 'change' questions: predicted deltaŶ = b1·deltaX."></i>
+                </label>
+                <input id="dxInput" class="form-control" type="number" step="0.0001" placeholder="e.g., 5">
+              </div>
+              <div class="col-12 small-note">
+                Ŷ(X0) = b0 + b1·X0, deltaŶ = b1·deltaX.
+                Intervals at X0:
+                <span class="mono">CI_mean: Ŷ ± t*·s·√(1/n + (X0−x̄)²/Sxx)</span>,
+                <span class="mono">PI: Ŷ ± t*·s·√(1 + 1/n + (X0−x̄)²/Sxx)</span>.
+              </div>
             </div>
 
             <div class="d-grid gap-2">
               <button id="btnCompute" class="btn btn-primary">
                 <i class="fa-solid fa-calculator me-2"></i>Compute
               </button>
+              <button id="btnExample" class="btn btn-outline-light">
+                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Load a generic example
+              </button>
             </div>
 
-            <div class="small-note mt-3">
-              <div class="fw-semibold mb-1">What this solves</div>
-              r, regression line (b0,b1), R<sup>2</sup>, significance test, RMSE, SE(b1), CI(b1), predictions (Yhat and deltaYhat).
-            </div>
+            <hr class="hr-soft my-3">
 
-          </div>
-        </div>
-      </div>
-
-      <!-- Data entry -->
-      <div class="col-12 col-lg-8">
-        <div class="card">
-          <div class="card-header p-3">
-            <div class="d-flex flex-wrap gap-2 align-items-center justify-content-between">
-              <div class="fw-bold">
-                Data Entry
+            <div class="result-box">
+              <div class="fw-semibold mb-2">
+                What this calculator covers (generic)
                 <i class="fa-solid fa-circle-info help-i"
                    data-bs-toggle="tooltip"
-                   title="Choose an input mode on the left. The panel below changes accordingly."></i>
+                   title="This text is generic so you can reuse the tool for any course/exercise set."></i>
               </div>
+
               <div class="small-note">
-                All inputs are numeric. Use decimals if needed.
-              </div>
-            </div>
-          </div>
-
-          <div class="card-body p-3">
-            <!-- Raw mode -->
-            <div id="panelRaw">
-              <label class="form-label">
-                Paste (X, Y) pairs — one pair per line
-                <i class="fa-solid fa-circle-info help-i"
-                   data-bs-toggle="tooltip"
-                   title="Format examples: '10, 25' or '10 25' or tab-separated. This mode computes everything from scratch."></i>
-              </label>
-              <textarea id="rawPairs" class="form-control mono"
-                        placeholder="Example:
-1, 10
-2, 12
-3, 15
-4, 18"></textarea>
-              <div class="small-note mt-2">
-                Allowed separators: comma, space, or tab. Empty lines are ignored.
-              </div>
-            </div>
-
-            <!-- Summary mode -->
-            <div id="panelSummary" class="d-none">
-              <div class="row g-2">
-                <div class="col-12 col-md-4">
-                  <label class="form-label">
-                    n
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Sample size (number of (X,Y) observations). Degrees of freedom for SLR is df = n - 2."></i>
-                  </label>
-                  <input id="nInput" type="number" min="3" class="form-control" value=""/>
-                </div>
-
-                <div class="col-12 col-md-4">
-                  <label class="form-label">
-                    r
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Sample correlation coefficient between X and Y. Range [-1,1]."></i>
-                  </label>
-                  <input id="rInput" type="number" step="0.001" min="-1" max="1" class="form-control" value=""/>
-                </div>
-
-                <div class="col-12 col-md-4">
-                  <label class="form-label">
-                    Optional: SSE
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Residual sum of squares from regression output. If not given, the calculator can derive SSE from r and SSY (needs Sy)."></i>
-                  </label>
-                  <input id="sseInput" type="number" step="0.0001" min="0" class="form-control" value=""/>
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label">
-                    X-bar
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Sample mean of X. Needed to compute intercept b0 if you derive b1."></i>
-                  </label>
-                  <input id="xbarInput" type="number" step="0.0001" class="form-control" value=""/>
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label">
-                    Y-bar
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Sample mean of Y. Needed to compute intercept b0 if you derive b1."></i>
-                  </label>
-                  <input id="ybarInput" type="number" step="0.0001" class="form-control" value=""/>
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label">
-                    Sx
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Sample standard deviation of X. Used with Sy and r to compute slope b1 = r*(Sy/Sx)."></i>
-                  </label>
-                  <input id="sxInput" type="number" step="0.0001" min="0" class="form-control" value=""/>
-                </div>
-
-                <div class="col-12 col-md-6">
-                  <label class="form-label">
-                    Sy
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Sample standard deviation of Y. Used with Sx and r to compute slope b1 = r*(Sy/Sx)."></i>
-                  </label>
-                  <input id="syInput" type="number" step="0.0001" min="0" class="form-control" value=""/>
-                </div>
-
-                <div class="col-12">
-                  <div class="result-box mt-2">
-                    <div class="fw-semibold mb-2">
-                      Optional: If you already have regression output (Excel)
-                      <span class="badge badge-soft ms-2">optional</span>
-                    </div>
-
-                    <div class="row g-2">
-                      <div class="col-12 col-md-4">
-                        <label class="form-label">
-                          b0 (intercept)
-                          <i class="fa-solid fa-circle-info help-i"
-                             data-bs-toggle="tooltip"
-                             title="Regression intercept. If provided, the calculator will use it directly (instead of deriving from means)."></i>
-                        </label>
-                        <input id="b0Input" type="number" step="0.0001" class="form-control" value=""/>
-                      </div>
-
-                      <div class="col-12 col-md-4">
-                        <label class="form-label">
-                          b1 (slope)
-                          <i class="fa-solid fa-circle-info help-i"
-                             data-bs-toggle="tooltip"
-                             title="Regression slope. If provided, the calculator will use it directly (instead of deriving from r,Sx,Sy)."></i>
-                        </label>
-                        <input id="b1Input" type="number" step="0.0001" class="form-control" value=""/>
-                      </div>
-
-                      <div class="col-12 col-md-4">
-                        <label class="form-label">
-                          SE(b1)
-                          <i class="fa-solid fa-circle-info help-i"
-                             data-bs-toggle="tooltip"
-                             title="Standard error of slope from Excel output. Used for CI and slope t-test. If not provided, it will be computed when possible."></i>
-                        </label>
-                        <input id="seb1Input" type="number" step="0.0001" min="0" class="form-control" value=""/>
-                      </div>
-                    </div>
-
-                    <div class="small-note mt-2">
-                      If you only have some fields, the calculator will compute what it can and explain which values were derived.
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-            </div>
-
-            <!-- Population mode -->
-            <div id="panelPopulation" class="d-none">
-              <div class="row g-2">
-                <div class="col-12 col-md-4">
-                  <label class="form-label">
-                    muX
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Population mean of X (not a sample). Used in the theoretical regression line."></i>
-                  </label>
-                  <input id="muX" type="number" step="0.0001" class="form-control" value=""/>
-                </div>
-                <div class="col-12 col-md-4">
-                  <label class="form-label">
-                    sigmaX
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Population standard deviation of X."></i>
-                  </label>
-                  <input id="sigX" type="number" step="0.0001" min="0" class="form-control" value=""/>
-                </div>
-                <div class="col-12 col-md-4">
-                  <label class="form-label">
-                    rho
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Population correlation between X and Y (rho). Used to compute the population slope beta1."></i>
-                  </label>
-                  <input id="rho" type="number" step="0.001" min="-1" max="1" class="form-control" value=""/>
-                </div>
-
-                <div class="col-12 col-md-4">
-                  <label class="form-label">
-                    muY
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Population mean of Y. Used in beta0 = muY - beta1*muX."></i>
-                  </label>
-                  <input id="muY" type="number" step="0.0001" class="form-control" value=""/>
-                </div>
-                <div class="col-12 col-md-4">
-                  <label class="form-label">
-                    sigmaY
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Population standard deviation of Y."></i>
-                  </label>
-                  <input id="sigY" type="number" step="0.0001" min="0" class="form-control" value=""/>
-                </div>
-                <div class="col-12 col-md-4">
-                  <label class="form-label">
-                    X0 for prediction
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="Value of X for which you want the theoretical predicted Y."></i>
-                  </label>
-                  <input id="x0Pop" type="number" step="0.0001" class="form-control" value=""/>
-                </div>
-              </div>
-
-              <div class="small-note mt-2">
-                Population mode uses: beta1 = rho*(sigmaY/sigmaX), beta0 = muY - beta1*muX, then Yhat = beta0 + beta1*X0.
+                <b>Covers:</b> estimating the regression line <span class="mono">Ŷ=b0+b1X</span>, computing <span class="mono">r</span> and <span class="mono">R²</span>,
+                testing association (<span class="mono">H0: ρ=0</span> / <span class="mono">b1=0</span>), confidence interval for <span class="mono">b1</span>,
+                ANOVA (<span class="mono">SST=SSR+SSE</span>, <span class="mono">F</span>), and predictions.
+                Also computes <b>CI for mean response at X0</b> and <b>prediction interval at X0</b> when inputs are sufficient.
+                <br><br>
+                <b>Not covered:</b> multiple regression (more than one predictor), categorical predictors/dummies, advanced diagnostics, and special transformations workflows.
               </div>
             </div>
 
@@ -754,7 +591,7 @@
       </div>
 
       <!-- Results -->
-      <div class="col-12">
+      <div class="col-12 col-lg-8">
         <div class="card">
           <div class="card-header p-3">
             <div class="fw-bold">Results</div>
@@ -762,148 +599,116 @@
           <div class="card-body p-3">
             <div id="errorBox" class="alert alert-danger d-none mb-3"></div>
 
+            <!-- KPIs -->
             <div class="kpi mb-3">
               <div class="k">
-                <div class="label">n <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Sample size. In population mode, not applicable."></i></div>
-                <div id="outN" class="value mono">—</div>
+                <div class="label">Regression line</div>
+                <div id="kpiLine" class="value mono">—</div>
               </div>
               <div class="k">
-                <div class="label">r <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Sample correlation (or rho if population mode)."></i></div>
-                <div id="outR" class="value mono">—</div>
+                <div class="label">r and R²</div>
+                <div id="kpiR2" class="value mono">—</div>
               </div>
               <div class="k">
-                <div class="label">b1 (slope) <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Slope: expected change in Y for +1 unit in X. In population mode this is beta1."></i></div>
-                <div id="outB1" class="value mono">—</div>
+                <div class="label">t-stat / df</div>
+                <div id="kpiT" class="value mono">—</div>
               </div>
               <div class="k">
-                <div class="label">b0 (intercept) <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Intercept: predicted Y when X=0. In population mode this is beta0."></i></div>
-                <div id="outB0" class="value mono">—</div>
-              </div>
-              <div class="k">
-                <div class="label">R<sup>2</sup> <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Explained fraction of Y variance by X in a linear model. In SLR, R^2 = r^2."></i></div>
-                <div id="outR2" class="value mono">—</div>
+                <div class="label">p-value / decision</div>
+                <div id="kpiDecision" class="value">—</div>
               </div>
             </div>
 
-            <!-- Model + Formulas + ANOVA -->
+            <!-- Model box + ANOVA -->
             <div class="row g-3 mb-3">
-              <div class="col-12 col-lg-6">
+              <div class="col-12 col-xl-5">
                 <div class="result-box">
-                  <div class="fw-semibold mb-2">
-                    Model & formulas (always visible)
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="This box shows the SLR model and the exact equations used by the calculator."></i>
-                  </div>
+                  <div class="fw-semibold mb-2">Model & formulas</div>
                   <div id="modelBox" class="small-note"></div>
                 </div>
               </div>
-
-              <div class="col-12 col-lg-6">
+              <div class="col-12 col-xl-7">
                 <div class="result-box">
-                  <div class="fw-semibold mb-2">
-                    ANOVA (Excel-style regression output)
-                    <i class="fa-solid fa-circle-info help-i"
-                       data-bs-toggle="tooltip"
-                       title="ANOVA decomposes total variation: SST = SSR + SSE. MSR/MSE gives the F-statistic."></i>
-                  </div>
+                  <div class="fw-semibold mb-2">ANOVA (Excel-style)</div>
                   <div id="anovaBox"></div>
-                  <div class="small-note mt-2" id="anovaNote"></div>
+                  <div id="anovaNote" class="small-note mt-2"></div>
                 </div>
               </div>
             </div>
 
-            <div class="row g-3">
+            <!-- Uncertainty -->
+            <div class="row g-3 mb-3">
               <div class="col-12 col-lg-6">
                 <div class="result-box">
                   <div class="fw-semibold mb-2">Model accuracy and uncertainty</div>
                   <div class="kpi">
                     <div class="k">
-                      <div class="label">SSE <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Sum of squared residuals. If not given, computed when possible."></i></div>
-                      <div id="outSSE" class="value mono">—</div>
+                      <div class="label">SSE</div>
+                      <div id="kpiSSE" class="value mono">—</div>
                     </div>
                     <div class="k">
-                      <div class="label">RMSE <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Root mean squared error = sqrt(SSE/(n-2)). Typical size of prediction error in Y units."></i></div>
-                      <div id="outRMSE" class="value mono">—</div>
+                      <div class="label">RMSE (s)</div>
+                      <div id="kpiRMSE" class="value mono">—</div>
                     </div>
                     <div class="k">
-                      <div class="label">SE(b1) <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Standard error of slope. Used for CI and t-test."></i></div>
-                      <div id="outSEB1" class="value mono">—</div>
+                      <div class="label">SE(b1)</div>
+                      <div id="kpiSEb1" class="value mono">—</div>
                     </div>
                     <div class="k">
-                      <div class="label">CI for b1 <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Confidence interval for the slope at your chosen confidence level."></i></div>
-                      <div id="outCI" class="value mono">—</div>
+                      <div class="label">CI for b1</div>
+                      <div id="kpiCIb1" class="value mono">—</div>
                     </div>
                   </div>
-                  <div class="small-note mt-2" id="outDeriveNote"></div>
                 </div>
               </div>
 
               <div class="col-12 col-lg-6">
                 <div class="result-box">
-                  <div class="fw-semibold mb-2">Hypothesis test and predictions</div>
+                  <div class="fw-semibold mb-2">Predictions & intervals at X0</div>
                   <div class="kpi">
                     <div class="k">
-                      <div class="label">t-stat <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Test statistic for H0: rho=0 (equivalently b1=0). df=n-2."></i></div>
-                      <div id="outT" class="value mono">—</div>
+                      <div class="label">Ŷ at X0</div>
+                      <div id="kpiYhatX0" class="value mono">—</div>
                     </div>
                     <div class="k">
-                      <div class="label">df <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Degrees of freedom for SLR is df = n - 2."></i></div>
-                      <div id="outDf" class="value mono">—</div>
+                      <div class="label">deltaŶ for deltaX</div>
+                      <div id="kpiDY" class="value mono">—</div>
                     </div>
                     <div class="k">
-                      <div class="label">p-value <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Probability of seeing a t-statistic at least as extreme as observed under H0."></i></div>
-                      <div id="outP" class="value mono">—</div>
+                      <div class="label">CI(mean) at X0</div>
+                      <div id="kpiCIMeanX0" class="value mono">—</div>
                     </div>
                     <div class="k">
-                      <div class="label">Decision <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Reject H0 if p-value < alpha."></i></div>
-                      <div id="outDecision" class="value">—</div>
-                    </div>
-                    <div class="k">
-                      <div class="label">Yhat at X0 <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Prediction using Yhat = b0 + b1*X0 (or population beta0,beta1)."></i></div>
-                      <div id="outYhat" class="value mono">—</div>
-                    </div>
-                    <div class="k">
-                      <div class="label">deltaYhat for deltaX <i class="fa-solid fa-circle-info help-i" data-bs-toggle="tooltip" title="Predicted change in Y: deltaYhat = b1*deltaX."></i></div>
-                      <div id="outDYhat" class="value mono">—</div>
+                      <div class="label">Prediction interval at X0</div>
+                      <div id="kpiPIX0" class="value mono">—</div>
                     </div>
                   </div>
+                  <div id="intervalNote" class="small-note mt-2"></div>
                 </div>
               </div>
+            </div>
 
-              <div class="col-12">
-                <div class="result-box">
-                  <div class="fw-semibold mb-2">
-                    Step-by-step solution
-                    <span class="badge badge-soft ms-2">Homework style</span>
-                  </div>
-                  <div id="stepsContainer"></div>
-                </div>
+            <!-- Steps -->
+            <div class="result-box mb-3">
+              <div class="fw-semibold mb-2">
+                Step-by-step solution
+                <span class="pill ms-2">Homework style</span>
               </div>
+              <div id="stepsContainer"></div>
+            </div>
 
-              <!-- Homework write-up -->
-              <div class="col-12">
-                <div class="result-box">
-                  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
-                    <div class="fw-semibold">
-                      Homework write-up (auto-generated)
-                      <i class="fa-solid fa-circle-info help-i"
-                         data-bs-toggle="tooltip"
-                         title="A ready-to-submit paragraph: hypotheses, test statistic, p-value, decision, regression line, R^2, and predictions (if provided)."></i>
-                    </div>
-                    <button id="btnCopyWriteup" class="btn btn-outline-light btn-sm">
-                      <i class="fa-solid fa-copy me-2"></i>Copy write-up
-                    </button>
-                  </div>
-
-                  <details open>
-                    <summary class="small-note" style="cursor:pointer;">
-                      <span class="summary-pill"><i class="fa-solid fa-file-lines"></i> Show/Hide write-up</span>
-                    </summary>
-                    <pre id="writeupPreview" class="mono mt-3" style="white-space:pre-wrap; margin:0;"></pre>
-                  </details>
-                </div>
+            <!-- Write-up -->
+            <div class="result-box">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                <div class="fw-semibold">Homework write-up (auto-generated)</div>
+                <button id="btnCopyWriteup" class="btn btn-outline-light btn-sm">
+                  <i class="fa-solid fa-copy me-2"></i>Copy write-up
+                </button>
               </div>
+              <details open>
+                <summary class="small-note">Show/Hide write-up</summary>
+                <pre id="writeupPreview" class="mono mt-3"></pre>
+              </details>
             </div>
 
             <div class="d-flex justify-content-end mt-3">
@@ -915,222 +720,19 @@
           </div>
         </div>
       </div>
-
     </div><!-- row -->
   </div><!-- container -->
 
   <script>
-    /********************
-     * Formatting helpers
-     ********************/
-    function fmt(x, digits=4){
-      if (x == null || !isFinite(x)) return "—";
-      const ax = Math.abs(x);
-      if (ax !== 0 && ax < 1e-10) return x.toExponential(3);
+    /***********************
+     * Helpers
+     ***********************/
+    function fmt(x, digits=6){
+      if (!isFinite(x)) return "—";
+      const abs = Math.abs(x);
+      if (abs !== 0 && abs < 1e-6) return x.toExponential(3);
       return Number(x).toFixed(digits);
     }
-    function fmt0(x){ return fmt(x, 0); }
-    function escapeHtml(str){
-      return String(str)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#039;");
-    }
-
-    /********************
-     * Bootstrap tooltips
-     ********************/
-    function initTooltips(){
-      const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-      tooltipTriggerList.forEach(el => {
-        const existing = bootstrap.Tooltip.getInstance(el);
-        if (existing) existing.dispose();
-        new bootstrap.Tooltip(el, {container: 'body', trigger: 'hover focus'});
-      });
-    }
-
-    /********************
-     * Math: log-gamma, incomplete beta, t-CDF, t-inverse
-     * (Numerical Recipes style approximations; good for course-level accuracy)
-     ********************/
-    function gammaln(xx){
-      const cof = [
-        76.18009172947146, -86.50532032941677,
-        24.01409824083091, -1.231739572450155,
-        0.001208650973866179, -0.000005395239384953
-      ];
-      let x = xx - 1.0;
-      let tmp = x + 5.5;
-      tmp -= (x + 0.5) * Math.log(tmp);
-      let ser = 1.000000000190015;
-      for (let j=0; j<cof.length; j++){
-        x += 1;
-        ser += cof[j] / x;
-      }
-      return -tmp + Math.log(2.5066282746310005 * ser);
-    }
-
-    function betacf(a, b, x){
-      const MAXIT = 200;
-      const EPS = 3e-14;
-      const FPMIN = 1e-300;
-
-      let qab = a + b;
-      let qap = a + 1.0;
-      let qam = a - 1.0;
-
-      let c = 1.0;
-      let d = 1.0 - qab * x / qap;
-      if (Math.abs(d) < FPMIN) d = FPMIN;
-      d = 1.0 / d;
-      let h = d;
-
-      for (let m=1; m<=MAXIT; m++){
-        let m2 = 2*m;
-
-        let aa = m*(b - m)*x / ((qam + m2) * (a + m2));
-        d = 1.0 + aa * d;
-        if (Math.abs(d) < FPMIN) d = FPMIN;
-        c = 1.0 + aa / c;
-        if (Math.abs(c) < FPMIN) c = FPMIN;
-        d = 1.0 / d;
-        h *= d*c;
-
-        aa = -(a + m)*(qab + m)*x / ((a + m2) * (qap + m2));
-        d = 1.0 + aa * d;
-        if (Math.abs(d) < FPMIN) d = FPMIN;
-        c = 1.0 + aa / c;
-        if (Math.abs(c) < FPMIN) c = FPMIN;
-        d = 1.0 / d;
-        let del = d*c;
-        h *= del;
-
-        if (Math.abs(del - 1.0) < EPS) break;
-      }
-      return h;
-    }
-
-    function betai(a, b, x){
-      if (x < 0.0 || x > 1.0) return NaN;
-      if (x === 0.0 || x === 1.0) return x;
-
-      let bt = Math.exp(
-        gammaln(a + b) - gammaln(a) - gammaln(b)
-        + a * Math.log(x) + b * Math.log(1.0 - x)
-      );
-
-      if (x < (a + 1.0) / (a + b + 2.0)){
-        return bt * betacf(a, b, x) / a;
-      } else {
-        return 1.0 - bt * betacf(b, a, 1.0 - x) / b;
-      }
-    }
-
-    // Student t CDF: P(T <= t)
-    function tCdf(t, df){
-      if (!isFinite(t) || !isFinite(df) || df <= 0) return NaN;
-      if (t === 0) return 0.5;
-      const x = df / (df + t*t);
-      const a = df / 2.0;
-      const b = 0.5;
-      const ib = betai(a, b, x);
-      // For t > 0: CDF = 1 - 0.5*I_x(a,b)
-      // For t < 0: CDF = 0.5*I_x(a,b)
-      return (t > 0) ? (1.0 - 0.5 * ib) : (0.5 * ib);
-    }
-
-    // Inverse t: returns t such that CDF(t)=p
-    function tInv(p, df){
-      if (!(p > 0 && p < 1) || !(df > 0)) return NaN;
-
-      // Symmetry: tInv(p) = -tInv(1-p)
-      if (p < 0.5) return -tInv(1 - p, df);
-
-      // Bisection on [0, hi]
-      let lo = 0.0;
-      let hi = 100.0;
-      for (let i=0; i<200; i++){
-        const mid = (lo + hi) / 2.0;
-        const cmid = tCdf(mid, df);
-        if (cmid < p) lo = mid;
-        else hi = mid;
-      }
-      return (lo + hi) / 2.0;
-    }
-
-    // F CDF using incomplete beta:
-    // CDF(F; d1,d2) = I_{ d1*F / (d1*F + d2) }(d1/2, d2/2)
-    function fCdf(F, d1, d2){
-      if (!isFinite(F) || !isFinite(d1) || !isFinite(d2) || d1 <= 0 || d2 <= 0) return NaN;
-      if (F <= 0) return 0;
-      const x = (d1 * F) / (d1 * F + d2);
-      return betai(d1/2, d2/2, x);
-    }
-
-    function fRightTailPValue(F, d1, d2){
-      const cdf = fCdf(F, d1, d2);
-      if (!isFinite(cdf)) return NaN;
-      return 1 - cdf;
-    }
-
-    /********************
-     * Basic statistics
-     ********************/
-    function mean(arr){
-      let s = 0;
-      for (const v of arr) s += v;
-      return s / arr.length;
-    }
-
-    function sampleVar(arr){
-      const m = mean(arr);
-      let s = 0;
-      for (const v of arr) s += (v - m) * (v - m);
-      return s / (arr.length - 1);
-    }
-
-    function sampleSd(arr){
-      return Math.sqrt(sampleVar(arr));
-    }
-
-    function covXY(x, y){
-      const mx = mean(x), my = mean(y);
-      let s = 0;
-      for (let i=0;i<x.length;i++){
-        s += (x[i]-mx) * (y[i]-my);
-      }
-      return s / (x.length - 1);
-    }
-
-    function corrXY(x, y){
-      const sx = sampleSd(x);
-      const sy = sampleSd(y);
-      if (sx === 0 || sy === 0) return NaN;
-      return covXY(x, y) / (sx * sy);
-    }
-
-    function parsePairs(text){
-      const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-      const xs = [];
-      const ys = [];
-      for (const line of lines){
-        // Split by comma or whitespace or tab
-        const parts = line.split(/[\s,]+/).map(s=>s.trim()).filter(Boolean);
-        if (parts.length < 2) continue;
-        const x = parseFloat(parts[0]);
-        const y = parseFloat(parts[1]);
-        if (isFinite(x) && isFinite(y)){
-          xs.push(x); ys.push(y);
-        }
-      }
-      return {xs, ys};
-    }
-
-    /********************
-     * UI helpers
-     ********************/
     function showError(msg){
       const box = document.getElementById("errorBox");
       box.textContent = msg;
@@ -1142,10 +744,115 @@
       box.classList.add("d-none");
     }
 
-    function getMode(){
-      return document.querySelector('input[name="mode"]:checked').value;
+    function initTooltips(){
+      const list = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      list.forEach(el => {
+        const existing = bootstrap.Tooltip.getInstance(el);
+        if (existing) existing.dispose();
+        new bootstrap.Tooltip(el, {container:'body', trigger:'hover focus'});
+      });
     }
 
+    /***********************
+     * Beta/Gamma -> t and F
+     ***********************/
+    function gammaln(xx){
+      const cof=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,0.001208650973866179,-0.000005395239384953];
+      let x=xx-1.0, tmp=x+5.5;
+      tmp -= (x+0.5)*Math.log(tmp);
+      let ser=1.000000000190015;
+      for (let j=0;j<cof.length;j++){ x+=1; ser += cof[j]/x; }
+      return -tmp + Math.log(2.5066282746310005*ser);
+    }
+
+    function betacf(a,b,x){
+      const MAXIT=200, EPS=3e-12, FPMIN=1e-300;
+      let qab=a+b, qap=a+1, qam=a-1;
+      let c=1, d=1 - qab*x/qap;
+      if (Math.abs(d)<FPMIN) d=FPMIN;
+      d=1/d;
+      let h=d;
+      for (let m=1;m<=MAXIT;m++){
+        let m2=2*m;
+        let aa = m*(b-m)*x/((qam+m2)*(a+m2));
+        d=1+aa*d; if (Math.abs(d)<FPMIN) d=FPMIN; d=1/d;
+        c=1+aa/c; if (Math.abs(c)<FPMIN) c=FPMIN;
+        h *= d*c;
+
+        aa = -(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+        d=1+aa*d; if (Math.abs(d)<FPMIN) d=FPMIN; d=1/d;
+        c=1+aa/c; if (Math.abs(c)<FPMIN) c=FPMIN;
+        let del=d*c;
+        h *= del;
+        if (Math.abs(del-1.0) < EPS) break;
+      }
+      return h;
+    }
+
+    function betai(a,b,x){
+      if (x<0 || x>1) return NaN;
+      if (x===0 || x===1) return x;
+      const bt = Math.exp(gammaln(a+b)-gammaln(a)-gammaln(b) + a*Math.log(x) + b*Math.log(1-x));
+      if (x < (a+1)/(a+b+2)){
+        return bt*betacf(a,b,x)/a;
+      } else {
+        return 1 - bt*betacf(b,a,1-x)/b;
+      }
+    }
+
+    function tCdf(t, df){
+      if (!isFinite(t) || !isFinite(df) || df<=0) return NaN;
+      if (t===0) return 0.5;
+      const x = df/(df + t*t);
+      const ib = betai(df/2, 0.5, x);
+      if (t>0) return 1 - 0.5*ib;
+      return 0.5*ib;
+    }
+
+    function tInv(p, df){
+      if (!(p>0 && p<1) || !(df>0)) return NaN;
+      if (p===0.5) return 0;
+      let lo=-80, hi=80;
+      for (let i=0;i<220;i++){
+        const mid=(lo+hi)/2;
+        const c=tCdf(mid,df);
+        if (c< p) lo=mid; else hi=mid;
+      }
+      return (lo+hi)/2;
+    }
+
+    function fCdf(F, d1, d2){
+      if (!isFinite(F) || !isFinite(d1) || !isFinite(d2) || d1<=0 || d2<=0) return NaN;
+      if (F<=0) return 0;
+      const x = (d1*F)/(d1*F + d2);
+      return betai(d1/2, d2/2, x);
+    }
+    function fRightTailPValue(F, d1, d2){
+      const cdf = fCdf(F,d1,d2);
+      if (!isFinite(cdf)) return NaN;
+      return 1 - cdf;
+    }
+
+    /***********************
+     * Parsing raw pairs
+     ***********************/
+    function parsePairs(text){
+      const lines = text.split(/\r?\n/).map(l=>l.trim()).filter(l=>l.length>0);
+      const xs=[], ys=[];
+      for (const line of lines){
+        const parts = line.split(/[, \t]+/).filter(p=>p.length>0);
+        if (parts.length<2) continue;
+        const x = parseFloat(parts[0]);
+        const y = parseFloat(parts[1]);
+        if (!isFinite(x) || !isFinite(y)) continue;
+        xs.push(x); ys.push(y);
+      }
+      return {xs, ys};
+    }
+
+    /***********************
+     * Core compute
+     ***********************/
     function getAlpha(){
       const customVisible = !document.getElementById("alphaCustom").classList.contains("d-none");
       if (customVisible){
@@ -1155,7 +862,7 @@
       }
       return parseFloat(document.getElementById("alphaSelect").value);
     }
-
+    function getH1(){ return document.getElementById("h1Select").value; }
     function getConf(){
       const customVisible = !document.getElementById("confCustom").classList.contains("d-none");
       if (customVisible){
@@ -1166,410 +873,292 @@
       return parseFloat(document.getElementById("confSelect").value);
     }
 
-    function setDecisionText(el, isReject, msg){
-      el.textContent = msg;
-      el.classList.remove("status-good","status-warn","status-bad");
-      el.classList.add(isReject ? "status-good" : "status-warn");
-    }
-
-    function setPanelVisibility(){
-      const mode = getMode();
-      document.getElementById("panelRaw").classList.toggle("d-none", mode !== "raw");
-      document.getElementById("panelSummary").classList.toggle("d-none", mode !== "summary");
-      document.getElementById("panelPopulation").classList.toggle("d-none", mode !== "population");
-
-      // Hide test/CI settings in population mode (not a sample inference task)
-      const hideInfer = (mode === "population");
-      document.getElementById("testSettings").classList.toggle("d-none", hideInfer);
-      document.getElementById("ciSettings").classList.toggle("d-none", hideInfer);
-
-      initTooltips();
-    }
-
-    function clearOutputs(){
-      const ids = ["outN","outR","outB1","outB0","outR2","outSSE","outRMSE","outSEB1","outCI","outT","outDf","outP","outDecision","outYhat","outDYhat"];
-      ids.forEach(id => document.getElementById(id).textContent = "—");
-      document.getElementById("outDeriveNote").innerHTML = "";
-      document.getElementById("stepsContainer").innerHTML = "";
-    }
-
-    /********************
-     * Core computation
-     ********************/
     function compute(){
       clearError();
-      clearOutputs();
 
-      const mode = getMode();
-      const h1 = document.getElementById("h1Select").value;
+      const mode = document.getElementById("modeSelect").value;
       const alpha = getAlpha();
+      const h1 = getH1();
       const conf = getConf();
 
-      let derivedNotes = [];
+      let n, df;
+      let b0, b1, r, R2;
+      let xbar, ybar;
+      let SSx, SSy, SSE, SSR, SST;
+      let MSE, RMSE;
+      let se_b1;
+      let tstat, pval;
+      let tcrit;
+      let ci_b1 = [NaN, NaN];
 
-      // Outputs to compute (sample context)
-      let n=null, r=null, xbar=null, ybar=null, sx=null, sy=null;
-      let b0=null, b1=null;
-      let SSx=null, SSy=null, SSE=null, RMSE=null, se_b1=null;
-      let tstat=null, df=null, pval=null;
-      let R2=null;
+      // Intervals at X0
+      let se_mean = NaN, se_pred = NaN;
+      let ci_mean_x0 = [NaN, NaN];
+      let pi_x0 = [NaN, NaN];
 
-      // Prediction inputs (general)
-      const x0 = parseFloat(document.getElementById("x0Input").value);
-      const dx = parseFloat(document.getElementById("dxInput").value);
+      // predictions
+      const predOn = document.getElementById("predToggle").checked;
+      const x0 = predOn ? parseFloat(document.getElementById("x0Input").value) : NaN;
+      const dx = predOn ? parseFloat(document.getElementById("dxInput").value) : NaN;
+      let yhatX0 = NaN;
+      let dyhat = NaN;
 
-      // Population mode
-      if (mode === "population"){
-        const muX = parseFloat(document.getElementById("muX").value);
-        const sigX = parseFloat(document.getElementById("sigX").value);
-        const muY = parseFloat(document.getElementById("muY").value);
-        const sigY = parseFloat(document.getElementById("sigY").value);
-        const rho = parseFloat(document.getElementById("rho").value);
-        const x0p = parseFloat(document.getElementById("x0Pop").value);
-
-        if (![muX,sigX,muY,sigY,rho,x0p].every(v => isFinite(v))){
-          showError("Population mode: please fill muX, sigmaX, muY, sigmaY, rho, and X0.");
-          return;
-        }
-        if (sigX <= 0 || sigY <= 0){
-          showError("Population mode: sigmaX and sigmaY must be positive.");
-          return;
-        }
-        if (rho < -1 || rho > 1){
-          showError("Population mode: rho must be between -1 and 1.");
-          return;
-        }
-
-        // beta1, beta0 (population)
-        b1 = rho * (sigY / sigX);
-        b0 = muY - b1 * muX;
-
-        r = rho;
-        R2 = rho*rho;
-
-        // prediction
-        const yhat = b0 + b1 * x0p;
-
-        // Populate outputs
-        document.getElementById("outN").textContent = "N/A";
-        document.getElementById("outR").textContent = fmt(r, 6) + " (rho)";
-        document.getElementById("outB1").textContent = fmt(b1, 6) + " (beta1)";
-        document.getElementById("outB0").textContent = fmt(b0, 6) + " (beta0)";
-        document.getElementById("outR2").textContent = fmt(R2, 6);
-
-        document.getElementById("outSSE").textContent = "N/A";
-        document.getElementById("outRMSE").textContent = "N/A";
-        document.getElementById("outSEB1").textContent = "N/A";
-        document.getElementById("outCI").textContent = "N/A";
-
-        document.getElementById("outT").textContent = "N/A";
-        document.getElementById("outDf").textContent = "N/A";
-        document.getElementById("outP").textContent = "N/A";
-        document.getElementById("outDecision").textContent = "N/A";
-
-        document.getElementById("outYhat").textContent = fmt(yhat, 6);
-        document.getElementById("outDYhat").textContent = isFinite(dx) ? fmt(b1*dx, 6) : "—";
-
-        renderStepsPopulation({muX,sigX,muY,sigY,rho,x0p,b0,b1,yhat,R2});
-        initTooltips();
-        return;
-      }
-
-      // Raw data mode
       if (mode === "raw"){
         const {xs, ys} = parsePairs(document.getElementById("rawPairs").value);
-        if (xs.length < 3 || ys.length < 3 || xs.length !== ys.length){
-          showError("Raw data mode: please paste at least 3 valid (X,Y) pairs.");
-          return;
-        }
         n = xs.length;
-        xbar = mean(xs);
-        ybar = mean(ys);
-        sx = sampleSd(xs);
-        sy = sampleSd(ys);
-        r = corrXY(xs, ys);
+        if (n < 3){
+          showError("Raw data mode requires at least 3 (x,y) pairs.");
+          return null;
+        }
+        df = n - 2;
 
-        if (!isFinite(r)){
-          showError("Raw data mode: cannot compute correlation (check that X and Y are not constant).");
-          return;
+        xbar = xs.reduce((a,v)=>a+v,0)/n;
+        ybar = ys.reduce((a,v)=>a+v,0)/n;
+
+        SSx = xs.reduce((a,v)=>a + (v-xbar)*(v-xbar), 0);
+        SSy = ys.reduce((a,v)=>a + (v-ybar)*(v-ybar), 0);
+        const SSxy = xs.reduce((a,v,i)=>a + (v-xbar)*(ys[i]-ybar), 0);
+
+        if (SSx <= 0){
+          showError("Cannot fit SLR: Sxx is 0 (all X values are identical).");
+          return null;
         }
 
-        // Regression coefficients
-        // b1 = Cov(X,Y)/Var(X)
-        const varX = sampleVar(xs);
-        const cov = covXY(xs, ys);
-        if (varX === 0){
-          showError("Raw data mode: variance of X is 0. Regression slope is undefined.");
-          return;
-        }
-        b1 = cov / varX;
-        b0 = ybar - b1 * xbar;
+        b1 = SSxy / SSx;
+        b0 = ybar - b1*xbar;
 
-        // Sums of squares
-        SSx = (n-1) * sx*sx;
-        SSy = (n-1) * sy*sy;
+        r = SSxy / Math.sqrt(SSx*SSy);
+        R2 = r*r;
 
-        // SSE: sum of residuals^2
-        // SSE = Σ (y - yhat)^2
-        let sse=0;
+        SSE = 0;
         for (let i=0;i<n;i++){
           const yhat = b0 + b1*xs[i];
           const e = ys[i] - yhat;
-          sse += e*e;
+          SSE += e*e;
         }
-        SSE = sse;
+        SST = SSy;
+        SSR = SST - SSE;
 
-        df = n - 2;
-        RMSE = Math.sqrt(SSE / df);
+        MSE = SSE / df;
+        RMSE = Math.sqrt(MSE);
 
-        // SE(b1) = RMSE / sqrt(SSx)
         se_b1 = RMSE / Math.sqrt(SSx);
+        tstat = b1 / se_b1;
 
+      } else if (mode === "summary"){
+        n = parseInt(document.getElementById("nSummary").value, 10);
+        r = parseFloat(document.getElementById("rSummary").value);
+        xbar = parseFloat(document.getElementById("xbarSummary").value);
+        ybar = parseFloat(document.getElementById("ybarSummary").value);
+        const sx = parseFloat(document.getElementById("sxSummary").value);
+        const sy = parseFloat(document.getElementById("sySummary").value);
+
+        if (!(n>=3) || !isFinite(r) || !isFinite(xbar) || !isFinite(ybar) || !(sx>0) || !(sy>0)){
+          showError("Summary stats mode requires valid n (>=3), r, x̄, ȳ, sₓ>0, sᵧ>0.");
+          return null;
+        }
+        if (Math.abs(r) > 1){
+          showError("r must be between −1 and 1.");
+          return null;
+        }
+
+        df = n - 2;
+
+        SSx = (n-1) * sx*sx;
+        SSy = (n-1) * sy*sy;
+
+        b1 = r * (sy / sx);
+        b0 = ybar - b1*xbar;
         R2 = r*r;
 
-        derivedNotes.push("Computed all statistics from raw (X,Y) pairs.");
+        SST = SSy;
+        SSR = R2 * SST;
+        SSE = (1 - R2) * SST;
+
+        MSE = SSE / df;
+        RMSE = Math.sqrt(MSE);
+
+        se_b1 = RMSE / Math.sqrt(SSx);
+        tstat = b1 / se_b1;
 
       } else {
-        // Summary mode
-        n = parseInt(document.getElementById("nInput").value, 10);
-        r = parseFloat(document.getElementById("rInput").value);
+        // output mode
+        b0 = parseFloat(document.getElementById("b0Out").value);
+        b1 = parseFloat(document.getElementById("b1Out").value);
+        n = parseInt(document.getElementById("nOut").value, 10);
+        xbar = parseFloat(document.getElementById("xbarOut").value);
+        SSx = parseFloat(document.getElementById("ssxOut").value);
 
-        xbar = parseFloat(document.getElementById("xbarInput").value);
-        ybar = parseFloat(document.getElementById("ybarInput").value);
-        sx = parseFloat(document.getElementById("sxInput").value);
-        sy = parseFloat(document.getElementById("syInput").value);
-
-        // Optional Excel output
-        const b0_in = parseFloat(document.getElementById("b0Input").value);
-        const b1_in = parseFloat(document.getElementById("b1Input").value);
-        const seb1_in = parseFloat(document.getElementById("seb1Input").value);
-        const sse_in = parseFloat(document.getElementById("sseInput").value);
-
-        if (!isFinite(n) || n < 3){
-          showError("Summary stats mode: please enter a valid sample size n >= 3.");
-          return;
-        }
-        if (!isFinite(r) || r < -1 || r > 1){
-          showError("Summary stats mode: please enter a valid correlation r in [-1, 1].");
-          return;
+        if (!isFinite(b0) || !isFinite(b1) || !(n>=3)){
+          showError("Output mode requires valid b0, b1, and n (>=3).");
+          return null;
         }
         df = n - 2;
 
-        // Use provided slope/intercept if available
-        if (isFinite(b1_in)){
-          b1 = b1_in;
-          derivedNotes.push("Used b1 (slope) provided from regression output.");
-        } else {
-          // derive from r, sx, sy
-          if (!(isFinite(sx) && isFinite(sy) && sx > 0 && sy > 0)){
-            showError("Summary stats mode: to derive b1 you must provide Sx and Sy (both > 0), or directly provide b1.");
-            return;
+        const seGiven = parseFloat(document.getElementById("seB1Out").value);
+        const rmseGiven = parseFloat(document.getElementById("rmseOut").value);
+        const sseGiven = parseFloat(document.getElementById("sseOut").value);
+
+        if (isFinite(seGiven) && seGiven > 0){
+          se_b1 = seGiven;
+          if (SSx > 0){
+            RMSE = se_b1 * Math.sqrt(SSx); // derive s
+            MSE = RMSE*RMSE;
+            SSE = MSE * df;
           }
-          b1 = r * (sy / sx);
-          derivedNotes.push("Derived b1 using b1 = r*(Sy/Sx).");
-        }
-
-        if (isFinite(b0_in)){
-          b0 = b0_in;
-          derivedNotes.push("Used b0 (intercept) provided from regression output.");
-        } else {
-          if (!(isFinite(xbar) && isFinite(ybar))){
-            showError("Summary stats mode: to derive b0 you must provide X-bar and Y-bar, or directly provide b0.");
-            return;
+          tstat = b1 / se_b1;
+        } else if (isFinite(rmseGiven) && rmseGiven > 0){
+          if (!(SSx > 0)){
+            showError("To use RMSE, Sxx must be provided and > 0.");
+            return null;
           }
-          b0 = ybar - b1 * xbar;
-          derivedNotes.push("Derived b0 using b0 = Y-bar - b1*X-bar.");
-        }
-
-        // SSx, SSy if sx, sy exist
-        if (isFinite(sx) && sx > 0) SSx = (n-1) * sx*sx;
-        if (isFinite(sy) && sy > 0) SSy = (n-1) * sy*sy;
-
-        // SSE
-        if (isFinite(sse_in) && sse_in >= 0){
-          SSE = sse_in;
-          derivedNotes.push("Used SSE provided.");
-        } else if (isFinite(SSy)){
-          // SSE = (1 - r^2) * SSy
-          SSE = (1 - r*r) * SSy;
-          derivedNotes.push("Derived SSE using SSE = (1 - r^2)*SSy.");
-        } else {
-          derivedNotes.push("SSE could not be computed (provide SSE or Sy).");
-        }
-
-        // RMSE
-        if (isFinite(SSE)){
-          RMSE = Math.sqrt(SSE / df);
-        }
-
-        // SE(b1)
-        if (isFinite(seb1_in) && seb1_in > 0){
-          se_b1 = seb1_in;
-          derivedNotes.push("Used SE(b1) provided from regression output.");
-        } else if (isFinite(RMSE) && isFinite(SSx) && SSx > 0){
+          RMSE = rmseGiven;
+          MSE = RMSE*RMSE;
+          SSE = MSE * df;
           se_b1 = RMSE / Math.sqrt(SSx);
-          derivedNotes.push("Derived SE(b1) using SE(b1) = RMSE / sqrt(SSx).");
+          tstat = b1 / se_b1;
+        } else if (isFinite(sseGiven) && sseGiven > 0){
+          if (!(SSx > 0)){
+            showError("To use SSE, Sxx must be provided and > 0.");
+            return null;
+          }
+          SSE = sseGiven;
+          MSE = SSE / df;
+          RMSE = Math.sqrt(MSE);
+          se_b1 = RMSE / Math.sqrt(SSx);
+          tstat = b1 / se_b1;
         } else {
-          derivedNotes.push("SE(b1) could not be computed (provide SE(b1) or provide enough to compute RMSE and SSx).");
+          se_b1 = NaN;
+          tstat = NaN;
         }
 
-        R2 = r*r;
+        r = NaN; R2 = NaN;
+        SSR = NaN; SST = NaN;
+        ybar = NaN; SSy = NaN;
       }
 
-      // Hypothesis test (rho=0) using t from r (robust for your exercises)
-      // t = r*sqrt(n-2)/sqrt(1-r^2)
-      tstat = r * Math.sqrt(df) / Math.sqrt(Math.max(1e-15, 1 - r*r));
+      // t critical for confidence intervals
+      const alphaCI = 1 - conf;
+      tcrit = tInv(1 - alphaCI/2, df);
 
-      // p-value by tail
-      let p;
-      if (h1 === "two"){
-        p = 2 * (1 - tCdf(Math.abs(tstat), df));
-      } else if (h1 === "gt"){
-        p = 1 - tCdf(tstat, df);
+      // p-value from t distribution
+      if (isFinite(tstat)){
+        if (h1 === "two"){
+          const pRight = 1 - tCdf(Math.abs(tstat), df);
+          pval = 2*pRight;
+        } else if (h1 === "gt"){
+          pval = 1 - tCdf(tstat, df);
+        } else {
+          pval = tCdf(tstat, df);
+        }
       } else {
-        p = tCdf(tstat, df);
+        pval = NaN;
       }
-      pval = p;
 
-      const reject = (pval < alpha);
-
-      // CI for b1 (if we have SE(b1))
-      let ciText = "—";
+      // CI for b1
       if (isFinite(se_b1)){
-        const confAlpha = 1 - conf;
-        const tcrit = tInv(1 - confAlpha/2, df);
-        const lo = b1 - tcrit * se_b1;
-        const hi = b1 + tcrit * se_b1;
-        ciText = "[" + fmt(lo, 6) + ", " + fmt(hi, 6) + "]";
+        ci_b1 = [b1 - tcrit*se_b1, b1 + tcrit*se_b1];
       }
 
       // Predictions
-      let yhatX0 = null;
-      if (isFinite(x0)) yhatX0 = b0 + b1 * x0;
-      const dyhat = isFinite(dx) ? (b1 * dx) : null;
+      if (predOn){
+        if (isFinite(x0)) yhatX0 = b0 + b1*x0;
+        if (isFinite(dx)) dyhat = b1*dx;
 
-      // ===== ANOVA / Excel-output components =====
-      let SST = null, SSR = null, MSR = null, MSE = null, F = null, pF = null;
+        // Intervals at X0 require: x0, xbar, SSx>0, RMSE (s), n, df, tcrit
+        const canIntervals =
+          isFinite(x0) && isFinite(yhatX0) &&
+          isFinite(xbar) &&
+          isFinite(SSx) && SSx > 0 &&
+          isFinite(RMSE) && RMSE > 0 &&
+          isFinite(n) && n > 0 &&
+          isFinite(tcrit);
 
-      // Prefer SSy if available
-      if (isFinite(SSy)) SST = SSy;
+        if (canIntervals){
+          const s = RMSE;
+          const leveragePart = ( (x0 - xbar)*(x0 - xbar) ) / SSx;
 
-      // If SST missing but SSE exists and R2 != 1, derive SST = SSE/(1-R2)
-      if (!isFinite(SST) && isFinite(SSE) && isFinite(R2) && Math.abs(1 - R2) > 1e-12){
-        SST = SSE / (1 - R2);
+          se_mean = s * Math.sqrt( (1/n) + leveragePart );
+          se_pred = s * Math.sqrt( 1 + (1/n) + leveragePart );
+
+          ci_mean_x0 = [ yhatX0 - tcrit*se_mean, yhatX0 + tcrit*se_mean ];
+          pi_x0      = [ yhatX0 - tcrit*se_pred, yhatX0 + tcrit*se_pred ];
+        }
       }
 
-      // If SSE missing but SST exists, derive SSE = (1-R2)*SST
-      if (!isFinite(SSE) && isFinite(SST) && isFinite(R2)){
-        SSE = (1 - R2) * SST;
-      }
-
-      // If we have SST and SSE, get SSR
-      if (isFinite(SST) && isFinite(SSE)){
-        SSR = SST - SSE;
-      }
-
-      // MSE and MSR
-      if (isFinite(SSE) && isFinite(df) && df > 0){
-        MSE = SSE / df;
-      }
-      if (isFinite(SSR)){
+      // ANOVA / F (when SST & SSE exist)
+      let MSR = NaN, F = NaN, pF = NaN;
+      if (isFinite(SSE) && isFinite(SSR) && isFinite(df) && df>0){
+        MSE = (isFinite(MSE) ? MSE : SSE/df);
         MSR = SSR; // df_reg = 1
+        if (isFinite(MSE) && MSE > 0){
+          F = MSR / MSE;
+          pF = fRightTailPValue(F, 1, df);
+        }
       }
 
-      // F and Significance F
-      if (isFinite(MSR) && isFinite(MSE) && MSE > 0){
-        F = MSR / MSE;
-        pF = fRightTailPValue(F, 1, df);
-      }
-
-      // Populate outputs
-      document.getElementById("outN").textContent = fmt0(n);
-      document.getElementById("outR").textContent = fmt(r, 6);
-      document.getElementById("outB1").textContent = fmt(b1, 6);
-      document.getElementById("outB0").textContent = fmt(b0, 6);
-      document.getElementById("outR2").textContent = fmt(R2, 6);
-
-      document.getElementById("outSSE").textContent = isFinite(SSE) ? fmt(SSE, 6) : "—";
-      document.getElementById("outRMSE").textContent = isFinite(RMSE) ? fmt(RMSE, 6) : "—";
-      document.getElementById("outSEB1").textContent = isFinite(se_b1) ? fmt(se_b1, 6) : "—";
-      document.getElementById("outCI").textContent = ciText;
-
-      document.getElementById("outT").textContent = fmt(tstat, 6);
-      document.getElementById("outDf").textContent = fmt0(df);
-      document.getElementById("outP").textContent = fmt(pval, 8);
-
-      const decEl = document.getElementById("outDecision");
-      setDecisionText(decEl, reject, reject ? "Reject H0" : "Fail to reject H0");
-
-      document.getElementById("outYhat").textContent = isFinite(yhatX0) ? fmt(yhatX0, 6) : "—";
-      document.getElementById("outDYhat").textContent = isFinite(dyhat) ? fmt(dyhat, 6) : "—";
-
-      document.getElementById("outDeriveNote").innerHTML =
-        `<span class="summary-pill"><i class="fa-solid fa-circle-info"></i> Notes</span>
-         <div class="mt-2">${derivedNotes.map(s => "• " + escapeHtml(s)).join("<br>")}</div>`;
-
-      renderStepsSample({
-        mode, n, df, r, xbar, ybar, sx, sy, b0, b1, R2,
-        SSx, SSy, SSE, RMSE, se_b1,
-        h1, alpha, tstat, pval, reject,
-        conf, ciText,
-        x0, yhatX0, dx, dyhat,
-        // new ANOVA fields
-        SST, SSR, MSR, MSE, F, pF
-      });
-
-      // Render the new panels
-      renderModelBox({b0,b1,r,R2,n,df,h1,alpha,tstat,pval, reject, SST, SSR, SSE, MSR, MSE, F, pF, x0, yhatX0, dx, dyhat});
-      renderAnovaBox({n, df, R2, SST, SSR, SSE, MSR, MSE, F, pF, h1, alpha, tstat, pval, reject});
-      renderWriteup({b0,b1,R2,n,df,h1,alpha,tstat,pval, reject, x0, yhatX0, dx, dyhat});
-
-      initTooltips();
+      return {
+        mode, alpha, h1, conf,
+        n, df, b0, b1,
+        xbar, ybar, SSx, SSy,
+        r, R2,
+        SSE, SSR, SST, MSE, RMSE,
+        se_b1, tstat, pval, tcrit, ci_b1,
+        x0, dx, yhatX0, dyhat,
+        se_mean, se_pred,
+        ci_mean_x0, pi_x0,
+        MSR, F, pF
+      };
     }
 
-    /********************
-     * Step-by-step renderers (ASCII-safe)
-     ********************/
+    /***********************
+     * Rendering
+     ***********************/
+    function decisionText(p, alpha){
+      if (!isFinite(p)) return {txt:"Not enough info for a hypothesis test.", cls:"status-warn"};
+      if (p < alpha) return {txt:"Reject H0", cls:"status-good"};
+      return {txt:"Fail to reject H0", cls:"status-warn"};
+    }
+
     function renderModelBox(res){
       const box = document.getElementById("modelBox");
-      if (!box) return;
-
-      const eqLine = `Yhat = b0 + b1*X`;
+      const eq = `Ŷ = b0 + b1·X`;
+      const line = `Ŷ = ${fmt(res.b0,6)} + (${fmt(res.b1,6)})·X`;
 
       box.innerHTML = `
-        <div><span class="mono">${eqLine}</span></div>
+        <div class="mono">${eq}</div>
+        <div class="mono mt-2">${line}</div>
         <div class="mt-2">
-          <b>Interpretation:</b> b1 is the expected change in Y for a +1 change in X.
+          <b>Interpretation:</b> <span class="mono">b1</span> is the expected change in <span class="mono">Ŷ</span> for a +1 change in <span class="mono">X</span>.
         </div>
-        <div class="mt-2 mono">
-          b0 = ${fmt(res.b0,6)}<br>
-          b1 = ${fmt(res.b1,6)}<br>
-          => Yhat = ${fmt(res.b0,6)} + (${fmt(res.b1,6)})*X
-        </div>
-
         <hr class="hr-soft my-3">
-
-        <div><b>Core formulas used:</b></div>
-        <div class="mt-2 mono">
-          b1 = r*(Sy/Sx)  (summary mode)<br>
-          b0 = Ybar - b1*Xbar<br>
-          R2 = r^2<br>
-          t (rho=0) = r*sqrt(n-2)/sqrt(1-r^2), df=n-2<br>
-          SE(b1) = RMSE/sqrt(SSX), RMSE = sqrt(SSE/(n-2))
+        <div><b>Key formulas used:</b></div>
+        <div class="mono mt-2">
+          b1 = Sxy / Sxx  (raw data)<br>
+          b1 = r·(sᵧ/sₓ)  (summary stats)<br>
+          b0 = ȳ − b1·x̄<br>
+          df = n − 2<br>
+          RMSE = s = √(SSE/df)<br>
+          SE(b1) = s / √Sxx
+        </div>
+        <hr class="hr-soft my-3">
+        <div><b>Intervals at X0:</b></div>
+        <div class="mono mt-2">
+          SE_mean(X0) = s·√(1/n + (X0−x̄)²/Sxx)<br>
+          CI_mean: Ŷ(X0) ± t*·SE_mean(X0)<br><br>
+          SE_pred(X0) = s·√(1 + 1/n + (X0−x̄)²/Sxx)<br>
+          Prediction interval: Ŷ(X0) ± t*·SE_pred(X0)
         </div>
       `;
     }
 
-    function renderAnovaBox(res){
+    function renderAnova(res){
       const box = document.getElementById("anovaBox");
       const note = document.getElementById("anovaNote");
-      if (!box || !note) return;
 
-      // If we cannot compute ANOVA (rare), show a clear message
-      if (!isFinite(res.SST) || !isFinite(res.SSE) || !isFinite(res.SSR) || !isFinite(res.MSE)){
+      if (!isFinite(res.SST) || !isFinite(res.SSE) || !isFinite(res.SSR)){
         box.innerHTML = `<div class="small-note status-warn">
-          Cannot compute full ANOVA table with the currently available inputs.
-          Provide Sy (or raw pairs) OR provide SSE plus r (so SST can be derived).
+          ANOVA cannot be fully computed in this mode unless SST/SSE/SSR are identifiable from inputs.
         </div>`;
         note.textContent = "";
         return;
@@ -1578,11 +1167,8 @@
       const dfReg = 1;
       const dfErr = res.df;
       const dfTot = res.n - 1;
-
       const MSR = res.MSR;
       const MSE = res.MSE;
-      const F = res.F;
-      const pF = res.pF;
 
       box.innerHTML = `
         <div class="table-wrap">
@@ -1602,15 +1188,15 @@
                 <th>Regression</th>
                 <td class="mono">${fmt(dfReg,0)}</td>
                 <td class="mono">${fmt(res.SSR,6)}</td>
-                <td class="mono">${fmt(MSR,6)}</td>
-                <td class="mono">${isFinite(F) ? fmt(F,6) : "—"}</td>
-                <td class="mono">${isFinite(pF) ? fmt(pF,8) : "—"}</td>
+                <td class="mono">${isFinite(MSR) ? fmt(MSR,6) : "—"}</td>
+                <td class="mono">${isFinite(res.F) ? fmt(res.F,6) : "—"}</td>
+                <td class="mono">${isFinite(res.pF) ? fmt(res.pF,8) : "—"}</td>
               </tr>
               <tr>
                 <th>Error</th>
                 <td class="mono">${fmt(dfErr,0)}</td>
                 <td class="mono">${fmt(res.SSE,6)}</td>
-                <td class="mono">${fmt(MSE,6)}</td>
+                <td class="mono">${isFinite(MSE) ? fmt(MSE,6) : "—"}</td>
                 <td class="mono">—</td>
                 <td class="mono">—</td>
               </tr>
@@ -1627,455 +1213,348 @@
         </div>
       `;
 
-      note.innerHTML = `
-        <span class="mono">SST = SSR + SSE</span>. Also <span class="mono">R2 = SSR/SST = ${fmt(res.R2,6)}</span>.
-      `;
+      note.innerHTML = `<span class="mono">SST = SSR + SSE</span> and <span class="mono">R² = SSR/SST</span>.`;
     }
 
     function buildWriteup(res){
-      const tailTxt =
-        (res.h1 === "two") ? "two-sided" :
-        (res.h1 === "gt") ? "right-tailed" : "left-tailed";
+      const h1Text =
+        res.h1 === "two" ? "ρ ≠ 0 (two-sided)" :
+        res.h1 === "gt" ? "ρ > 0 (right-tailed)" :
+                          "ρ < 0 (left-tailed)";
 
-      const decision = res.reject ? "Reject H0" : "Fail to reject H0";
+      const dec = decisionText(res.pval, res.alpha);
 
-      let predLines = "";
-      if (isFinite(res.x0) && isFinite(res.yhatX0)){
-        predLines += `Prediction: at X0=${res.x0}, Yhat = ${fmt(res.yhatX0,6)}.\n`;
+      const predLines = [];
+      if (isFinite(res.x0) && isFinite(res.yhatX0)) predLines.push(`Prediction: at X0=${res.x0}, Ŷ=${fmt(res.yhatX0,6)}.`);
+      if (isFinite(res.dx) && isFinite(res.dyhat)) predLines.push(`Change: for deltaX=${res.dx}, predicted deltaŶ=${fmt(res.dyhat,6)}.`);
+
+      const intervalLines = [];
+      if (isFinite(res.ci_mean_x0[0])){
+        intervalLines.push(`CI for mean response at X0 (${fmt(100*res.conf,0)}%): [${fmt(res.ci_mean_x0[0],6)}, ${fmt(res.ci_mean_x0[1],6)}].`);
+      } else if (isFinite(res.x0)) {
+        intervalLines.push(`CI(mean) at X0 not available (need x̄, Sxx, and RMSE/SE info).`);
       }
-      if (isFinite(res.dx) && isFinite(res.dyhat)){
-        predLines += `Change: for deltaX=${res.dx}, predicted deltaYhat = ${fmt(res.dyhat,6)}.\n`;
+
+      if (isFinite(res.pi_x0[0])){
+        intervalLines.push(`Prediction interval at X0 (${fmt(100*res.conf,0)}%): [${fmt(res.pi_x0[0],6)}, ${fmt(res.pi_x0[1],6)}].`);
+      } else if (isFinite(res.x0)) {
+        intervalLines.push(`Prediction interval at X0 not available (need x̄, Sxx, and RMSE/SE info).`);
       }
 
-      const writeup =
+      return (
 `Simple Linear Regression (SLR)
 
-Model: Yhat = b0 + b1*X
-Estimated line: Yhat = ${fmt(res.b0,6)} + (${fmt(res.b1,6)})*X
+Model: Ŷ = b0 + b1·X
+Estimated line: Ŷ = ${fmt(res.b0,6)} + (${fmt(res.b1,6)})·X
 
-Explained variability: R2 = ${fmt(res.R2,6)} (about ${fmt(100*res.R2,2)}% of Y variation explained by X).
+Association / slope test:
+H0: ρ = 0  (equivalently: b1 = 0)
+H1: ${h1Text}
 
-Hypothesis test for association:
-H0: rho = 0  (equivalently: b1 = 0)
-H1: ${res.h1 === "two" ? "rho != 0" : (res.h1 === "gt" ? "rho > 0" : "rho < 0")}  (${tailTxt})
+Test statistic: t = ${fmt(res.tstat,6)} with df = ${fmt(res.df,0)}
+p-value = ${fmt(res.pval,8)}
+At α = ${fmt(res.alpha,4)}: ${dec.txt}
 
-Test statistic: t = ${fmt(res.tstat,6)}, df = ${fmt(res.df,0)}, p-value = ${fmt(res.pval,8)}.
-At alpha = ${fmt(res.alpha,4)}: ${decision}.
+${isFinite(res.R2) ? `Explained variability: R² = ${fmt(res.R2,6)} (${fmt(100*res.R2,2)}% of Y variation explained by X).` : `Explained variability: R² not identifiable from the provided inputs.`}
 
-Interpretation: ${res.reject
-  ? "There is statistically significant evidence of a linear relationship between X and Y."
-  : "There is not statistically significant evidence of a linear relationship at this alpha."}
+${isFinite(res.ci_b1[0]) ? `Confidence interval for b1 (${fmt(100*res.conf,0)}%): [${fmt(res.ci_b1[0],6)}, ${fmt(res.ci_b1[1],6)}].` : `Confidence interval for b1: not available (missing SE info).`}
 
-${predLines}`.trim();
-
-      return writeup;
+${predLines.concat(intervalLines).join("\n")}`
+      ).trim();
     }
 
-    function renderWriteup(res){
-      const pre = document.getElementById("writeupPreview");
-      if (!pre) return;
-      pre.textContent = buildWriteup(res);
-    }
+    function renderSteps(res){
+      const steps = document.getElementById("stepsContainer");
+      const dec = decisionText(res.pval, res.alpha);
 
-    /********************
-     * Step-by-step renderers (ASCII-safe)
-     ********************/
-    function renderStepsSample(res){
-      const el = document.getElementById("stepsContainer");
+      const h1Line =
+        res.h1 === "two" ? "H1: ρ ≠ 0 (two-sided)" :
+        res.h1 === "gt" ? "H1: ρ > 0 (right-tailed)" :
+                          "H1: ρ < 0 (left-tailed)";
 
-      const h1Text = (res.h1 === "two") ? "H1: rho != 0 (two-sided)"
-                   : (res.h1 === "gt") ? "H1: rho > 0 (right-tailed)"
-                   : "H1: rho < 0 (left-tailed)";
+      const exSlope = (res.mode === "summary")
+        ? `b1 = r·(sᵧ/sₓ) = (${fmt(res.r,6)})·(sᵧ/sₓ) = ${fmt(res.b1,6)}`
+        : (res.mode === "raw")
+          ? `b1 = Sxy/Sxx = ${fmt(res.b1,6)} (computed from your pasted pairs)`
+          : `b1 is provided as input: ${fmt(res.b1,6)}`;
 
-      const decisionLine = res.reject
-        ? `<span class="status-good fw-bold">Reject H0</span> because <span class="mono">p-value (${fmt(res.pval,8)}) &lt; alpha (${fmt(res.alpha,4)})</span>.`
-        : `<span class="status-warn fw-bold">Fail to reject H0</span> because <span class="mono">p-value (${fmt(res.pval,8)}) >= alpha (${fmt(res.alpha,4)})</span>.`;
+      const exIntercept = (isFinite(res.xbar) && isFinite(res.ybar))
+        ? `b0 = ȳ − b1·x̄ = ${fmt(res.ybar,6)} − (${fmt(res.b1,6)})·${fmt(res.xbar,6)} = ${fmt(res.b0,6)}`
+        : `b0 is provided as input: ${fmt(res.b0,6)}`;
 
-      const interp = res.reject
-        ? "Interpretation: There is statistically significant evidence of a linear association between X and Y."
-        : "Interpretation: There is not statistically significant evidence of a linear association at this alpha.";
+      const seLine = isFinite(res.se_b1)
+        ? `SE(b1) = s/√Sxx = ${fmt(res.RMSE,6)}/√${fmt(res.SSx,6)} = ${fmt(res.se_b1,6)}`
+        : `SE(b1) cannot be computed because uncertainty input is missing.`;
 
-      // Build detailed derivations
-      const detailsDerived = `
-        <details class="mt-2">
-          <summary class="small-note" style="cursor:pointer;">
-            <span class="summary-pill"><i class="fa-solid fa-list"></i> Show detailed calculations</span>
-          </summary>
-          <div class="mt-3 small-note">
+      const tLine = isFinite(res.tstat)
+        ? `t = b1 / SE(b1) = ${fmt(res.b1,6)} / ${fmt(res.se_b1,6)} = ${fmt(res.tstat,6)}`
+        : `t-statistic not available (missing SE(b1)).`;
 
-            <div class="fw-semibold">A) Regression coefficients</div>
-            <div class="mt-2">
-              <span class="mono">b1 = r * (Sy / Sx)</span> (if using summary stats)<br>
-              <span class="mono">b0 = Y-bar - b1*X-bar</span>
-            </div>
+      const ciB1Line = isFinite(res.ci_b1[0])
+        ? `${fmt(100*res.conf,0)}% CI for b1: b1 ± t*·SE(b1)
+t* = t_{1−α/2, df} = ${fmt(res.tcrit,6)}
+CI = ${fmt(res.b1,6)} ± ${fmt(res.tcrit,6)}·${fmt(res.se_b1,6)} = [${fmt(res.ci_b1[0],6)}, ${fmt(res.ci_b1[1],6)}]`
+        : `CI for b1 not available (missing SE(b1)).`;
 
-            <div class="mt-2 mono">
-              b1 = ${fmt(res.b1,6)}<br>
-              b0 = ${fmt(res.b0,6)}
-            </div>
+      // Interval calculations at X0
+      let intervalSteps = `<div class="small-note status-warn">Intervals at X0 are not available (need X0, x̄, Sxx, and RMSE/SE info).</div>`;
+      if (isFinite(res.ci_mean_x0[0]) && isFinite(res.pi_x0[0])){
+        const s = res.RMSE;
+        const lev = ((res.x0 - res.xbar)*(res.x0 - res.xbar))/res.SSx;
 
-            <hr class="hr-soft my-3">
-
-            <div class="fw-semibold">B) Explained variability</div>
-            <div class="mt-2">
-              <span class="mono">R^2 = r^2</span> (in simple linear regression)
-            </div>
-            <div class="mt-2 mono">
-              R^2 = (${fmt(res.r,6)})^2 = ${fmt(res.R2,6)}
-            </div>
-
-            <hr class="hr-soft my-3">
-
-            <div class="fw-semibold">C) SSE and RMSE</div>
-            <div class="mt-2">
-              If summary stats are available: <span class="mono">SSE = (1 - r^2) * SSY</span>,
-              where <span class="mono">SSY = (n-1)*Sy^2</span>.<br>
-              Then <span class="mono">RMSE = sqrt(SSE / (n-2))</span>.
-            </div>
-            <div class="mt-2 mono">
-              SSE = ${isFinite(res.SSE) ? fmt(res.SSE,6) : "N/A"}<br>
-              RMSE = ${isFinite(res.RMSE) ? fmt(res.RMSE,6) : "N/A"}
-            </div>
-
-            <hr class="hr-soft my-3">
-
-            <div class="fw-semibold">D) Standard error of slope and CI</div>
-            <div class="mt-2">
-              <span class="mono">SE(b1) = RMSE / sqrt(SSX)</span>, where <span class="mono">SSX = (n-1)*Sx^2</span> (when Sx is known).<br>
-              CI for slope: <span class="mono">b1 +/- t_(1 - alpha/2, df) * SE(b1)</span>
-            </div>
-            <div class="mt-2 mono">
-              df = n - 2 = ${fmt0(res.df)}<br>
-              SE(b1) = ${isFinite(res.se_b1) ? fmt(res.se_b1,6) : "N/A"}<br>
-              CI(b1) at confidence ${fmt(res.conf,3)} = ${escapeHtml(res.ciText)}
-            </div>
-
-            <hr class="hr-soft my-3">
-
-            <div class="fw-semibold">E) Hypothesis test (rho = 0)</div>
-            <div class="mt-2">
-              Test statistic (based on correlation):<br>
-              <span class="mono">t = r * sqrt(n-2) / sqrt(1 - r^2)</span>, with <span class="mono">df = n - 2</span>.
-            </div>
-            <div class="mt-2 mono">
-              t = ${fmt(res.tstat,6)}, df = ${fmt0(res.df)}, p-value = ${fmt(res.pval,8)}
-            </div>
-          </div>
-        </details>
-      `;
-
-      const predBlock = `
-        <div class="mt-2">
-          <div class="fw-semibold">Predictions</div>
-          <div class="small-note mt-2">
-            Point prediction at X0 uses <span class="mono">Yhat = b0 + b1*X0</span>.<br>
-            Change prediction uses <span class="mono">deltaYhat = b1*deltaX</span>.
-          </div>
-          <div class="mt-2 mono">
-            X0 = ${isFinite(res.x0) ? fmt(res.x0,6) : "N/A"} -> Yhat = ${isFinite(res.yhatX0) ? fmt(res.yhatX0,6) : "—"}<br>
-            deltaX = ${isFinite(res.dx) ? fmt(res.dx,6) : "N/A"} -> deltaYhat = ${isFinite(res.dyhat) ? fmt(res.dyhat,6) : "—"}
-          </div>
-        </div>
-      `;
-
-      el.innerHTML = `
-        <div class="step">
-          <div class="fw-semibold mb-1">Step 1 - State the model and goal</div>
+        intervalSteps = `
           <div class="small-note">
-            We use the simple linear regression model:
-            <div class="mt-2 mono">Y = b0 + b1*X + error</div>
-            The goal is to quantify the linear relationship and answer typical questions:
-            correlation, regression line, predictions, explained variability (R^2), model error (RMSE),
-            and inference (hypothesis test and CI for b1).
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="fw-semibold mb-1">Step 2 - Key sample inputs</div>
-          <div class="small-note">
-            Sample size: <span class="mono">n = ${fmt0(res.n)}</span> so degrees of freedom: <span class="mono">df = n - 2 = ${fmt0(res.df)}</span>.<br>
-            Correlation: <span class="mono">r = ${fmt(res.r,6)}</span>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="fw-semibold mb-1">Step 3 - Build the regression line</div>
-          <div class="small-note">
-            The fitted regression line is:
-            <div class="mt-2 mono">Yhat = b0 + b1*X</div>
-            Interpretation of b1: expected change in Y for a +1 unit change in X.
-            <div class="mt-2 mono">b0 = ${fmt(res.b0,6)}, b1 = ${fmt(res.b1,6)}</div>
-            <div class="mt-2 mono">Yhat = ${fmt(res.b0,6)} + (${fmt(res.b1,6)})*X</div>
-            ${predBlock}
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="fw-semibold mb-1">Step 4 - Explained variability (R^2)</div>
-          <div class="small-note">
-            In simple linear regression:
-            <div class="mt-2 mono">R^2 = r^2 = ${fmt(res.R2,6)} (${fmt(100*res.R2,2)}%)</div>
-            Interpretation: approximately ${fmt(100*res.R2,2)}% of the variation in Y is explained by X through a linear model.
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="fw-semibold mb-1">Step 5 - Model error (RMSE) and slope uncertainty</div>
-          <div class="small-note">
-            RMSE measures typical prediction error size in Y units:
-            <div class="mt-2 mono">RMSE = sqrt(SSE / (n-2))</div>
-            <div class="mt-2 mono">SSE = ${isFinite(res.SSE) ? fmt(res.SSE,6) : "N/A"}, RMSE = ${isFinite(res.RMSE) ? fmt(res.RMSE,6) : "N/A"}</div>
-            Standard error of slope:
-            <div class="mt-2 mono">SE(b1) = ${isFinite(res.se_b1) ? fmt(res.se_b1,6) : "N/A"}</div>
-            Confidence interval for b1 at confidence ${fmt(res.conf,3)}:
-            <div class="mt-2 mono">CI(b1) = ${escapeHtml(res.ciText)}</div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="fw-semibold mb-1">Step 6 - Hypothesis test for association</div>
-          <div class="small-note">
-            Hypotheses:
-            <div class="mt-2 mono">H0: rho = 0</div>
-            <div class="mono">${escapeHtml(h1Text)}</div>
-            Test statistic (correlation form):
-            <div class="mt-2 mono">t = r * sqrt(n-2) / sqrt(1 - r^2)</div>
-            <div class="mt-2 mono">t = ${fmt(res.tstat,6)}, df = ${fmt0(res.df)}, p-value = ${fmt(res.pval,8)}</div>
-            Using <span class="mono">alpha = ${fmt(res.alpha,4)}</span>: ${decisionLine}<br>
-            ${interp}
-          </div>
-        </div>
-
-        ${detailsDerived}
-      `;
-    }
-
-    function renderStepsPopulation(res){
-      const el = document.getElementById("stepsContainer");
-      el.innerHTML = `
-        <div class="step">
-          <div class="fw-semibold mb-1">Step 1 - Population regression formula</div>
-          <div class="small-note">
-            In population terms (theoretical regression):
-            <div class="mt-2 mono">beta1 = rho * (sigmaY / sigmaX)</div>
-            <div class="mono">beta0 = muY - beta1*muX</div>
-          </div>
-        </div>
-
-        <div class="step">
-          <div class="fw-semibold mb-1">Step 2 - Compute beta1 and beta0</div>
-          <div class="small-note">
-            Given:
-            <div class="mt-2 mono">
-              muX=${fmt(res.muX,4)}, sigmaX=${fmt(res.sigX,4)}, muY=${fmt(res.muY,4)}, sigmaY=${fmt(res.sigY,4)}, rho=${fmt(res.rho,4)}
+            First compute the standard errors at X0:
+            <div class="mono mt-2">leverage part = (X0−x̄)²/Sxx = (${fmt(res.x0,6)}−${fmt(res.xbar,6)})²/${fmt(res.SSx,6)} = ${fmt(lev,6)}</div>
+            <div class="mono mt-2">SE_mean(X0) = s·√(1/n + leverage) = ${fmt(s,6)}·√(1/${fmt(res.n,0)} + ${fmt(lev,6)}) = ${fmt(res.se_mean,6)}</div>
+            <div class="mono mt-2">SE_pred(X0) = s·√(1 + 1/n + leverage) = ${fmt(s,6)}·√(1 + 1/${fmt(res.n,0)} + ${fmt(lev,6)}) = ${fmt(res.se_pred,6)}</div>
+            <div class="small-note mt-3">
+              With confidence level ${fmt(100*res.conf,0)}%, the critical value is
+              <span class="mono">t* = ${fmt(res.tcrit,6)}</span>.
             </div>
-            Compute:
-            <div class="mt-2 mono">
-              beta1 = ${fmt(res.rho,4)} * (${fmt(res.sigY,4)} / ${fmt(res.sigX,4)}) = ${fmt(res.b1,6)}<br>
-              beta0 = ${fmt(res.muY,4)} - (${fmt(res.b1,6)} * ${fmt(res.muX,4)}) = ${fmt(res.b0,6)}
+            <div class="mono mt-2">CI_mean(X0): Ŷ(X0) ± t*·SE_mean = ${fmt(res.yhatX0,6)} ± ${fmt(res.tcrit,6)}·${fmt(res.se_mean,6)} = [${fmt(res.ci_mean_x0[0],6)}, ${fmt(res.ci_mean_x0[1],6)}]</div>
+            <div class="mono mt-2">Prediction interval: Ŷ(X0) ± t*·SE_pred = ${fmt(res.yhatX0,6)} ± ${fmt(res.tcrit,6)}·${fmt(res.se_pred,6)} = [${fmt(res.pi_x0[0],6)}, ${fmt(res.pi_x0[1],6)}]</div>
+            <div class="small-note mt-2">
+              Interpretation: CI_mean is narrower (uncertainty about the mean). Prediction interval is wider (mean uncertainty + new observation noise).
             </div>
           </div>
-        </div>
-
-        <div class="step">
-          <div class="fw-semibold mb-1">Step 3 - Predict Y at X0</div>
-          <div class="small-note">
-            Use:
-            <div class="mt-2 mono">Yhat = beta0 + beta1*X0</div>
-            For X0=${fmt(res.x0p,4)}:
-            <div class="mt-2 mono">Yhat = ${fmt(res.b0,6)} + ${fmt(res.b1,6)}*${fmt(res.x0p,4)} = ${fmt(res.yhat,6)}</div>
-            Also:
-            <div class="mt-2 mono">R^2 = rho^2 = ${fmt(res.R2,6)}</div>
-          </div>
-        </div>
-      `;
-    }
-
-    /********************
-     * Presets (Exercise 4)
-     ********************/
-    function loadPreset(key){
-      // Presets based on the provided exercise solution values
-      const presets = {
-        q1: {
-          mode: "summary",
-          n: 32, r: 0.59,
-          xbar: 178.16, sx: 6.2,
-          ybar: 181.9, sy: 7.05,
-          alpha: 0.01, h1: "gt",
-          conf: 0.95,
-          x0: "", dx: 5,
-          // optional outputs
-          b0: 62.54, b1: 0.67, seb1: 0.167, sse: ""
-        },
-        q2: {
-          mode: "summary",
-          n: 8, r: -0.89,
-          xbar: 5.25, sx: 3.151,
-          ybar: 83.5, sy: 7.071,
-          alpha: 0.05, h1: "two",
-          conf: 0.95,
-          x0: 5, dx: "",
-          b0: 93.98, b1: -1.997, seb1: 0.416, sse: ""
-        },
-        q3: {
-          mode: "population",
-          muX: 16000, sigX: 4000, muY: 3000, sigY: 250, rho: 0.3, x0p: 12000
-        },
-        q4: {
-          mode: "summary",
-          n: 7, r: 0.90,
-          // means/SD are not required if b0/b1 given:
-          xbar: "", sx: "", ybar: "", sy: "",
-          alpha: 0.01, h1: "gt",
-          conf: 0.99,
-          x0: 85, dx: -10,
-          b0: 36.05, b1: 0.83, seb1: 0.18, sse: 182.21
-        }
-      };
-
-      const p = presets[key];
-      if (!p) return;
-
-      // set mode radio
-      document.querySelectorAll('input[name="mode"]').forEach(r => {
-        r.checked = (r.value === p.mode);
-      });
-      setPanelVisibility();
-
-      if (p.mode === "summary"){
-        document.getElementById("nInput").value = p.n ?? "";
-        document.getElementById("rInput").value = p.r ?? "";
-        document.getElementById("xbarInput").value = p.xbar ?? "";
-        document.getElementById("sxInput").value = p.sx ?? "";
-        document.getElementById("ybarInput").value = p.ybar ?? "";
-        document.getElementById("syInput").value = p.sy ?? "";
-
-        document.getElementById("b0Input").value = p.b0 ?? "";
-        document.getElementById("b1Input").value = p.b1 ?? "";
-        document.getElementById("seb1Input").value = p.seb1 ?? "";
-        document.getElementById("sseInput").value = p.sse ?? "";
-
-        document.getElementById("h1Select").value = p.h1 ?? "two";
-
-        // alpha
-        document.getElementById("alphaCustom").classList.add("d-none");
-        document.getElementById("alphaSelect").classList.remove("d-none");
-        document.getElementById("btnAlphaCustom").textContent = "Custom";
-        document.getElementById("alphaSelect").value = String(p.alpha ?? 0.05);
-
-        // conf
-        document.getElementById("confCustom").classList.add("d-none");
-        document.getElementById("confSelect").classList.remove("d-none");
-        document.getElementById("btnConfCustom").textContent = "Custom";
-        document.getElementById("confSelect").value = String(p.conf ?? 0.95);
-
-        document.getElementById("x0Input").value = (p.x0 ?? "");
-        document.getElementById("dxInput").value = (p.dx ?? "");
-
-      } else if (p.mode === "population"){
-        document.getElementById("muX").value = p.muX ?? "";
-        document.getElementById("sigX").value = p.sigX ?? "";
-        document.getElementById("muY").value = p.muY ?? "";
-        document.getElementById("sigY").value = p.sigY ?? "";
-        document.getElementById("rho").value = p.rho ?? "";
-        document.getElementById("x0Pop").value = p.x0p ?? "";
-
-        // also put x0Input for convenience
-        document.getElementById("x0Input").value = "";
-        document.getElementById("dxInput").value = "";
+        `;
       }
 
-      compute();
+      steps.innerHTML = `
+        <div class="step">
+          <div class="fw-semibold mb-1">Step 1 — State the model</div>
+          <div class="small-note">
+            Simple linear regression models the conditional mean of Y as a line in X:
+            <div class="mono mt-2">Ŷ = b0 + b1·X</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="fw-semibold mb-1">Step 2 — Compute the fitted line (b0 and b1)</div>
+          <div class="small-note">
+            ${res.mode === "raw"
+              ? `From raw data, compute x̄, ȳ, Sxx=Σ(x−x̄)², Sxy=Σ(x−x̄)(y−ȳ), then b1=Sxy/Sxx and b0=ȳ−b1·x̄.`
+              : res.mode === "summary"
+                ? `From summary stats, use b1=r·(sᵧ/sₓ), then b0=ȳ−b1·x̄.`
+                : `In output mode, b0 and b1 may be given directly.`}
+            <div class="mono mt-2">${exSlope}</div>
+            <div class="mono mt-2">${exIntercept}</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="fw-semibold mb-1">Step 3 — Strength of relationship (r and R²)</div>
+          <div class="small-note">
+            R² is the proportion of Y variation explained by the linear fit.
+            ${isFinite(res.R2)
+              ? `<div class="mono mt-2">R² = ${fmt(res.R2,6)} (${fmt(100*res.R2,2)}%)</div>`
+              : `<div class="small-note status-warn mt-2">R² is not identifiable from the given inputs in this mode.</div>`}
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="fw-semibold mb-1">Step 4 — Compute RMSE (s) and SE(b1)</div>
+          <div class="small-note">
+            RMSE (denoted s) is the estimated standard deviation of residuals:
+            <div class="mono mt-2">s = RMSE = √(SSE/df),  df = n−2</div>
+            <div class="mono mt-2">${seLine}</div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="fw-semibold mb-1">Step 5 — Hypothesis test for association</div>
+          <div class="small-note">
+            We test whether the slope is zero (no linear association):
+            <div class="mono mt-2">H0: ρ=0 (equivalently b1=0)</div>
+            <div class="mono">${h1Line}</div>
+            <div class="mono mt-2">${tLine}</div>
+            ${isFinite(res.pval)
+              ? `<div class="mono mt-2">p-value = ${fmt(res.pval,8)}</div>`
+              : `<div class="small-note status-warn mt-2">p-value not available (missing SE(b1)).</div>`}
+            <div class="small-note mt-2">
+              Decision rule: reject H0 if <span class="mono">p-value &lt; α</span>.
+              <div class="${dec.cls} fw-bold mt-1">${dec.txt}</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="fw-semibold mb-1">Step 6 — Confidence interval for b1</div>
+          <div class="small-note">
+            ${ciB1Line}
+          </div>
+        </div>
+
+        <div class="step">
+          <div class="fw-semibold mb-1">Step 7 — Predictions & intervals at X0</div>
+          <div class="small-note">
+            Point prediction:
+            <div class="mono mt-2">Ŷ(X0) = b0 + b1·X0 = ${fmt(res.yhatX0,6)}</div>
+            Change prediction:
+            <div class="mono mt-2">deltaŶ = b1·deltaX = ${fmt(res.dyhat,6)}</div>
+            <hr class="hr-soft my-3">
+            <div class="fw-semibold mb-2">Intervals at X0</div>
+            ${intervalSteps}
+          </div>
+        </div>
+      `;
     }
 
-    /********************
-     * Reset
-     ********************/
+    function render(res){
+      // KPIs
+      document.getElementById("kpiLine").textContent =
+        `Ŷ = ${fmt(res.b0,6)} + (${fmt(res.b1,6)})·X`;
+
+      const r2Text = isFinite(res.R2)
+        ? `r=${fmt(res.r,6)}, R²=${fmt(res.R2,6)}`
+        : `r/R²: — (not identifiable in this mode)`;
+      document.getElementById("kpiR2").textContent = r2Text;
+
+      document.getElementById("kpiT").textContent =
+        isFinite(res.tstat) ? `t=${fmt(res.tstat,6)}, df=${fmt(res.df,0)}` : `—`;
+
+      const dec = decisionText(res.pval, res.alpha);
+      const decEl = document.getElementById("kpiDecision");
+      decEl.textContent = isFinite(res.pval)
+        ? `p=${fmt(res.pval,8)} • ${dec.txt}`
+        : `—`;
+      decEl.classList.remove("status-good","status-warn","status-bad");
+      decEl.classList.add(dec.cls);
+
+      // Uncertainty
+      document.getElementById("kpiSSE").textContent = fmt(res.SSE,6);
+      document.getElementById("kpiRMSE").textContent = fmt(res.RMSE,6);
+      document.getElementById("kpiSEb1").textContent = fmt(res.se_b1,6);
+      document.getElementById("kpiCIb1").textContent =
+        isFinite(res.ci_b1[0]) ? `[${fmt(res.ci_b1[0],6)}, ${fmt(res.ci_b1[1],6)}]` : `—`;
+
+      // Predictions & intervals
+      document.getElementById("kpiYhatX0").textContent = fmt(res.yhatX0,6);
+      document.getElementById("kpiDY").textContent = fmt(res.dyhat,6);
+
+      document.getElementById("kpiCIMeanX0").textContent =
+        isFinite(res.ci_mean_x0[0]) ? `[${fmt(res.ci_mean_x0[0],6)}, ${fmt(res.ci_mean_x0[1],6)}]` : `—`;
+
+      document.getElementById("kpiPIX0").textContent =
+        isFinite(res.pi_x0[0]) ? `[${fmt(res.pi_x0[0],6)}, ${fmt(res.pi_x0[1],6)}]` : `—`;
+
+      const note = document.getElementById("intervalNote");
+      if (isFinite(res.x0) && !(isFinite(res.ci_mean_x0[0]) && isFinite(res.pi_x0[0]))){
+        note.innerHTML = `<span class="status-warn">
+          Intervals at X0 require <span class="mono">x̄</span>, <span class="mono">Sxx</span>, and <span class="mono">RMSE (s)</span> (or equivalent SE info).
+        </span>`;
+      } else {
+        note.textContent = "";
+      }
+
+      renderModelBox(res);
+      renderAnova(res);
+      renderSteps(res);
+
+      document.getElementById("writeupPreview").textContent = buildWriteup(res);
+
+      initTooltips();
+    }
+
+    /***********************
+     * UI wiring
+     ***********************/
+    function setMode(mode){
+      document.getElementById("modeRaw").classList.toggle("d-none", mode!=="raw");
+      document.getElementById("modeSummary").classList.toggle("d-none", mode!=="summary");
+      document.getElementById("modeOutput").classList.toggle("d-none", mode!=="output");
+    }
+
+    function computeAndRender(){
+      const res = compute();
+      if (res) render(res);
+    }
+
     function resetAll(){
       clearError();
-      clearOutputs();
-
-      document.getElementById("presetSelect").value = "";
-
-      document.getElementById("modeRaw").checked = true;
-      setPanelVisibility();
-
+      document.getElementById("modeSelect").value = "raw";
+      setMode("raw");
       document.getElementById("rawPairs").value = "";
-
-      // Summary fields
-      ["nInput","rInput","xbarInput","ybarInput","sxInput","syInput","b0Input","b1Input","seb1Input","sseInput"].forEach(id=>{
-        document.getElementById(id).value = "";
-      });
-
-      // Population fields
-      ["muX","sigX","muY","sigY","rho","x0Pop"].forEach(id=>{
-        document.getElementById(id).value = "";
-      });
-
-      // settings
-      document.getElementById("h1Select").value = "two";
-
       document.getElementById("alphaSelect").value = "0.05";
-      document.getElementById("alphaCustom").value = "0.05";
-      document.getElementById("alphaCustom").classList.add("d-none");
-      document.getElementById("alphaSelect").classList.remove("d-none");
-      document.getElementById("btnAlphaCustom").textContent = "Custom";
-
+      document.getElementById("h1Select").value = "two";
       document.getElementById("confSelect").value = "0.95";
-      document.getElementById("confCustom").value = "0.95";
-      document.getElementById("confCustom").classList.add("d-none");
-      document.getElementById("confSelect").classList.remove("d-none");
-      document.getElementById("btnConfCustom").textContent = "Custom";
-
+      document.getElementById("predToggle").checked = true;
+      document.getElementById("predBlock").classList.remove("d-none");
       document.getElementById("x0Input").value = "";
       document.getElementById("dxInput").value = "";
 
+      // summary defaults
+      document.getElementById("nSummary").value = "30";
+      document.getElementById("rSummary").value = "0.6";
+      document.getElementById("xbarSummary").value = "50";
+      document.getElementById("ybarSummary").value = "100";
+      document.getElementById("sxSummary").value = "10";
+      document.getElementById("sySummary").value = "20";
+
+      // output defaults
+      document.getElementById("b0Out").value = "0";
+      document.getElementById("b1Out").value = "1";
+      document.getElementById("nOut").value = "30";
+      document.getElementById("xbarOut").value = "";
+      document.getElementById("ssxOut").value = "1000";
+      document.getElementById("seB1Out").value = "";
+      document.getElementById("rmseOut").value = "";
+      document.getElementById("sseOut").value = "";
+
+      // clear results
+      [
+        "kpiLine","kpiR2","kpiT","kpiDecision",
+        "kpiSSE","kpiRMSE","kpiSEb1","kpiCIb1",
+        "kpiYhatX0","kpiDY","kpiCIMeanX0","kpiPIX0"
+      ].forEach(id => document.getElementById(id).textContent = "—");
+
+      document.getElementById("intervalNote").textContent = "";
+      document.getElementById("modelBox").innerHTML = "";
+      document.getElementById("anovaBox").innerHTML = "";
+      document.getElementById("anovaNote").innerHTML = "";
+      document.getElementById("stepsContainer").innerHTML = "";
+      document.getElementById("writeupPreview").textContent = "";
+
       initTooltips();
     }
 
-    /********************
-     * Events
-     ********************/
+    function loadExample(){
+      // Generic example dataset (no course references)
+      document.getElementById("modeSelect").value = "raw";
+      setMode("raw");
+      document.getElementById("rawPairs").value =
+`10, 72
+11, 74
+12, 79
+13, 81
+14, 86
+15, 89
+16, 92
+17, 95`;
+      document.getElementById("x0Input").value = "14";
+      document.getElementById("dxInput").value = "2";
+      computeAndRender();
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
       initTooltips();
-      setPanelVisibility();
+      setMode(document.getElementById("modeSelect").value);
 
-      document.querySelectorAll('input[name="mode"]').forEach(r => {
-        r.addEventListener("change", () => {
-          setPanelVisibility();
-          clearOutputs();
-        });
+      document.getElementById("modeSelect").addEventListener("change", (e)=> setMode(e.target.value));
+
+      document.getElementById("predToggle").addEventListener("change", (e)=>{
+        document.getElementById("predBlock").classList.toggle("d-none", !e.target.checked);
       });
 
-      document.getElementById("btnCompute").addEventListener("click", compute);
-      document.getElementById("btnComputeTop").addEventListener("click", compute);
-      document.getElementById("btnComputeBottom").addEventListener("click", compute);
+      document.getElementById("btnCompute").addEventListener("click", computeAndRender);
+      document.getElementById("btnComputeTop").addEventListener("click", computeAndRender);
+      document.getElementById("btnComputeBottom").addEventListener("click", computeAndRender);
 
       document.getElementById("btnReset").addEventListener("click", resetAll);
+      document.getElementById("btnExample").addEventListener("click", loadExample);
 
-      document.getElementById("btnCopyWriteup").addEventListener("click", async () => {
-        const pre = document.getElementById("writeupPreview");
-        if (!pre || !pre.textContent.trim()) return;
-
-        try{
-          await navigator.clipboard.writeText(pre.textContent);
-          // Optional small UX feedback:
-          const btn = document.getElementById("btnCopyWriteup");
-          const old = btn.innerHTML;
-          btn.innerHTML = `<i class="fa-solid fa-check me-2"></i>Copied`;
-          setTimeout(()=> btn.innerHTML = old, 900);
-        } catch (e){
-          showError("Could not copy to clipboard (browser permission). You can manually select and copy the text.");
-        }
-      });
-
-      document.getElementById("presetSelect").addEventListener("change", (e) => {
-        const key = e.target.value;
-        if (key) loadPreset(key);
-      });
-
-      document.getElementById("btnAlphaCustom").addEventListener("click", () => {
+      document.getElementById("btnAlphaCustom").addEventListener("click", ()=>{
         const custom = document.getElementById("alphaCustom");
         const sel = document.getElementById("alphaSelect");
         const isCustom = !custom.classList.contains("d-none");
@@ -2091,7 +1570,7 @@ ${predLines}`.trim();
         }
       });
 
-      document.getElementById("btnConfCustom").addEventListener("click", () => {
+      document.getElementById("btnConfCustom").addEventListener("click", ()=>{
         const custom = document.getElementById("confCustom");
         const sel = document.getElementById("confSelect");
         const isCustom = !custom.classList.contains("d-none");
@@ -2104,6 +1583,30 @@ ${predLines}`.trim();
           sel.classList.add("d-none");
           custom.value = sel.value;
           document.getElementById("btnConfCustom").textContent = "Use preset";
+        }
+      });
+
+      function hasResults(){
+        return (document.getElementById("stepsContainer").innerHTML || "").trim().length > 0;
+      }
+
+      document.getElementById("alphaSelect").addEventListener("change", ()=>{ if (hasResults()) computeAndRender(); });
+      document.getElementById("alphaCustom").addEventListener("input", ()=>{ if (hasResults()) computeAndRender(); });
+
+      document.getElementById("confSelect").addEventListener("change", ()=>{ if (hasResults()) computeAndRender(); });
+      document.getElementById("confCustom").addEventListener("input", ()=>{ if (hasResults()) computeAndRender(); });
+
+      document.getElementById("btnCopyWriteup").addEventListener("click", async ()=>{
+        const txt = document.getElementById("writeupPreview").textContent;
+        if (!txt.trim()) return;
+        try{
+          await navigator.clipboard.writeText(txt);
+          const btn = document.getElementById("btnCopyWriteup");
+          const old = btn.innerHTML;
+          btn.innerHTML = `<i class="fa-solid fa-check me-2"></i>Copied`;
+          setTimeout(()=> btn.innerHTML = old, 900);
+        }catch(e){
+          showError("Clipboard copy failed due to browser permissions. You can still manually select and copy the write-up text.");
         }
       });
     });
