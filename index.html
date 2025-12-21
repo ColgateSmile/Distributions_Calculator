@@ -474,7 +474,54 @@
         </div>
       </div>
     </div>
-  </div> <!-- /row -->
+      <div class="col-md-6">
+        <div class="card h-100 dist-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <div class="fw-semibold">Multiple Linear Regression</div>
+              <div class="small text-secondary">Y = β₀ + β₁·X₁ + β₂·X₂ + … + ε</div>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+              <span class="badge-tag">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span>Multiple predictors</span>
+              </span>
+              <i class="fa-solid fa-chevron-down dist-toggle-icon"></i>
+            </div>
+          </div>
+          <div class="card-body dist-card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <p class="mb-0 dist-toggle-hint">
+                Click this card to learn when to use multiple linear regression and open the calculator.
+              </p>
+              <a
+                href="Multiple_Linear_Regression_calculator.html"
+                class="btn btn-outline-light btn-sm"
+                onclick="event.stopPropagation();"
+              >
+                <i class="fa-solid fa-calculator me-1"></i>
+                Open MLR Calculator
+              </a>
+            </div>
+
+            <!-- Hidden explanation -->
+            <div class="dist-details mt-3">
+              <p class="text-secondary mb-2">
+                Use multiple linear regression to model a continuous response using two or more predictors. MLR
+                estimates each predictor's effect while controlling for the others and is appropriate when
+                relationships are approximately linear and you have sufficient sample size (n &gt; p + 1).
+              </p>
+              <h6 class="mb-1" style="font-size:.85rem;">When to use:</h6>
+              <ul>
+                <li>You have a continuous outcome and multiple explanatory variables.</li>
+                <li>You want to estimate adjusted effects (control for confounding) or predict from several inputs.</li>
+                <li>Check linearity, independence, and constant variance assumptions; ensure n &gt; p + 1 for inference.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div> <!-- /row -->
 
   <!-- Step-by-step recipes -->
   <section class="mb-5 mt-5">

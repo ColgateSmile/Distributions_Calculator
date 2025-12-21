@@ -19,6 +19,7 @@
     |-- chart.min.js
     |-- Index_Script.js
     |-- jstat.min.js
+|-- Multiple_Linear_Regression_calculator.html
 |-- Normal_Distribution_Calculator.html
 |-- Simple_Linear_Regression.html
 |-- t_distribution.html

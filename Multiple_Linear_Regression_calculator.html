@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Multiple Linear Regression (MLR) — Calculator</title>
+
+  <!-- Bootstrap (local) -->
+  <link href="./css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="./js/bootstrap.bundle.min.js"></script>
+
+  <!-- Font Awesome (local) -->
+  <link rel="stylesheet" href="./css/font-awesome.min.css"/>
+
+  <style>
+    :root{
+      --bg:#0b1224;
+      --panel:#101c33;
+      --panel2:#0b162e;
+      --surface: rgba(255,255,255,.03);
+      --surface2: rgba(2,6,23,.55);
+      --text:#f8fafc;
+      --muted: rgba(226,232,240,.78);
+      --muted2: rgba(226,232,240,.62);
+      --border: rgba(148,163,184,.22);
+      --border2: rgba(148,163,184,.30);
+      --accent:#38bdf8;
+      --accent2:#60a5fa;
+      --good:#22c55e;
+      --warn:#f59e0b;
+      --bad:#ef4444;
+      --shadow: 0 14px 34px rgba(0,0,0,.35);
+      --radius: 18px;
+    }
+
+    body{
+      min-height:100vh;
+      color:var(--text);
+      background:
+        radial-gradient(1100px 720px at 18% 0%, rgba(56,189,248,0.18), transparent 60%),
+        radial-gradient(900px 680px at 86% 15%, rgba(96,165,250,0.12), transparent 60%),
+        radial-gradient(1000px 700px at 55% 90%, rgba(34,197,94,0.08), transparent 65%),
+        var(--bg);
+      font-family: system-ui,-apple-system,"Segoe UI",Roboto,"Inter",Arial,sans-serif;
+      line-height: 1.45;
+      font-size: 16px;
+    }
+
+    .container{ max-width: 1420px; }
+
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      gap:.55rem;
+      padding:.35rem .70rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      color: rgba(226,232,240,0.86);
+      font-size: .92rem;
+    }
+
+    .app-title{
+      font-weight: 900;
+      letter-spacing: .2px;
+      text-shadow: 0 1px 16px rgba(0,0,0,.35);
+      margin: 0;
+    }
+
+    .subtle{ color: var(--muted); }
+
+    /* Cards */
+    .card{
+      background: rgba(16, 28, 51, 0.88);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      min-width: 0; /* critical: prevents “squashed overflow” inside flex/grid */
+    }
+
+    /* FIX: Headers should never be “too dark” */
+    .card-header{
+      background: linear-gradient(180deg, rgba(22, 52, 88, 0.92), rgba(11, 22, 46, 0.95));
+      border-bottom: 1px solid var(--border2);
+      border-top-left-radius: var(--radius);
+      border-top-right-radius: var(--radius);
+      color: rgba(248,250,252,0.96) !important;
+    }
+    .card-header *{
+      color: rgba(248,250,252,0.96) !important;
+    }
+
+    .section-title{
+      font-weight: 900;
+      margin: 0;
+      letter-spacing: .2px;
+    }
+
+    .help-i{
+      color: rgba(248,250,252,.82);
+      cursor: help;
+      margin-left: .35rem;
+    }
+
+    /* Forms */
+    .form-label,.form-check-label{ color: rgba(248,250,252,0.92) !important; }
+
+    .form-control, .form-select{
+      background: rgba(255,255,255,.045);
+      color: var(--text);
+      border: 1px solid rgba(148,163,184,0.28);
+      border-radius: 12px;
+    }
+
+    .form-control::placeholder{ color: rgba(226,232,240,0.55); }
+    select option{ background:#0b1224; color:#f8fafc; }
+
+    .form-control:focus, .form-select:focus{
+      box-shadow: 0 0 0 .25rem rgba(56,189,248,.15);
+      border-color: rgba(56,189,248,.55);
+    }
+
+    .btn{
+      border-radius: 12px;
+      font-weight: 750;
+      min-width: 0;
+    }
+    .btn-primary{
+      background: linear-gradient(180deg, rgba(56,189,248,0.95), rgba(56,189,248,0.72));
+      border: none;
+    }
+    .btn-outline-light{
+      border-color: rgba(248,250,252,.35);
+      color: var(--text);
+    }
+    .btn-outline-light:hover{
+      border-color: rgba(56,189,248,.65);
+      color: var(--text);
+      background: rgba(56,189,248,.10);
+    }
+
+    /* Layout blocks */
+    .panel-note{
+      color: var(--muted);
+      font-size: .93rem;
+    }
+
+    /* KPI grid (prevents squashed look) */
+    .kpi-grid{
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: .75rem;
+      margin-bottom: 1rem;
+      align-items: start;
+    }
+    @media (max-width: 900px){
+      .kpi-grid{ grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+    }
+    @media (max-width: 520px){
+      .kpi-grid{ grid-template-columns: 1fr; }
+    }
+
+    .kpi{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,.03);
+      border-radius: 16px;
+      padding: .85rem .9rem;
+      box-sizing: border-box;
+      overflow: hidden;
+      min-width: 0;
+      width: 100%;
+    }
+    .kpi .label{
+      color: rgba(226,232,240,0.88);
+      font-size: .95rem;
+      display:flex;
+      align-items:center;
+      gap:.4rem;
+    }
+    .kpi .value{
+      margin-top: .35rem;
+      font-weight: 900;
+      font-size: 1.15rem;
+      overflow-wrap:anywhere;
+      word-break: break-word;
+      display: block;
+      max-width: 100%;
+      padding-right: .2rem;
+      line-height: 1.25;
+    }
+
+    /* ensure KPI inner content never bleeds the rounded corner on sub-pixel layouts */
+    .kpi::after{
+      content: '';
+      display: block;
+      clear: both;
+    }
+    .mono{
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      overflow-wrap:anywhere;
+      word-break: break-word;
+      white-space: normal;
+    }
+
+    .status-good{ color: var(--good); }
+    .status-warn{ color: var(--warn); }
+    .status-bad{ color: var(--bad); }
+
+    /* Table wrappers */
+    .table-wrap{
+      overflow-x:auto;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      background: rgba(2,6,23,.45);
+    }
+    .table-wrap table{
+      width: 100%;
+      min-width: 0;
+      margin: 0;
+      color: var(--text);
+    }
+    /* “big result tables” */
+    .table-wrap-lg table{ min-width: 980px; }
+    /* “small input tables” */
+    .table-wrap-sm table{ min-width: 0; }
+
+    .table thead th{
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: rgba(2,6,23,.86) !important;
+      border-bottom: 1px solid var(--border2) !important;
+    }
+    .table th,.table td{
+      border-color: rgba(148,163,184,.20) !important;
+      padding: .62rem .68rem;
+      vertical-align: middle;
+      white-space: nowrap;
+    }
+    /* allow wrapping only in “Term” column */
+    .term-col{ white-space: normal !important; min-width: 160px; }
+
+    /* Math blocks in explanations */
+    .math-block{
+      border: 1px solid rgba(148,163,184,0.22);
+      background: rgba(2, 6, 23, 0.55);
+      border-radius: 12px;
+      padding: .75rem .9rem;
+      margin: .55rem 0;
+    }
+    .math-label{
+      color: rgba(226,232,240,0.74);
+      font-size: .88rem;
+      margin-bottom: .25rem;
+    }
+    .math-line{
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      font-size: .95rem;
+      color: rgba(248,250,252,0.92);
+    }
+
+    .callout{
+      border-radius: 12px;
+      border: 1px solid rgba(148,163,184,0.22);
+      padding: .75rem .9rem;
+      margin-top: .65rem;
+      background: rgba(255,255,255,.02);
+      color: rgba(248,250,252,0.90);
+    }
+    .callout.good{ background: rgba(34,197,94,0.08); border-color: rgba(34,197,94,0.25); }
+    .callout.warn{ background: rgba(245,158,11,0.08); border-color: rgba(245,158,11,0.25); }
+    .callout.bad { background: rgba(239,68,68,0.08); border-color: rgba(239,68,68,0.25); }
+
+    /* Steps area: full width + readable accordion */
+    .steps-shell{
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.03);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .steps-topbar{
+      display:flex;
+      align-items:center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: .9rem 1rem;
+      background: rgba(2, 6, 23, 0.35);
+      border-bottom: 1px solid rgba(148,163,184,0.18);
+    }
+    .steps-topbar .meta{
+      color: rgba(226,232,240,0.80);
+      font-size: .95rem;
+    }
+    .steps-body{ padding: 1rem; }
+
+    /* Bootstrap accordion styling */
+    .accordion-item{
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(148,163,184,0.18);
+      border-radius: 14px !important;
+      overflow: hidden;
+      margin-bottom: .85rem;
+    }
+    .accordion-button{
+      background: rgba(2, 6, 23, 0.35);
+      color: rgba(248,250,252,0.96);
+      font-weight: 900;
+      border: none;
+      box-shadow: none !important;
+      padding: 1rem 1rem;
+    }
+    .accordion-button:not(.collapsed){
+      background: rgba(56,189,248,0.12);
+    }
+    .accordion-body{
+      background: rgba(2, 6, 23, 0.18);
+      color: rgba(248,250,252,0.92);
+      padding: 1rem 1rem 1.15rem 1rem;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+    .step-badge{
+      display:inline-flex;
+      align-items:center;
+      gap:.4rem;
+      padding:.16rem .60rem;
+      border-radius: 999px;
+      border:1px solid rgba(148,163,184,0.22);
+      background: rgba(255,255,255,0.03);
+      color: rgba(226,232,240,0.88);
+      font-size: .86rem;
+      margin-left: .55rem;
+      font-weight: 750;
+    }
+
+    /* Write-up block */
+    .writeup{
+      border: 1px solid rgba(148,163,184,.22);
+      background: rgba(2,6,23,.55);
+      border-radius: 14px;
+      padding: .9rem 1rem;
+      color: rgba(248,250,252,0.93);
+      max-height: 380px;
+      overflow:auto;
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace;
+      font-size: .95rem;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      overflow-wrap:anywhere;
+    }
+
+    /* Prevent any “hidden text” from low contrast */
+    .panel-note, .subtle{ text-shadow: 0 1px 10px rgba(0,0,0,.25); }
+
+    /* Tooltip max width */
+    .tooltip-inner{ max-width: 360px; text-align:left; }
+
+    /* Reduce motion */
+    @media (prefers-reduced-motion: reduce){
+      *{ scroll-behavior:auto !important; transition:none !important; }
+    }
+    
+    /* =========================================================
+       FIX PATCH (paste at END of your CSS)
+       Goal: eliminate dark/unreadable text + improve header contrast
+       ========================================================= */
+
+    /* 1) Make all headings/headers readable, even if some parent sets low opacity */
+    .card-header,
+    .section-title,
+    .panel-title,
+    h1, h2, h3, h4, h5,
+    .fw-bold,
+    .fw-semibold {
+      color: rgba(248, 250, 252, 0.96) !important;
+      text-shadow: 0 1px 14px rgba(0,0,0,0.35);
+    }
+
+    /* 2) Improve header background so it doesn't “eat” the title text */
+    .card-header {
+      background: linear-gradient(
+        180deg,
+        rgba(15, 23, 42, 0.96),
+        rgba(2, 6, 23, 0.72)
+      ) !important;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.30) !important;
+    }
+
+    /* 3) Force readable text color in all result/metric cards (common dark-text culprit) */
+    .card,
+    .result-box,
+    .metric,
+    .stat-card,
+    .kpi-card,
+    .k,
+    .k .label,
+    .k .value {
+      color: rgba(248, 250, 252, 0.94) !important;
+    }
+
+    /* 4) Ensure “mono” values (equation, R², F-test, p-value) don’t inherit dark color */
+    .mono,
+    code,
+    pre,
+    kbd,
+    .card .mono,
+    .result-box .mono,
+    .metric .mono,
+    .stat-card .mono {
+      color: rgba(248, 250, 252, 0.96) !important;
+    }
+
+    /* 5) Bootstrap utility overrides that often cause “dark text” in dark themes */
+    .text-dark,
+    .text-body,
+    .text-secondary,
+    .text-muted {
+      color: rgba(226, 232, 240, 0.84) !important;
+    }
+
+    /* 6) Badges/pills sometimes inherit a dark color depending on Bootstrap theme */
+    .badge,
+    .pill,
+    .chip,
+    .btn-outline-light {
+      color: rgba(248, 250, 252, 0.94) !important;
+    }
+
+    /* 7) Tables: enforce readable text and improve header contrast */
+    .table {
+      --bs-table-color: rgba(248, 250, 252, 0.94);
+    }
+
+    .table thead th {
+      background: rgba(2, 6, 23, 0.92) !important;
+      color: rgba(248, 250, 252, 0.96) !important;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.30) !important;
+    }
+
+    .table td,
+    .table th {
+      color: rgba(248, 250, 252, 0.92) !important;
+    }
+
+    /* 8) Optional: selection highlight so selected text never “disappears” */
+    ::selection {
+      background: rgba(56, 189, 248, 0.35);
+      color: rgba(248, 250, 252, 0.98);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container py-4">
+    <!-- Header -->
+    <div class="d-flex flex-wrap align-items-end justify-content-between gap-3 mb-3">
+      <div>
+        <div class="pill mb-2">
+          <i class="fa-solid fa-chart-line"></i>
+          Multiple Linear Regression
+          <span class="mx-1">•</span>
+          <span class="subtle">OLS, ANOVA, t-tests, prediction</span>
+        </div>
+        <h1 class="app-title">Multiple Linear Regression (MLR) — Calculator</h1>
+        <div class="subtle mt-1">
+          Enter model size, ANOVA inputs, and coefficient estimates (with SE). Get χ-style “homework” steps with substituted numbers.
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <button id="btnReset" class="btn btn-outline-light">
+          <i class="fa-solid fa-rotate-left me-2"></i>Reset
+        </button>
+        <button id="btnComputeTop" class="btn btn-primary">
+          <i class="fa-solid fa-calculator me-2"></i>Compute
+        </button>
+      </div>
+    </div>
+
+    <!-- Main row: Inputs + Results -->
+    <div class="row g-3">
+      <!-- Inputs -->
+      <div class="col-12 col-xl-4">
+        <div class="card mb-3">
+          <div class="card-header p-2">
+            <div class="section-title">About Multiple Linear Regression</div>
+          </div>
+          <div class="card-body p-2">
+            <div class="panel-note mb-0">
+              Multiple linear regression (MLR) models a continuous outcome using two or more predictors via ordinary least squares (OLS). Use MLR to estimate each predictor's effect while controlling for the others, or to predict outcomes from multiple inputs. Suitable when the response is continuous, relationships are approximately linear, and the sample size satisfies n &gt; p + 1 for valid inference.
+            </div>
+          </div>
+        </div>
+        <div class="card h-100">
+          <div class="card-header p-3">
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="section-title">Inputs & Settings</div>
+              <span class="pill" style="font-size:.88rem">
+                <i class="fa-solid fa-sliders"></i>Generic MLR
+              </span>
+            </div>
+          </div>
+
+          <div class="card-body p-3">
+            <!-- Model size -->
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label">
+                  Predictors (p)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Number of predictors (excluding the intercept). Example: x1,x2,x3 ⇒ p=3."></i>
+                </label>
+                <div class="input-group">
+                  <button id="btnPMinus" class="btn btn-outline-light" type="button">−</button>
+                  <input id="pInput" class="form-control text-center" type="number" min="1" max="10" value="3">
+                  <button id="btnPPlus" class="btn btn-outline-light" type="button">+</button>
+                </div>
+              </div>
+              <div class="col-6">
+                <label class="form-label">
+                  Sample size (n)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Number of observations. Degrees of freedom for error is df_error = n − p − 1."></i>
+                </label>
+                <input id="nInput" class="form-control" type="number" min="3" step="1" value="30">
+              </div>
+            </div>
+
+            <hr class="my-3" style="border-color: rgba(148,163,184,.18); opacity:1">
+
+            <!-- ANOVA inputs -->
+            <div class="mb-2">
+              <div class="d-flex align-items-center justify-content-between">
+                <div class="fw-bold">
+                  ANOVA inputs (recommended)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Best case: provide SSE and SST. If SST is missing you may provide R²; if SSE is missing you may provide RMSE (and n,p). The calculator will infer missing parts when possible."></i>
+                </div>
+              </div>
+              <div class="panel-note mt-1">
+                Provide what your question gives you; the calculator derives the rest when possible.
+              </div>
+            </div>
+
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label">
+                  SSE (Residual SS)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="SSE = Σ (yi − ŷi)². Used for MSE = SSE/df_error and RMSE = √MSE."></i>
+                </label>
+                <input id="sseInput" class="form-control" type="number" step="any" placeholder="e.g., 2900">
+              </div>
+              <div class="col-6">
+                <label class="form-label">
+                  SST (Total SS)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="SST = Σ (yi − ȳ)². Also: SST = SSR + SSE. And R² = SSR/SST."></i>
+                </label>
+                <input id="sstInput" class="form-control" type="number" step="any" placeholder="e.g., 6200">
+              </div>
+              <div class="col-6">
+                <label class="form-label">
+                  R² (optional)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="If SST is not provided, you can infer SST using: SST = SSE/(1−R²) (requires SSE)."></i>
+                </label>
+                <input id="r2Input" class="form-control" type="number" step="any" min="0" max="1" placeholder="e.g., 0.465">
+              </div>
+              <div class="col-6">
+                <label class="form-label">
+                  RMSE (optional)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="RMSE = √MSE where MSE = SSE/df_error. If SSE is missing but RMSE is known: SSE = RMSE² × df_error."></i>
+                </label>
+                <input id="rmseInput" class="form-control" type="number" step="any" placeholder="e.g., 5.013">
+              </div>
+            </div>
+
+            <hr class="my-3" style="border-color: rgba(148,163,184,.18); opacity:1">
+
+            <!-- Coefficients input -->
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="fw-bold">
+                Coefficients (enter b and SE)
+                <i class="fa-solid fa-circle-info help-i"
+                   data-bs-toggle="tooltip"
+                   title="Enter intercept b0 and slopes b1..bp with their standard errors SE(b). The calculator computes t, p-values, and confidence intervals."></i>
+              </div>
+              <button id="btnRenameX" class="btn btn-outline-light btn-sm"
+                      data-bs-toggle="tooltip"
+                      title="Rename predictors (X1..Xp) to match your exercise wording (e.g., Price, Rooms, Distance).">
+                Rename
+              </button>
+            </div>
+
+            <div class="table-wrap table-wrap-sm mb-2">
+              <div id="coefInputContainer"></div>
+            </div>
+            <div class="panel-note">
+              Tip: Intercept is included automatically as b0. For most homework: you are given b and SE(b) in a coefficients table.
+            </div>
+
+            <hr class="my-3" style="border-color: rgba(148,163,184,.18); opacity:1">
+
+            <!-- Alpha & CL -->
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label">
+                  Significance level (α)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="Used for decisions: reject H0 if p-value < α. Set any value like 0.10, 0.05, 0.01, etc."></i>
+                </label>
+                <div class="input-group">
+                  <input id="alphaInput" class="form-control" type="number" step="0.001" min="0.0001" max="0.5" value="0.05">
+                  <span class="input-group-text" style="background: rgba(255,255,255,.04); color: rgba(248,250,252,.85); border-color: rgba(148,163,184,.28);">α</span>
+                </div>
+              </div>
+              <div class="col-6">
+                <label class="form-label">
+                  Confidence level (CL)
+                  <i class="fa-solid fa-circle-info help-i"
+                     data-bs-toggle="tooltip"
+                     title="For coefficient confidence intervals: CI = b ± t*·SE(b). Typical CL: 95% or 99%. You can set any CL."></i>
+                </label>
+                <div class="input-group">
+                  <input id="clInput" class="form-control" type="number" step="0.1" min="50" max="99.9" value="95">
+                  <span class="input-group-text" style="background: rgba(255,255,255,.04); color: rgba(248,250,252,.85); border-color: rgba(148,163,184,.28);">%</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-2">
+              <label class="form-label">
+                Alternative for coefficient tests (H1)
+                <i class="fa-solid fa-circle-info help-i"
+                   data-bs-toggle="tooltip"
+                   title="Two-sided is the default in most courses. For directional hypotheses choose >0 or <0."></i>
+              </label>
+              <select id="altSelect" class="form-select">
+                <option value="two">β ≠ 0 (two-sided)</option>
+                <option value="gt">β &gt; 0 (right-tailed)</option>
+                <option value="lt">β &lt; 0 (left-tailed)</option>
+              </select>
+            </div>
+
+            <hr class="my-3" style="border-color: rgba(148,163,184,.18); opacity:1">
+
+            <!-- Predictions -->
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <div class="fw-bold">
+                Predictions (x0) and differences (Δx)
+                <i class="fa-solid fa-circle-info help-i"
+                   data-bs-toggle="tooltip"
+                   title="Compute ŷ(x0)=b0+Σbj x0j. For difference questions, enter Δx to compute Δŷ=ΣbjΔxj (intercept cancels)."></i>
+              </div>
+              <div class="pill" style="font-size:.86rem">
+                <i class="fa-solid fa-bullseye"></i>x0 & Δx
+              </div>
+            </div>
+
+            <div class="table-wrap table-wrap-sm mb-2">
+              <div id="predictInputContainer"></div>
+            </div>
+
+            <div class="panel-note">
+              If x0 is not required in your question, you can leave x0 blank. If you’re asked “difference between two cases”, fill Δx.
+            </div>
+
+            <div class="d-grid gap-2 mt-3">
+              <button id="btnCompute" class="btn btn-primary">
+                <i class="fa-solid fa-calculator me-2"></i>Compute
+              </button>
+              <button id="btnExample" class="btn btn-outline-light">
+                <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Load a generic example
+              </button>
+            </div>
+
+            <div id="errorBox" class="alert alert-danger d-none mt-3 mb-0"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div class="col-12 col-xl-8">
+        <div class="card">
+          <div class="card-header p-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <div class="section-title">Results</div>
+              <div class="pill" style="font-size:.88rem">
+                <i class="fa-solid fa-circle-check"></i>
+                Model summary, ANOVA, coefficients, prediction
+              </div>
+            </div>
+          </div>
+
+          <div class="card-body p-3">
+            <!-- KPI row -->
+            <div class="kpi-grid">
+              <div class="kpi">
+                <div class="label">Estimated equation</div>
+                <div id="kpiEq" class="value mono">—</div>
+              </div>
+              <div class="kpi">
+                <div class="label">R² and Adjusted R²</div>
+                <div id="kpiR2" class="value mono">—</div>
+              </div>
+              <div class="kpi">
+                <div class="label">Overall F-test</div>
+                <div id="kpiF" class="value mono">—</div>
+              </div>
+              <div class="kpi">
+                <div class="label">RMSE</div>
+                <div id="kpiRMSE" class="value mono">—</div>
+              </div>
+            </div>
+
+            <!-- Two-column results panels -->
+            <div class="row g-3">
+              <div class="col-12 col-lg-6">
+                <div class="p-3" style="border:1px solid var(--border); border-radius:16px; background: rgba(255,255,255,.03);">
+                  <div class="fw-bold mb-2">Model & formulas</div>
+
+                  <div class="math-block">
+                    <div class="math-label">Model form</div>
+                    <div class="math-line">ŷ = b0 + b1·x1 + b2·x2 + … + bp·xp</div>
+                  </div>
+
+                  <div class="math-block">
+                    <div class="math-label">ANOVA relationships</div>
+                    <div class="math-line">SST = SSR + SSE</div>
+                    <div class="math-line">R² = SSR/SST,  Adj R² = 1 − (SSE/df_error)/(SST/df_total)</div>
+                    <div class="math-line">MSR = SSR/p,  MSE = SSE/(n−p−1),  F = MSR/MSE</div>
+                  </div>
+
+                  <div class="panel-note">
+                    Interpretation: each slope bj is the expected change in ŷ for a +1 change in xj,
+                    holding the other predictors fixed.
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <div class="p-3" style="border:1px solid var(--border); border-radius:16px; background: rgba(255,255,255,.03);">
+                  <div class="fw-bold mb-2">ANOVA table</div>
+                  <div class="table-wrap table-wrap-lg mb-2">
+                    <div id="anovaContainer"></div>
+                  </div>
+                  <div id="anovaNote" class="panel-note">—</div>
+                </div>
+              </div>
+
+              <div class="col-12">
+                <div class="p-3" style="border:1px solid var(--border); border-radius:16px; background: rgba(255,255,255,.03);">
+                  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                    <div class="fw-bold">Coefficients inference (b, SE, t, p, CI)</div>
+                    <div id="sigSummary" class="pill" style="font-size:.88rem;">—</div>
+                  </div>
+                  <div class="table-wrap table-wrap-lg">
+                    <div id="coefOutContainer"></div>
+                  </div>
+                  <div class="panel-note mt-2">
+                    Decision rule: significant if p-value &lt; α (or equivalently, CI does not include 0 for two-sided).
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <div class="p-3" style="border:1px solid var(--border); border-radius:16px; background: rgba(255,255,255,.03); height:100%;">
+                  <div class="fw-bold mb-2">Predictions</div>
+                  <div class="row g-2">
+                    <div class="col-12 col-sm-6">
+                      <div class="kpi">
+                        <div class="label">ŷ(x0)</div>
+                        <div id="kpiYhat0" class="value mono">—</div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-sm-6">
+                      <div class="kpi">
+                        <div class="label">Δŷ for Δx</div>
+                        <div id="kpiDeltaY" class="value mono">—</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="panel-note mt-2">
+                    Use x0 for “predict response at given predictors”. Use Δx for “difference between two cases”.
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-12 col-lg-6">
+                <div class="p-3" style="border:1px solid var(--border); border-radius:16px; background: rgba(255,255,255,.03); height:100%;">
+                  <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-2">
+                    <div class="fw-bold">Homework write-up (auto-generated)</div>
+                    <button id="btnCopyWriteup" class="btn btn-outline-light btn-sm">
+                      <i class="fa-solid fa-copy me-2"></i>Copy
+                    </button>
+                  </div>
+                  <div id="writeup" class="writeup">—</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-end mt-3">
+              <button id="btnComputeBottom" class="btn btn-primary">
+                <i class="fa-solid fa-calculator me-2"></i>Compute
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /row -->
+
+    <!-- FULL-WIDTH Steps section (fixes squashed tables) -->
+    <div class="row g-3 mt-1">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header p-3">
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+              <div class="section-title">Step-by-step solution</div>
+              <span class="pill" style="font-size:.88rem"><i class="fa-solid fa-graduation-cap"></i>Homework style</span>
+            </div>
+          </div>
+          <div class="card-body p-0">
+            <div class="steps-shell">
+              <div class="steps-topbar">
+                <div>
+                  <div class="fw-bold">Structure</div>
+                  <div class="meta">purpose → formula → substitute numbers → result → interpretation</div>
+                </div>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-outline-light btn-sm" type="button" id="btnExpandAll">Expand all</button>
+                  <button class="btn btn-outline-light btn-sm" type="button" id="btnCollapseAll">Collapse all</button>
+                </div>
+              </div>
+              <div class="steps-body">
+                <div id="stepsContainer">
+                  <div class="panel-note">Compute to generate the full solution steps.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div><!-- /col -->
+    </div><!-- /row -->
+  </div><!-- /container -->
+
+  <script>
+    /**********************
+     * Helpers
+     **********************/
+    function clamp(n,min,max){ return Math.max(min, Math.min(max,n)); }
+    function isNum(x){ return Number.isFinite(x) && !Number.isNaN(x); }
+    function num(v){ const x = parseFloat(v); return isNum(x) ? x : NaN; }
+    function fmt(x,d=6){
+      if (!isNum(x)) return "—";
+      const ax = Math.abs(x);
+      if (ax !== 0 && ax < 1e-6) return x.toExponential(3);
+      return Number(x).toFixed(d);
+    }
+    function escapeHtml(str){
+      return String(str)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+    }
+    function showError(msg){
+      const box = document.getElementById("errorBox");
+      box.textContent = msg;
+      box.classList.remove("d-none");
+    }
+    function clearError(){
+      const box = document.getElementById("errorBox");
+      box.textContent = "";
+      box.classList.add("d-none");
+    }
+
+    /**********************
+     * Bootstrap tooltips
+     **********************/
+    function initTooltips(){
+      const list = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+      list.forEach(el=>{
+        const ex = bootstrap.Tooltip.getInstance(el);
+        if (ex) ex.dispose();
+        new bootstrap.Tooltip(el,{container:"body", trigger:"hover focus"});
+      });
+    }
+
+    /**********************
+     * Special functions: incomplete beta
+     * (for F and t p-values + inverse t via binary search)
+     **********************/
+    function gammaln(xx){
+      const cof = [
+        76.18009172947146, -86.50532032941677,
+        24.01409824083091, -1.231739572450155,
+        0.001208650973866179, -0.000005395239384953
+      ];
+      let x = xx - 1.0;
+      let tmp = x + 5.5;
+      tmp -= (x + 0.5) * Math.log(tmp);
+      let ser = 1.000000000190015;
+      for (let j=0; j<cof.length; j++){
+        x += 1;
+        ser += cof[j] / x;
+      }
+      return -tmp + Math.log(2.5066282746310005 * ser);
+    }
+
+    function betacf(a, b, x){
+      const MAXIT = 2000;
+      const EPS = 3e-14;
+      const FPMIN = 1e-300;
+      let qab = a + b;
+      let qap = a + 1;
+      let qam = a - 1;
+      let c = 1;
+      let d = 1 - qab * x / qap;
+      if (Math.abs(d) < FPMIN) d = FPMIN;
+      d = 1 / d;
+      let h = d;
+
+      for (let m=1; m<=MAXIT; m++){
+        let m2 = 2*m;
+
+        let aa = m*(b - m)*x / ((qam + m2)*(a + m2));
+        d = 1 + aa*d; if (Math.abs(d) < FPMIN) d = FPMIN;
+        c = 1 + aa/c; if (Math.abs(c) < FPMIN) c = FPMIN;
+        d = 1/d; h *= d*c;
+
+        aa = -(a + m)*(qab + m)*x / ((a + m2)*(qap + m2));
+        d = 1 + aa*d; if (Math.abs(d) < FPMIN) d = FPMIN;
+        c = 1 + aa/c; if (Math.abs(c) < FPMIN) c = FPMIN;
+        d = 1/d;
+        let del = d*c;
+        h *= del;
+
+        if (Math.abs(del - 1.0) < EPS) break;
+      }
+      return h;
+    }
+
+    function betai(a, b, x){
+      if (x < 0 || x > 1) return NaN;
+      if (x === 0 || x === 1) return x;
+
+      const bt = Math.exp(
+        gammaln(a+b) - gammaln(a) - gammaln(b) +
+        a*Math.log(x) + b*Math.log(1-x)
+      );
+
+      if (x < (a+1)/(a+b+2)){
+        return bt*betacf(a,b,x)/a;
+      } else {
+        return 1 - bt*betacf(b,a,1-x)/b;
+      }
+    }
+
+    // F CDF via regularized beta
+    function fCdf(F, d1, d2){
+      if (!isNum(F) || F < 0) return NaN;
+      const x = (d1*F) / (d1*F + d2);
+      return betai(d1/2, d2/2, x);
+    }
+    function fPValueRightTail(F, d1, d2){
+      const cdf = fCdf(F, d1, d2);
+      return 1 - cdf;
+    }
+
+    // t CDF via regularized beta
+    function tCdf(t, df){
+      if (!isNum(t) || !isNum(df) || df <= 0) return NaN;
+      if (t === 0) return 0.5;
+      const x = df / (df + t*t);
+      const ib = betai(df/2, 0.5, x);
+      if (t > 0) return 1 - 0.5*ib;
+      return 0.5*ib;
+    }
+    function tPValue(t, df, alt){
+      // alt: "two", "gt", "lt"
+      if (!isNum(t)) return NaN;
+      const c = tCdf(t, df);
+      if (!isNum(c)) return NaN;
+      if (alt === "gt") return 1 - c;
+      if (alt === "lt") return c;
+      // two-sided
+      const ca = tCdf(Math.abs(t), df);
+      return 2*(1 - ca);
+    }
+
+    // Inverse t CDF via binary search for two-sided CI critical value
+    function tInv(p, df){
+      // p in (0,1)
+      if (!(p > 0 && p < 1)) return NaN;
+      let lo = -100, hi = 100;
+      for (let i=0;i<200;i++){
+        const mid = (lo+hi)/2;
+        const cmid = tCdf(mid, df);
+        if (cmid < p) lo = mid; else hi = mid;
+      }
+      return (lo+hi)/2;
+    }
+
+    /**********************
+     * State
+     **********************/
+    const state = {
+      p: 3,
+      names: ["Intercept (b0)", "X1", "X2", "X3"],
+      coefB: [12, 2.7, -1.1, 4.6],
+      coefSE: [8.0, 1.2, 0.6, 2.0],
+      x0: [3, 6, 200],
+      dx: [1, 0, -50]
+    };
+
+    /**********************
+     * UI builders
+     **********************/
+    function ensureStateSizes(){
+      const p = state.p;
+      // names includes intercept + p predictors
+      while(state.names.length < p+1) state.names.push(`X${state.names.length}`);
+      while(state.names.length > p+1) state.names.pop();
+
+      while(state.coefB.length < p+1) state.coefB.push(0);
+      while(state.coefB.length > p+1) state.coefB.pop();
+
+      while(state.coefSE.length < p+1) state.coefSE.push(0);
+      while(state.coefSE.length > p+1) state.coefSE.pop();
+
+      while(state.x0.length < p) state.x0.push(NaN);
+      while(state.x0.length > p) state.x0.pop();
+
+      while(state.dx.length < p) state.dx.push(NaN);
+      while(state.dx.length > p) state.dx.pop();
+    }
+
+    function buildCoefInput(){
+      ensureStateSizes();
+      const el = document.getElementById("coefInputContainer");
+      const p = state.p;
+
+      let html = `<table class="table table-dark table-bordered align-middle">
+        <thead>
+          <tr>
+            <th style="min-width:260px">Term</th>
+            <th style="min-width:180px">b (estimate)</th>
+            <th style="min-width:180px">SE(b)</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      for(let i=0;i<p+1;i++){
+        html += `<tr>
+          <td class="term-col">
+            <input class="form-control form-control-sm" type="text" value="${escapeHtml(state.names[i])}" data-name="${i}">
+          </td>
+          <td>
+            <input class="form-control form-control-sm mono" type="number" step="any"
+                   value="${isNum(state.coefB[i])? state.coefB[i] : ""}" data-b="${i}">
+          </td>
+          <td>
+            <input class="form-control form-control-sm mono" type="number" step="any"
+                   value="${isNum(state.coefSE[i])? state.coefSE[i] : ""}" data-se="${i}">
+          </td>
+        </tr>`;
+      }
+
+      html += `</tbody></table>`;
+      el.innerHTML = html;
+
+      el.querySelectorAll("input[data-name]").forEach(inp=>{
+        inp.addEventListener("input",(e)=>{
+          const i = parseInt(e.target.getAttribute("data-name"),10);
+          state.names[i] = e.target.value || (i===0 ? "Intercept (b0)" : `X${i}`);
+        });
+      });
+      el.querySelectorAll("input[data-b]").forEach(inp=>{
+        inp.addEventListener("input",(e)=>{
+          const i = parseInt(e.target.getAttribute("data-b"),10);
+          state.coefB[i] = num(e.target.value);
+        });
+      });
+      el.querySelectorAll("input[data-se]").forEach(inp=>{
+        inp.addEventListener("input",(e)=>{
+          const i = parseInt(e.target.getAttribute("data-se"),10);
+          state.coefSE[i] = num(e.target.value);
+        });
+      });
+    }
+
+    function buildPredictInput(){
+      ensureStateSizes();
+      const el = document.getElementById("predictInputContainer");
+      const p = state.p;
+
+      let html = `<table class="table table-dark table-bordered align-middle">
+        <thead>
+          <tr>
+            <th style="min-width:260px">Predictor</th>
+            <th style="min-width:200px">x0 value</th>
+            <th style="min-width:200px">Δx (difference)</th>
+          </tr>
+        </thead>
+        <tbody>`;
+
+      for(let j=1;j<=p;j++){
+        html += `<tr>
+          <td class="term-col">${escapeHtml(state.names[j] || `X${j}`)}</td>
+          <td>
+            <input class="form-control form-control-sm mono" type="number" step="any"
+                   value="${isNum(state.x0[j-1])? state.x0[j-1] : ""}" data-x0="${j-1}" placeholder="optional">
+          </td>
+          <td>
+            <input class="form-control form-control-sm mono" type="number" step="any"
+                   value="${isNum(state.dx[j-1])? state.dx[j-1] : ""}" data-dx="${j-1}" placeholder="optional">
+          </td>
+        </tr>`;
+      }
+
+      html += `</tbody></table>`;
+      el.innerHTML = html;
+
+      el.querySelectorAll("input[data-x0]").forEach(inp=>{
+        inp.addEventListener("input",(e)=>{
+          const i = parseInt(e.target.getAttribute("data-x0"),10);
+          state.x0[i] = num(e.target.value);
+        });
+      });
+      el.querySelectorAll("input[data-dx]").forEach(inp=>{
+        inp.addEventListener("input",(e)=>{
+          const i = parseInt(e.target.getAttribute("data-dx"),10);
+          state.dx[i] = num(e.target.value);
+        });
+      });
+    }
+
+    /**********************
+     * ANOVA + inference computation
+     **********************/
+    function getInputs(){
+      const p = clamp(parseInt(document.getElementById("pInput").value,10),1,10);
+      const n = parseInt(document.getElementById("nInput").value,10);
+
+      const alpha = num(document.getElementById("alphaInput").value);
+      const clPct = num(document.getElementById("clInput").value);
+      const cl = isNum(clPct) ? clPct/100 : NaN;
+      const alt = document.getElementById("altSelect").value;
+
+      const SSE_in = num(document.getElementById("sseInput").value);
+      const SST_in = num(document.getElementById("sstInput").value);
+      const R2_in  = num(document.getElementById("r2Input").value);
+      const RMSE_in= num(document.getElementById("rmseInput").value);
+
+      return {p,n,alpha,cl,alt,SSE_in,SST_in,R2_in,RMSE_in};
+    }
+
+    function inferAnova({p,n,SSE_in,SST_in,R2_in,RMSE_in}){
+      const dfModel = p;
+      const dfError = n - p - 1;
+      const dfTotal = n - 1;
+
+      let SSE = SSE_in;
+      let SST = SST_in;
+      let R2  = R2_in;
+      let RMSE= RMSE_in;
+
+      // Basic validation
+      if (!Number.isFinite(dfError) || dfError <= 0){
+        return {error: `Invalid degrees of freedom: df_error = n − p − 1 must be > 0. Please ensure n > p+1.`};
+      }
+
+      // If SSE missing but RMSE is known: SSE = RMSE^2 * dfError
+      if (!isNum(SSE) && isNum(RMSE)){
+        SSE = RMSE*RMSE * dfError;
+      }
+
+      // If SST missing but SSE and R2 known: SST = SSE/(1-R2)
+      if (!isNum(SST) && isNum(SSE) && isNum(R2)){
+        if (R2 >= 1) return {error:`R² must be < 1 to infer SST from SSE.`};
+        if (R2 < 0) return {error:`R² must be ≥ 0.`};
+        SST = SSE/(1 - R2);
+      }
+
+      // If SSE missing but SST and R2 known: SSE = SST*(1-R2)
+      if (!isNum(SSE) && isNum(SST) && isNum(R2)){
+        SSE = SST*(1 - R2);
+      }
+
+      // If R2 missing but SSE and SST known
+      if (!isNum(R2) && isNum(SSE) && isNum(SST)){
+        R2 = 1 - (SSE/SST);
+      }
+
+      // If SST missing but SSE and R2 computed now
+      if (!isNum(SST) && isNum(SSE) && isNum(R2)){
+        if (R2 >= 1) return {error:`R² must be < 1 to infer SST.`};
+        SST = SSE/(1 - R2);
+      }
+
+      // Compute SSR if possible
+      if (!isNum(SSE) || !isNum(SST)){
+        return {error:`To compute ANOVA you must provide enough information. Recommended: provide SSE and SST. Alternatively: SSE + R², or RMSE + (SST or R²).`};
+      }
+      if (SST <= 0) return {error:`SST must be > 0.`};
+      if (SSE < 0) return {error:`SSE must be ≥ 0.`};
+
+      const SSR = SST - SSE;
+      if (SSR < 0){
+        return {error:`Inconsistent inputs: SST − SSE is negative. Check your SSE/SST/R²/RMSE values.`};
+      }
+
+      const MSR = SSR / dfModel;
+      const MSE = SSE / dfError;
+      const RMSE_out = Math.sqrt(MSE);
+
+      const F = (MSE === 0) ? Infinity : (MSR / MSE);
+      const pF = (MSE === 0) ? 0 : fPValueRightTail(F, dfModel, dfError);
+
+      const adjR2 = 1 - (SSE/dfError)/(SST/dfTotal);
+
+      return {dfModel,dfError,dfTotal,SSE,SST,SSR,MSR,MSE,RMSE:RMSE_out,F,pF,R2,adjR2};
+    }
+
+    function computeCoefficients({p, dfError, alpha, cl, alt}){
+      const tCrit = isNum(cl) ? tInv(1 - (1-cl)/2, dfError) : NaN;
+
+      const rows = [];
+      for(let i=0;i<p+1;i++){
+        const name = state.names[i] || (i===0 ? "Intercept (b0)" : `X${i}`);
+        const b = state.coefB[i];
+        const se = state.coefSE[i];
+
+        let t = NaN, pv = NaN, ciLow = NaN, ciHigh = NaN, sig = false;
+
+        if (isNum(b) && isNum(se) && se > 0){
+          t = b / se;
+          pv = tPValue(t, dfError, alt);
+          if (isNum(tCrit)){
+            ciLow = b - tCrit*se;
+            ciHigh= b + tCrit*se;
+          }
+          sig = isNum(pv) && isNum(alpha) ? (pv < alpha) : false;
+        }
+
+        rows.push({name,b,se,t,pv,ciLow,ciHigh,sig});
+      }
+      return {rows, tCrit};
+    }
+
+    function computePrediction(p){
+      const b0 = isNum(state.coefB[0]) ? state.coefB[0] : 0;
+
+      // yhat0 = b0 + Σ bj*x0j
+      let yhat0 = b0;
+      for(let j=1;j<=p;j++){
+        const bj = isNum(state.coefB[j]) ? state.coefB[j] : 0;
+        const x0j = isNum(state.x0[j-1]) ? state.x0[j-1] : 0;
+        yhat0 += bj*x0j;
+      }
+
+      // deltaY = Σ bj*dxj (intercept cancels)
+      let deltaY = 0;
+      for(let j=1;j<=p;j++){
+        const bj = isNum(state.coefB[j]) ? state.coefB[j] : 0;
+        const dxj = isNum(state.dx[j-1]) ? state.dx[j-1] : 0;
+        deltaY += bj*dxj;
+      }
+
+      return {yhat0, deltaY};
+    }
+
+    /**********************
+     * Rendering results tables
+     **********************/
+    function renderAnovaTable(res){
+      const el = document.getElementById("anovaContainer");
+      const html = `
+        <table class="table table-dark table-bordered align-middle">
+          <thead>
+            <tr>
+              <th>Source</th>
+              <th>df</th>
+              <th>SS</th>
+              <th>MS</th>
+              <th>F</th>
+              <th>Significance (p)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>Regression</th>
+              <td class="mono">${fmt(res.dfModel,0)}</td>
+              <td class="mono">${fmt(res.SSR,6)}</td>
+              <td class="mono">${fmt(res.MSR,6)}</td>
+              <td class="mono">${isFinite(res.F) ? fmt(res.F,6) : "∞"}</td>
+              <td class="mono">${fmt(res.pF,8)}</td>
+            </tr>
+            <tr>
+              <th>Error</th>
+              <td class="mono">${fmt(res.dfError,0)}</td>
+              <td class="mono">${fmt(res.SSE,6)}</td>
+              <td class="mono">${fmt(res.MSE,6)}</td>
+              <td class="mono">—</td>
+              <td class="mono">—</td>
+            </tr>
+            <tr>
+              <th>Total</th>
+              <td class="mono">${fmt(res.dfTotal,0)}</td>
+              <td class="mono">${fmt(res.SST,6)}</td>
+              <td class="mono">—</td>
+              <td class="mono">—</td>
+              <td class="mono">—</td>
+            </tr>
+          </tbody>
+        </table>`;
+      el.innerHTML = html;
+
+      document.getElementById("anovaNote").innerHTML =
+        `SST = SSR + SSE and R² = SSR/SST. Here: R² = <span class="mono">${fmt(res.R2,6)}</span>, Adj R² = <span class="mono">${fmt(res.adjR2,6)}</span>.`;
+    }
+
+    function renderCoefOut(rows, alpha, cl){
+      const el = document.getElementById("coefOutContainer");
+      const clLabel = isNum(cl) ? `${Math.round(cl*100)}% CI` : "CI";
+
+      let body = "";
+      let sigNames = [];
+      rows.forEach(r=>{
+        const pStr = isNum(r.pv) ? fmt(r.pv,8) : "—";
+        const tStr = isNum(r.t) ? fmt(r.t,6) : "—";
+        const ciStr = (isNum(r.ciLow) && isNum(r.ciHigh)) ? `[${fmt(r.ciLow,6)}, ${fmt(r.ciHigh,6)}]` : "—";
+        const sigText = isNum(r.pv) && isNum(alpha) ? (r.pv < alpha ? "Significant" : "Not significant") : "—";
+        const sigClass = isNum(r.pv) && isNum(alpha) ? (r.pv < alpha ? "status-good" : "status-warn") : "";
+        if (sigText === "Significant" && r.name !== "Intercept (b0)") sigNames.push(r.name);
+
+        body += `
+          <tr>
+            <td class="term-col">${escapeHtml(r.name)}</td>
+            <td class="mono">${isNum(r.b)? fmt(r.b,6) : "—"}</td>
+            <td class="mono">${isNum(r.se)? fmt(r.se,6) : "—"}</td>
+            <td class="mono">${tStr}</td>
+            <td class="mono">${pStr}</td>
+            <td class="mono">${ciStr}</td>
+            <td class="${sigClass}">${sigText}</td>
+          </tr>`;
+      });
+
+      el.innerHTML = `
+        <table class="table table-dark table-bordered align-middle">
+          <thead>
+            <tr>
+              <th class="term-col">Term</th>
+              <th>b</th>
+              <th>SE(b)</th>
+              <th>t</th>
+              <th>p</th>
+              <th>${clLabel}</th>
+              <th>Decision</th>
+            </tr>
+          </thead>
+          <tbody>${body}</tbody>
+        </table>
+      `;
+
+      const sigSummary = document.getElementById("sigSummary");
+      if (isNum(alpha)){
+        const msg = sigNames.length
+          ? `Significant (α=${fmt(alpha,3)}): ${sigNames.join(", ")}`
+          : `No significant predictors at α=${fmt(alpha,3)} (excluding intercept)`;
+        sigSummary.textContent = msg;
+      } else {
+        sigSummary.textContent = "—";
+      }
+    }
+
+    /**********************
+     * Steps accordion
+     **********************/
+    function accItem({id, title, badge, bodyHtml, open=false}) {
+      const show = open ? "show" : "";
+      const collapsed = open ? "" : "collapsed";
+      return `
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="h-${id}">
+            <button class="accordion-button ${collapsed}" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#c-${id}"
+                    aria-expanded="${open}" aria-controls="c-${id}">
+              ${title}
+              ${badge ? `<span class="step-badge">${badge}</span>` : ``}
+            </button>
+          </h2>
+          <div id="c-${id}" class="accordion-collapse collapse ${show}" aria-labelledby="h-${id}">
+            <div class="accordion-body">${bodyHtml}</div>
+          </div>
+        </div>`;
+    }
+
+    function buildSteps(res, coefRows, inputs, pred){
+      const stepsEl = document.getElementById("stepsContainer");
+      const p = inputs.p, n = inputs.n;
+      const alpha = inputs.alpha, cl = inputs.cl;
+      const alt = inputs.alt;
+
+      const altLabel = (alt==="two") ? "two-sided" : (alt==="gt" ? "right-tailed" : "left-tailed");
+
+      const eq = (() => {
+        let s = `ŷ = ${fmt(state.coefB[0],6)}`;
+        for(let j=1;j<=p;j++){
+          const bj = state.coefB[j];
+          const nm = state.names[j] || `X${j}`;
+          s += ` + (${fmt(bj,6)})·${nm}`;
+        }
+        return s;
+      })();
+
+      const decisionOverall = (res.pF < alpha)
+        ? `<div class="callout good"><b>Decision (overall):</b> Reject H0 because p = ${fmt(res.pF,8)} &lt; α = ${fmt(alpha,4)}.</div>
+           <div class="panel-note mt-2">Interpretation: the model is statistically significant; at least one slope differs from 0.</div>`
+        : `<div class="callout warn"><b>Decision (overall):</b> Fail to reject H0 because p = ${fmt(res.pF,8)} ≥ α = ${fmt(alpha,4)}.</div>
+           <div class="panel-note mt-2">Interpretation: not enough evidence that the predictors explain Y (as a group) at this α.</div>`;
+
+      const step1 = `
+        <div class="panel-note">
+          <b>Purpose:</b> define the regression model and the meaning of coefficients.
+        </div>
+        <div class="math-block">
+          <div class="math-label">Model form</div>
+          <div class="math-line">ŷ = b0 + b1·x1 + b2·x2 + … + bp·xp</div>
+        </div>
+        <div class="math-block">
+          <div class="math-label">Estimated model (your inputs)</div>
+          <div class="math-line">${escapeHtml(eq)}</div>
+        </div>
+        <div class="callout">
+          <b>Interpretation reminder:</b> bj is the expected change in ŷ for a +1 change in xj <u>holding the other predictors fixed</u>.
+        </div>
+      `;
+
+      const step2 = `
+        <div class="panel-note"><b>Purpose:</b> compute degrees of freedom for ANOVA and t-tests.</div>
+        <div class="math-block">
+          <div class="math-label">Formulas</div>
+          <div class="math-line">df_model = p</div>
+          <div class="math-line">df_error = n − p − 1</div>
+          <div class="math-line">df_total = n − 1</div>
+        </div>
+        <div class="math-block">
+          <div class="math-label">Substitution</div>
+          <div class="math-line">p=${p}, n=${n}</div>
+          <div class="math-line">df_model=${res.dfModel}, df_error=${res.dfError}, df_total=${res.dfTotal}</div>
+        </div>
+        <div class="panel-note">
+          Reason: we estimate p slopes plus 1 intercept, which consumes p+1 degrees of freedom.
+        </div>
+      `;
+
+      const step3 = `
+        <div class="panel-note"><b>Purpose:</b> compute ANOVA quantities and relate them to R².</div>
+        <div class="math-block">
+          <div class="math-label">Core identities</div>
+          <div class="math-line">SST = SSR + SSE</div>
+          <div class="math-line">MSR = SSR / p</div>
+          <div class="math-line">MSE = SSE / df_error</div>
+          <div class="math-line">RMSE = √MSE</div>
+          <div class="math-line">R² = SSR/SST</div>
+        </div>
+        <div class="math-block">
+          <div class="math-label">Substitution</div>
+          <div class="math-line">SSE=${fmt(res.SSE,6)}, SST=${fmt(res.SST,6)} ⇒ SSR=SST−SSE=${fmt(res.SSR,6)}</div>
+          <div class="math-line">MSR=${fmt(res.SSR,6)}/${res.dfModel}=${fmt(res.MSR,6)}</div>
+          <div class="math-line">MSE=${fmt(res.SSE,6)}/${res.dfError}=${fmt(res.MSE,6)}, RMSE=${fmt(res.RMSE,6)}</div>
+          <div class="math-line">R²=${fmt(res.R2,6)}, Adj R²=${fmt(res.adjR2,6)}</div>
+        </div>
+        <div class="panel-note">
+          Interpretation: SSR is the part of variability explained by predictors; SSE is leftover error.
+        </div>
+      `;
+
+      const step4 = `
+        <div class="panel-note"><b>Purpose:</b> test if the model is useful overall.</div>
+        <div class="math-block">
+          <div class="math-label">Hypotheses (overall F-test)</div>
+          <div class="math-line">H0: b1 = b2 = … = bp = 0</div>
+          <div class="math-line">H1: at least one bj ≠ 0</div>
+        </div>
+        <div class="math-block">
+          <div class="math-label">Test statistic</div>
+          <div class="math-line">F = MSR / MSE</div>
+        </div>
+        <div class="math-block">
+          <div class="math-label">Substitution</div>
+          <div class="math-line">F = ${fmt(res.MSR,6)} / ${fmt(res.MSE,6)} = ${isFinite(res.F)? fmt(res.F,6):"∞"}</div>
+          <div class="math-line">p-value = P(F_${res.dfModel},${res.dfError} ≥ F_obs) = ${fmt(res.pF,8)}</div>
+        </div>
+        ${decisionOverall}
+      `;
+
+      // Coef table reused from results (render again but inside steps to keep it “self-contained”)
+      const coefTableHtml = (() => {
+        const clLabel = isNum(cl) ? `${Math.round(cl*100)}% CI` : "CI";
+        const rowsHtml = coefRows.map(r=>{
+          const pStr = isNum(r.pv) ? fmt(r.pv,8) : "—";
+          const tStr = isNum(r.t) ? fmt(r.t,6) : "—";
+          const ciStr = (isNum(r.ciLow) && isNum(r.ciHigh)) ? `[${fmt(r.ciLow,6)}, ${fmt(r.ciHigh,6)}]` : "—";
+          const sigText = isNum(r.pv) && isNum(alpha) ? (r.pv < alpha ? "Significant" : "Not significant") : "—";
+          const sigClass = isNum(r.pv) && isNum(alpha) ? (r.pv < alpha ? "status-good" : "status-warn") : "";
+          return `
+            <tr>
+              <td class="term-col">${escapeHtml(r.name)}</td>
+              <td class="mono">${isNum(r.b)? fmt(r.b,6) : "—"}</td>
+              <td class="mono">${isNum(r.se)? fmt(r.se,6) : "—"}</td>
+              <td class="mono">${tStr}</td>
+              <td class="mono">${pStr}</td>
+              <td class="mono">${ciStr}</td>
+              <td class="${sigClass}">${sigText}</td>
+            </tr>`;
+        }).join("");
+
+        return `
+          <div class="table-wrap table-wrap-lg">
+            <table class="table table-dark table-bordered align-middle">
+              <thead>
+                <tr>
+                  <th class="term-col">Term</th>
+                  <th>b</th>
+                  <th>SE(b)</th>
+                  <th>t</th>
+                  <th>p</th>
+                  <th>${clLabel}</th>
+                  <th>Decision</th>
+                </tr>
+              </thead>
+              <tbody>${rowsHtml}</tbody>
+            </table>
+          </div>`;
+      })();
+
+      const step5 = `
+        <div class="panel-note">
+          <b>Purpose:</b> test individual predictors and build confidence intervals.
+        </div>
+        <div class="math-block">
+          <div class="math-label">Per-coefficient test</div>
+          <div class="math-line">H0: bj = 0</div>
+          <div class="math-line">t = bj / SE(bj), with df = df_error</div>
+          <div class="math-line">p-value computed as ${altLabel}</div>
+        </div>
+        <div class="math-block">
+          <div class="math-label">Confidence interval (two-sided)</div>
+          <div class="math-line">CI: bj ± t* · SE(bj), where t* = t_{1−(1−CL)/2, df_error}</div>
+        </div>
+        ${coefTableHtml}
+        <div class="callout">
+          <b>Interpretation:</b> a predictor is significant if p &lt; α (or for two-sided, CI does not include 0).
+        </div>
+      `;
+
+      const step6 = `
+        <div class="panel-note">
+          <b>Purpose:</b> compute prediction at x0 and “difference between two cases”.
+        </div>
+        <div class="math-block">
+          <div class="math-label">Prediction</div>
+          <div class="math-line">ŷ(x0) = b0 + Σ bj·x0j</div>
+          <div class="math-line">Computed: ŷ(x0) = ${fmt(pred.yhat0,6)}</div>
+        </div>
+        <div class="math-block">
+          <div class="math-label">Difference (Δy for Δx)</div>
+          <div class="math-line">Δŷ = Σ bj·Δxj (intercept cancels)</div>
+          <div class="math-line">Computed: Δŷ = ${fmt(pred.deltaY,6)}</div>
+        </div>
+        <div class="callout warn">
+          If an exercise asks for a <b>prediction interval</b> in MLR, you usually need more than b and SE(b)
+          (often the covariance matrix of coefficients or (X'X)^{-1}). This calculator focuses on the standard
+          homework outputs: ANOVA, overall F, coefficient tests, CIs, and point predictions.
+        </div>
+      `;
+
+      const step7 = `
+        <div class="panel-note"><b>Purpose:</b> produce a concise exam-ready statement.</div>
+        <div class="callout">
+          <b>Reporting template:</b><br>
+          “F(${res.dfModel}, ${res.dfError}) = ${fmt(res.F,4)}, p = ${fmt(res.pF,6)}. R² = ${fmt(res.R2,4)}, Adj R² = ${fmt(res.adjR2,4)}, RMSE = ${fmt(res.RMSE,4)}.
+          At α=${fmt(alpha,3)}, significant predictors are those with p&lt;α (see coefficient table).”
+        </div>
+      `;
+
+      const accHtml = `
+        <div class="accordion" id="stepsAcc">
+          ${accItem({id:"s1", title:"Step 1 — Set up the model", badge:"Model", bodyHtml:step1, open:true})}
+          ${accItem({id:"s2", title:"Step 2 — Degrees of freedom", badge:"df", bodyHtml:step2})}
+          ${accItem({id:"s3", title:"Step 3 — ANOVA quantities (SST, SSR, SSE, MSR, MSE)", badge:"ANOVA", bodyHtml:step3})}
+          ${accItem({id:"s4", title:"Step 4 — Overall model significance (F-test)", badge:"F-test", bodyHtml:step4})}
+          ${accItem({id:"s5", title:"Step 5 — Coefficients inference (t-tests + CI)", badge:"t-tests", bodyHtml:step5})}
+          ${accItem({id:"s6", title:"Step 6 — Predictions & differences (Δŷ)", badge:"Prediction", bodyHtml:step6})}
+          ${accItem({id:"s7", title:"Step 7 — What to report (template)", badge:"Write-up", bodyHtml:step7})}
+        </div>
+      `;
+      stepsEl.innerHTML = accHtml;
+
+      // Expand/collapse all
+      const accRoot = document.getElementById("stepsAcc");
+      document.getElementById("btnExpandAll").onclick = () => {
+        accRoot.querySelectorAll(".accordion-collapse").forEach(el => new bootstrap.Collapse(el, {show:true}));
+      };
+      document.getElementById("btnCollapseAll").onclick = () => {
+        accRoot.querySelectorAll(".accordion-collapse").forEach(el => new bootstrap.Collapse(el, {toggle:false}).hide());
+      };
+    }
+
+    /**********************
+     * Write-up generator
+     **********************/
+    function buildWriteup(res, coefRows, inputs, pred){
+      const alpha = inputs.alpha;
+      const cl = inputs.cl;
+
+      const sig = coefRows
+        .filter(r => r.name !== "Intercept (b0)" && isNum(r.pv) && isNum(alpha) && r.pv < alpha)
+        .map(r => r.name);
+
+      const eq = (() => {
+        let s = `ŷ = ${fmt(state.coefB[0],4)}`;
+        for(let j=1;j<=inputs.p;j++){
+          s += ` + (${fmt(state.coefB[j],4)})·${state.names[j] || `X${j}`}`;
+        }
+        return s;
+      })();
+
+      const overallDecision = (res.pF < alpha) ? "Reject H0 (overall model significant)." : "Fail to reject H0 (overall not significant).";
+
+      const clLabel = isNum(cl) ? `${Math.round(cl*100)}%` : "CL";
+      const lines = [];
+      lines.push(`Multiple Linear Regression (MLR)`);
+      lines.push(`Model: ${eq}`);
+      lines.push(``);
+      lines.push(`ANOVA / model fit:`);
+      lines.push(`R² = ${fmt(res.R2,4)}, Adj R² = ${fmt(res.adjR2,4)}, RMSE = ${fmt(res.RMSE,4)}`);
+      lines.push(`Overall F-test: F(${res.dfModel},${res.dfError}) = ${fmt(res.F,4)}, p = ${fmt(res.pF,6)} at α=${fmt(alpha,3)} → ${overallDecision}`);
+      lines.push(``);
+      lines.push(`Coefficients (${clLabel} CI; significance at α=${fmt(alpha,3)}):`);
+      coefRows.forEach(r=>{
+        const ci = (isNum(r.ciLow) && isNum(r.ciHigh)) ? `[${fmt(r.ciLow,4)}, ${fmt(r.ciHigh,4)}]` : `[—]`;
+        const p = isNum(r.pv) ? fmt(r.pv,6) : "—";
+        lines.push(`- ${r.name}: b=${isNum(r.b)?fmt(r.b,4):"—"}, SE=${isNum(r.se)?fmt(r.se,4):"—"}, t=${isNum(r.t)?fmt(r.t,4):"—"}, p=${p}, CI=${ci}`);
+      });
+      lines.push(``);
+      lines.push(`Significant predictors: ${sig.length ? sig.join(", ") : "None (excluding intercept)"}`);
+      lines.push(``);
+      lines.push(`Predictions: ŷ(x0) = ${fmt(pred.yhat0,4)},  Δŷ(for Δx) = ${fmt(pred.deltaY,4)}`);
+
+      return lines.join("\n");
+    }
+
+    /**********************
+     * Main compute
+     **********************/
+    function computeAndRender(){
+      clearError();
+
+      // Sync state sizes from UI p
+      const pFromUI = clamp(parseInt(document.getElementById("pInput").value,10),1,10);
+      state.p = pFromUI;
+      ensureStateSizes();
+
+      // Rebuild tables (in case p changed)
+      buildCoefInput();
+      buildPredictInput();
+
+      const inputs = getInputs();
+      if (!Number.isFinite(inputs.n) || inputs.n <= 0){
+        showError("Please enter a valid sample size n.");
+        return;
+      }
+      if (inputs.n <= inputs.p + 1){
+        showError("n must be greater than p+1 so that df_error = n − p − 1 > 0.");
+        return;
+      }
+      if (!isNum(inputs.alpha) || inputs.alpha <= 0 || inputs.alpha >= 1){
+        showError("Please enter a valid significance level α (0 < α < 1).");
+        return;
+      }
+      if (!isNum(inputs.cl) || inputs.cl <= 0.5 || inputs.cl >= 1){
+        showError("Please enter a valid confidence level CL (e.g., 95). Minimum allowed is 50%.");
+        return;
+      }
+
+      const an = inferAnova(inputs);
+      if (an.error){
+        showError(an.error);
+        return;
+      }
+
+      const coef = computeCoefficients({p:inputs.p, dfError:an.dfError, alpha:inputs.alpha, cl:inputs.cl, alt:inputs.alt});
+      const pred = computePrediction(inputs.p);
+
+      // KPIs
+      const eqText = (() => {
+        let s = `ŷ = ${fmt(state.coefB[0],6)}`;
+        for(let j=1;j<=inputs.p;j++){
+          s += ` + (${fmt(state.coefB[j],6)})·${state.names[j] || `X${j}`}`;
+        }
+        return s;
+      })();
+
+      document.getElementById("kpiEq").textContent = eqText;
+      document.getElementById("kpiR2").textContent = `R²=${fmt(an.R2,6)}, Adj R²=${fmt(an.adjR2,6)}`;
+
+      const overallDecision = (an.pF < inputs.alpha)
+        ? `p=${fmt(an.pF,8)} → Reject H0`
+        : `p=${fmt(an.pF,8)} → Fail to reject H0`;
+      document.getElementById("kpiF").textContent = `F(${an.dfModel},${an.dfError})=${isFinite(an.F)?fmt(an.F,6):"∞"}; ${overallDecision}`;
+      document.getElementById("kpiRMSE").textContent = fmt(an.RMSE,6);
+
+      renderAnovaTable(an);
+      renderCoefOut(coef.rows, inputs.alpha, inputs.cl);
+
+      document.getElementById("kpiYhat0").textContent = fmt(pred.yhat0,6);
+      document.getElementById("kpiDeltaY").textContent = fmt(pred.deltaY,6);
+
+      // Steps + write-up
+      buildSteps(an, coef.rows, inputs, pred);
+
+      const writeupText = buildWriteup(an, coef.rows, inputs, pred);
+      document.getElementById("writeup").textContent = writeupText;
+
+      // Re-init tooltips after DOM updates
+      initTooltips();
+    }
+
+    /**********************
+     * Rename predictors
+     **********************/
+    function renamePredictors(){
+      const p = state.p;
+      const current = state.names.slice(1, p+1).join(", ");
+      const ans = prompt(
+        "Enter predictor names separated by commas (example: Price, Rooms, Distance)\n\nCurrent:\n" + current,
+        current
+      );
+      if (ans == null) return;
+      const parts = ans.split(",").map(s=>s.trim()).filter(Boolean);
+      for(let j=1;j<=p;j++){
+        state.names[j] = parts[j-1] || `X${j}`;
+      }
+      buildCoefInput();
+      buildPredictInput();
+      initTooltips();
+    }
+
+    /**********************
+     * Example + reset
+     **********************/
+    function loadExample(){
+      state.p = 3;
+      state.names = ["Intercept (b0)", "X1", "X2", "X3"];
+      state.coefB = [12.0, 2.7, -1.1, 4.6];
+      state.coefSE = [8.0, 1.2, 0.6, 2.0];
+      state.x0 = [3, 6, 200];
+      state.dx = [1, 0, -50];
+
+      document.getElementById("pInput").value = 3;
+      document.getElementById("nInput").value = 30;
+
+      // Provide a consistent ANOVA example
+      document.getElementById("sseInput").value = 2900;
+      document.getElementById("sstInput").value = 6200;
+      document.getElementById("r2Input").value = "";
+      document.getElementById("rmseInput").value = "";
+
+      document.getElementById("alphaInput").value = 0.05;
+      document.getElementById("clInput").value = 95;
+      document.getElementById("altSelect").value = "two";
+
+      buildCoefInput();
+      buildPredictInput();
+      computeAndRender();
+    }
+
+    function resetAll(){
+      document.getElementById("pInput").value = 3;
+      document.getElementById("nInput").value = 30;
+
+      document.getElementById("sseInput").value = "";
+      document.getElementById("sstInput").value = "";
+      document.getElementById("r2Input").value = "";
+      document.getElementById("rmseInput").value = "";
+
+      document.getElementById("alphaInput").value = 0.05;
+      document.getElementById("clInput").value = 95;
+      document.getElementById("altSelect").value = "two";
+
+      state.p = 3;
+      state.names = ["Intercept (b0)", "X1", "X2", "X3"];
+      state.coefB = [0,0,0,0];
+      state.coefSE = [0,0,0,0];
+      state.x0 = [NaN,NaN,NaN];
+      state.dx = [NaN,NaN,NaN];
+
+      buildCoefInput();
+      buildPredictInput();
+
+      document.getElementById("kpiEq").textContent = "—";
+      document.getElementById("kpiR2").textContent = "—";
+      document.getElementById("kpiF").textContent = "—";
+      document.getElementById("kpiRMSE").textContent = "—";
+      document.getElementById("anovaContainer").innerHTML = "";
+      document.getElementById("anovaNote").textContent = "—";
+      document.getElementById("coefOutContainer").innerHTML = "";
+      document.getElementById("sigSummary").textContent = "—";
+      document.getElementById("kpiYhat0").textContent = "—";
+      document.getElementById("kpiDeltaY").textContent = "—";
+      document.getElementById("writeup").textContent = "—";
+      document.getElementById("stepsContainer").innerHTML = `<div class="panel-note">Compute to generate the full solution steps.</div>`;
+
+      clearError();
+      initTooltips();
+    }
+
+    /**********************
+     * Copy write-up
+     **********************/
+    async function copyWriteup(){
+      const text = document.getElementById("writeup").textContent || "";
+      try{
+        await navigator.clipboard.writeText(text);
+        const btn = document.getElementById("btnCopyWriteup");
+        const old = btn.innerHTML;
+        btn.innerHTML = `<i class="fa-solid fa-check me-2"></i>Copied`;
+        setTimeout(()=>btn.innerHTML=old, 1200);
+      }catch(e){
+        alert("Copy failed (browser permissions). You can manually select the write-up and copy.");
+      }
+    }
+
+    /**********************
+     * Wire up events
+     **********************/
+    function rebuildForP(){
+      const p = clamp(parseInt(document.getElementById("pInput").value,10),1,10);
+      state.p = p;
+      ensureStateSizes();
+      buildCoefInput();
+      buildPredictInput();
+      initTooltips();
+    }
+
+    document.addEventListener("DOMContentLoaded", ()=>{
+      ensureStateSizes();
+      buildCoefInput();
+      buildPredictInput();
+      initTooltips();
+
+      document.getElementById("btnCompute").addEventListener("click", computeAndRender);
+      document.getElementById("btnComputeTop").addEventListener("click", computeAndRender);
+      document.getElementById("btnComputeBottom").addEventListener("click", computeAndRender);
+
+      document.getElementById("btnReset").addEventListener("click", resetAll);
+      document.getElementById("btnExample").addEventListener("click", loadExample);
+      document.getElementById("btnRenameX").addEventListener("click", renamePredictors);
+
+      document.getElementById("btnCopyWriteup").addEventListener("click", copyWriteup);
+
+      document.getElementById("btnPMinus").addEventListener("click", ()=>{
+        document.getElementById("pInput").value = clamp(parseInt(document.getElementById("pInput").value,10)-1,1,10);
+        rebuildForP();
+      });
+      document.getElementById("btnPPlus").addEventListener("click", ()=>{
+        document.getElementById("pInput").value = clamp(parseInt(document.getElementById("pInput").value,10)+1,1,10);
+        rebuildForP();
+      });
+      document.getElementById("pInput").addEventListener("change", rebuildForP);
+    });
+  </script>
+</body>
+</html>

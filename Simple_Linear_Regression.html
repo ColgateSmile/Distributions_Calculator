@@ -57,7 +57,7 @@
     .card-header{
       border-bottom: 1px solid rgba(148,163,184,0.25);
       position: relative;
-      background: linear-gradient(180deg, rgba(30, 41, 59, 0.92), rgba(15, 23, 42, 0.88));
+      background: rgba(11, 18, 36, 0.94);
       border-top-left-radius: 18px;
       border-top-right-radius: 18px;
     }
@@ -73,6 +73,14 @@
       pointer-events:none;
     }
     .card-header > *{ position: relative; z-index: 1; }
+    .card-header .fw-bold,
+    .card-header .fw-semibold,
+    .card-header h1,
+    .card-header h2,
+    .card-header h3{ 
+      color: rgba(248,250,252,0.96) !important;
+      text-shadow: 0 1px 10px rgba(0,0,0,0.35);
+    }
     .card-header, .card-header *{ color: rgba(248,250,252,0.95) !important; }
     .card-header .small-note{ color: rgba(226,232,240,0.82) !important; }
 
@@ -143,20 +151,25 @@
       backdrop-filter: blur(6px);
     }
 
-    /* Make result-box headers bright */
+    /* Improve header contrast inside cards/result boxes */
+    .result-box .fw-bold,
     .result-box .fw-semibold,
-    .result-box .fw-bold {
+    .result-box h1,
+    .result-box h2,
+    .result-box h3{
       color: rgba(248,250,252,0.96) !important;
-      text-shadow: 0 1px 8px rgba(0,0,0,0.35);
+      text-shadow: 0 1px 12px rgba(0,0,0,0.40);
     }
 
+    /* Responsive KPI grid: cards wrap automatically instead of shrinking too much */
     .kpi{
-      display:flex;
-      flex-wrap: wrap;
-      gap:.6rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: .75rem;
     }
     .kpi .k{
-      flex: 1 1 220px;
+      min-width: 0;  /* critical: allow grid items to shrink properly without overflow */
+      overflow: hidden;
       padding:.85rem;
       border-radius: 14px;
       border:1px solid rgba(148,163,184,0.25);
@@ -170,11 +183,27 @@
       align-items:center;
       gap:.35rem;
     }
+    /* Default KPI values can wrap (equations especially) */
     .k .value{
       font-size: 1.2rem;
       font-weight: 800;
       margin-top:.25rem;
       color: rgba(248,250,252,0.96);
+      max-width: 100%;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      word-break: normal;
+      line-height: 1.25;
+    }
+    /* Use this ONLY for numeric outputs that should not wrap */
+    .k .value.nowrap{
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Optional: equations get slightly smaller on tight screens */
+    @media (max-width: 576px){
+      .kpi .value{ font-size: 1.05rem; }
     }
 
     .status-good{ color: var(--good); }
@@ -187,11 +216,27 @@
     }
 
     .table-wrap{
-      overflow:auto;
+      overflow-x: auto;
+      overflow-y: hidden;
+      -webkit-overflow-scrolling: touch;
       border-radius: 14px;
       border: 1px solid rgba(148,163,184,0.30);
       background: rgba(2, 6, 23, 0.55);
     }
+
+    .table-wrap table{
+      width: 100%;
+      margin: 0;
+      color: var(--text);
+      border-collapse: separate;
+      border-spacing: 0;
+    }
+
+    /* Only enforce larger minimum width on tables marked as 'wide' */
+    .table-wrap.table-wide table{
+      min-width: 860px;
+    }
+
     table{ margin:0; width:100%; color: var(--text); }
     thead th{
       position: sticky; top:0;
@@ -235,6 +280,33 @@
       color: rgba(226,232,240,0.92) !important;
       cursor:pointer;
     }
+
+    /* Mobile table readability improvements */
+    @media (max-width: 576px){
+      .table-wrap{
+        border-radius: 12px;
+      }
+
+      .table-wrap table{
+        font-size: 0.88rem;
+      }
+
+      .table-wrap th,
+      .table-wrap td{
+        padding: .55rem .6rem;
+        white-space: nowrap;
+      }
+
+      .step{
+        padding: .85rem;
+      }
+      .step .fw-semibold{
+        font-size: 1rem;
+      }
+      .result-box{
+        padding: .85rem;
+      }
+    }
   </style>
 </head>
 
@@ -265,7 +337,7 @@
 
     <div class="row g-3">
       <!-- Inputs -->
-      <div class="col-12 col-lg-4">
+      <div class="col-12 col-lg-4 order-2 order-lg-1">
         <div class="card h-100">
           <div class="card-header p-3">
             <div class="d-flex align-items-center justify-content-between">
@@ -591,7 +663,7 @@
       </div>
 
       <!-- Results -->
-      <div class="col-12 col-lg-8">
+      <div class="col-12 col-lg-8 order-1 order-lg-2">
         <div class="card">
           <div class="card-header p-3">
             <div class="fw-bold">Results</div>
@@ -607,15 +679,15 @@
               </div>
               <div class="k">
                 <div class="label">r and R²</div>
-                <div id="kpiR2" class="value mono">—</div>
+                <div id="kpiR2" class="value mono nowrap">—</div>
               </div>
               <div class="k">
                 <div class="label">t-stat / df</div>
-                <div id="kpiT" class="value mono">—</div>
+                <div id="kpiT" class="value mono nowrap">—</div>
               </div>
               <div class="k">
                 <div class="label">p-value / decision</div>
-                <div id="kpiDecision" class="value">—</div>
+                <div id="kpiDecision" class="value nowrap">—</div>
               </div>
             </div>
 
@@ -644,19 +716,19 @@
                   <div class="kpi">
                     <div class="k">
                       <div class="label">SSE</div>
-                      <div id="kpiSSE" class="value mono">—</div>
+                      <div id="kpiSSE" class="value mono nowrap">—</div>
                     </div>
                     <div class="k">
                       <div class="label">RMSE (s)</div>
-                      <div id="kpiRMSE" class="value mono">—</div>
+                      <div id="kpiRMSE" class="value mono nowrap">—</div>
                     </div>
                     <div class="k">
                       <div class="label">SE(b1)</div>
-                      <div id="kpiSEb1" class="value mono">—</div>
+                      <div id="kpiSEb1" class="value mono nowrap">—</div>
                     </div>
                     <div class="k">
                       <div class="label">CI for b1</div>
-                      <div id="kpiCIb1" class="value mono">—</div>
+                      <div id="kpiCIb1" class="value mono nowrap">—</div>
                     </div>
                   </div>
                 </div>
@@ -668,19 +740,19 @@
                   <div class="kpi">
                     <div class="k">
                       <div class="label">Ŷ at X0</div>
-                      <div id="kpiYhatX0" class="value mono">—</div>
+                      <div id="kpiYhatX0" class="value mono nowrap">—</div>
                     </div>
                     <div class="k">
                       <div class="label">deltaŶ for deltaX</div>
-                      <div id="kpiDY" class="value mono">—</div>
+                      <div id="kpiDY" class="value mono nowrap">—</div>
                     </div>
                     <div class="k">
                       <div class="label">CI(mean) at X0</div>
-                      <div id="kpiCIMeanX0" class="value mono">—</div>
+                      <div id="kpiCIMeanX0" class="value mono nowrap">—</div>
                     </div>
                     <div class="k">
                       <div class="label">Prediction interval at X0</div>
-                      <div id="kpiPIX0" class="value mono">—</div>
+                      <div id="kpiPIX0" class="value mono nowrap">—</div>
                     </div>
                   </div>
                   <div id="intervalNote" class="small-note mt-2"></div>
@@ -727,10 +799,11 @@
     /***********************
      * Helpers
      ***********************/
-    function fmt(x, digits=6){
+    function fmt(x, digits=4){
       if (!isFinite(x)) return "—";
       const abs = Math.abs(x);
-      if (abs !== 0 && abs < 1e-6) return x.toExponential(3);
+      // Small p-values: show scientific notation for readability
+      if (abs !== 0 && abs < 0.0001) return x.toExponential(3);
       return Number(x).toFixed(digits);
     }
     function showError(msg){
@@ -1171,7 +1244,7 @@
       const MSE = res.MSE;
 
       box.innerHTML = `
-        <div class="table-wrap">
+        <div class="table-wrap table-wide">
           <table class="table table-dark table-bordered align-middle mb-0">
             <thead>
               <tr>
@@ -1190,7 +1263,7 @@
                 <td class="mono">${fmt(res.SSR,6)}</td>
                 <td class="mono">${isFinite(MSR) ? fmt(MSR,6) : "—"}</td>
                 <td class="mono">${isFinite(res.F) ? fmt(res.F,6) : "—"}</td>
-                <td class="mono">${isFinite(res.pF) ? fmt(res.pF,8) : "—"}</td>
+                <td class="mono">${isFinite(res.pF) ? fmt(res.pF,6) : "—"}</td>
               </tr>
               <tr>
                 <th>Error</th>
@@ -1252,7 +1325,7 @@ H0: ρ = 0  (equivalently: b1 = 0)
 H1: ${h1Text}
 
 Test statistic: t = ${fmt(res.tstat,6)} with df = ${fmt(res.df,0)}
-p-value = ${fmt(res.pval,8)}
+p-value = ${fmt(res.pval,6)}
 At α = ${fmt(res.alpha,4)}: ${dec.txt}
 
 ${isFinite(res.R2) ? `Explained variability: R² = ${fmt(res.R2,6)} (${fmt(100*res.R2,2)}% of Y variation explained by X).` : `Explained variability: R² not identifiable from the provided inputs.`}
@@ -1370,7 +1443,7 @@ CI = ${fmt(res.b1,6)} ± ${fmt(res.tcrit,6)}·${fmt(res.se_b1,6)} = [${fmt(res.c
             <div class="mono">${h1Line}</div>
             <div class="mono mt-2">${tLine}</div>
             ${isFinite(res.pval)
-              ? `<div class="mono mt-2">p-value = ${fmt(res.pval,8)}</div>`
+              ? `<div class="mono mt-2">p-value = ${fmt(res.pval,6)}</div>`
               : `<div class="small-note status-warn mt-2">p-value not available (missing SE(b1)).</div>`}
             <div class="small-note mt-2">
               Decision rule: reject H0 if <span class="mono">p-value &lt; α</span>.
@@ -1403,8 +1476,9 @@ CI = ${fmt(res.b1,6)} ± ${fmt(res.tcrit,6)}·${fmt(res.se_b1,6)} = [${fmt(res.c
 
     function render(res){
       // KPIs
-      document.getElementById("kpiLine").textContent =
-        `Ŷ = ${fmt(res.b0,6)} + (${fmt(res.b1,6)})·X`;
+      // Add <wbr> break opportunities around operators so it wraps cleanly on smaller cards
+      document.getElementById("kpiLine").innerHTML =
+        `Ŷ = ${fmt(res.b0,4)} <wbr> + <wbr> (${fmt(res.b1,4)})·X`;
 
       const r2Text = isFinite(res.R2)
         ? `r=${fmt(res.r,6)}, R²=${fmt(res.R2,6)}`
@@ -1417,7 +1491,7 @@ CI = ${fmt(res.b1,6)} ± ${fmt(res.tcrit,6)}·${fmt(res.se_b1,6)} = [${fmt(res.c
       const dec = decisionText(res.pval, res.alpha);
       const decEl = document.getElementById("kpiDecision");
       decEl.textContent = isFinite(res.pval)
-        ? `p=${fmt(res.pval,8)} • ${dec.txt}`
+        ? `p=${fmt(res.pval,6)} • ${dec.txt}`
         : `—`;
       decEl.classList.remove("status-good","status-warn","status-bad");
       decEl.classList.add(dec.cls);
