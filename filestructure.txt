@@ -21,6 +21,7 @@
     |-- jstat.min.js
 |-- Multiple_Linear_Regression_calculator.html
 |-- Normal_Distribution_Calculator.html
+|-- robots.txt
 |-- Simple_Linear_Regression.html
 |-- t_distribution.html
 |-- T_Test_Calculator.html

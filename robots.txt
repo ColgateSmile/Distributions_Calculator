@@ -1,0 +1,38 @@
+User-agent: *
+Allow: /
+
+# Set crawl delay (optional - in seconds)
+Crawl-delay: 1
+
+# Sitemap location (update if you have a sitemap)
+# Sitemap: /sitemap.xml
+
+# Site map (visual)
+#
+# |-- CheatSheet.html
+# |-- Chi_Square_Calculator.html
+# |-- Confidence_Interval_Calculator.html
+# |-- css
+#     |-- bootstrap.min.css
+#     |-- font-awesome.min.css
+#     |-- fonts
+#         |-- fa-brands-400.ttf
+#         |-- fa-brands-400.woff2
+#         |-- fa-solid-900.ttf
+#         |-- fa-solid-900.woff2
+#     |-- Index_Style.css
+# |-- fix_all.ps1
+# |-- fix_encoding.ps1
+# |-- Hypothesis_Testing_Calculator.html
+# |-- index.html
+# |-- js
+#     |-- bootstrap.bundle.min.js
+#     |-- chart.min.js
+#     |-- Index_Script.js
+#     |-- jstat.min.js
+# |-- Multiple_Linear_Regression_calculator.html
+# |-- Normal_Distribution_Calculator.html
+# |-- robots.txt
+# |-- Simple_Linear_Regression.html
+# |-- t_distribution.html
+# |-- T_Test_Calculator.html
