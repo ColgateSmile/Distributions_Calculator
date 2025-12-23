@@ -24,9 +24,7 @@
       display: flex;
       flex-direction: column;
     }
-    .page-wrapper {
-      flex: 1 0 auto;
-    }
+    .page-wrapper { flex: 1 0 auto; }
 
     .card {
       background: #1e253b;
@@ -72,7 +70,6 @@
       transition: 0.3s;
       text-decoration: none;
     }
-
     .hm-foot-icon a:hover {
       color: #0ea5e9;
       text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
@@ -83,7 +80,6 @@
       text-decoration: none;
       font-weight: 500;
     }
-
     footer a:hover {
       color: #0ea5e9;
       text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
@@ -98,23 +94,10 @@
       font-weight: 600;
     }
 
-    .result-highlight {
-      color: #38bdf8;
-      font-weight: 600;
-    }
+    .result-highlight { color: #38bdf8; font-weight: 600; }
 
-    .step-list {
-      list-style: none;
-      padding-left: 0;
-      margin-bottom: 0;
-    }
-
-    .step-list li {
-      margin-bottom: 0.75rem;
-      display: flex;
-      gap: 0.6rem;
-    }
-
+    .step-list { list-style: none; padding-left: 0; margin-bottom: 0; }
+    .step-list li { margin-bottom: 0.75rem; display: flex; gap: 0.6rem; }
     .step-number {
       flex-shrink: 0;
       width: 1.5rem;
@@ -130,44 +113,39 @@
       color: #38bdf8;
       margin-top: 0.05rem;
     }
+    .step-text { font-size: 0.9rem; color: #e2e8f0; }
+    .step-text strong { color: #f9fafb; }
 
-    .step-text {
-      font-size: 0.9rem;
-      color: #e2e8f0;
-    }
+    .small-label { font-size: 0.8rem; color: #94a3b8; }
 
-    .step-text strong {
-      color: #f9fafb;
-    }
-
-    .small-label {
-      font-size: 0.8rem;
-      color: #94a3b8;
-    }
-
-    .form-control,
-    .form-select {
+    .form-control, .form-select {
       background-color: #020617;
       border-color: #334155;
       color: #e2e8f0;
     }
-
-    .form-control:focus,
-    .form-select:focus {
+    .form-control:focus, .form-select:focus {
       background-color: #020617;
       color: #e2e8f0;
       border-color: #38bdf8;
       box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.25);
     }
 
-    .form-text {
-      font-size: 0.75rem;
-    }
+    .form-text { font-size: 0.75rem; }
 
     .alert-soft {
       background-color: rgba(239, 68, 68, 0.08);
       border: 1px solid rgba(239, 68, 68, 0.4);
       color: #fecaca;
+      border-radius: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.8rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .warn-soft {
+      background-color: rgba(245, 158, 11, 0.10);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fde68a;
       border-radius: 0.75rem;
       padding: 0.6rem 0.75rem;
       font-size: 0.8rem;
@@ -181,15 +159,8 @@
       font-size: 0.85rem;
       margin-bottom: 0.75rem;
     }
-
-    .summary-label {
-      color: #cbd5f5;
-    }
-
-    .summary-value {
-      color: #38bdf8;
-      font-weight: 600;
-    }
+    .summary-label { color: #cbd5f5; }
+    .summary-value { color: #38bdf8; font-weight: 600; }
 
     .result-box {
       background-color: #020617;
@@ -199,15 +170,32 @@
       font-size: 0.9rem;
       margin-bottom: 0.75rem;
     }
+
+    /* Tooltip usability */
+    .info-icon {
+      color: #38bdf8;
+      margin-left: 0.35rem;
+      cursor: pointer;
+      opacity: 0.9;
+    }
+    .info-icon:hover { opacity: 1; color: #0ea5e9; }
+    .tooltip-inner {
+      max-width: 380px;
+      text-align: left;
+      padding: 0.6rem 0.75rem;
+      font-size: 0.82rem;
+      line-height: 1.25rem;
+    }
   </style>
 </head>
+
 <body>
 <div class="container page-wrapper">
   <div class="text-center mb-4">
     <h1 class="h3 mb-1">Confidence Interval Calculator</h1>
     <div class="text-secondary">
-      Build CIs for <span class="result-highlight">one mean</span> or
-      <span class="result-highlight">difference between two means</span> using Z-based formulas.
+      Build CIs for <span class="result-highlight">means</span> or
+      <span class="result-highlight">proportions</span> using Z-based formulas.
     </div>
   </div>
 
@@ -219,23 +207,45 @@
           <div>
             <div class="fw-semibold">Inputs</div>
             <div class="small text-secondary">
-              Choose number of samples and fill in mean, size, and SD.
+              Choose parameter type and number of samples.
             </div>
           </div>
-          <span class="badge-soft">
-            Z-CI
-          </span>
+          <span class="badge-soft">Z-CI</span>
         </div>
+
         <div class="card-body">
+          <!-- Parameter type -->
+          <div class="mb-3">
+            <label class="form-label">
+              Parameter type <span class="small-label">(what you estimate)</span>
+              <i class="fa-solid fa-circle-info info-icon"
+                 data-bs-toggle="tooltip" data-bs-html="true"
+                 title="<strong>Pick based on the question.</strong><br>
+                 <u>Mean (μ)</u>: questions about an average (e.g., average waiting time).<br>
+                 <u>Proportion (p)</u>: questions about a percentage/ratio (e.g., % positive attitude).<br><br>
+                 <strong>Exam tip:</strong> If the data are counts like “positive/negative”, that is almost always a <u>proportion</u> problem.">
+              </i>
+            </label>
+            <select id="paramType" class="form-select">
+              <option value="mean" selected>Mean (μ or μ₁ − μ₂)</option>
+              <option value="prop">Proportion (p or p₁ − p₂)</option>
+            </select>
+          </div>
+
           <!-- Number of samples -->
           <div class="mb-3">
             <label class="form-label">
-              Number of samples
-              <span class="small-label">(1 = CI for μ, 2 = CI for μ₁ − μ₂)</span>
+              Number of samples <span class="small-label">(1 = one CI, 2 = difference)</span>
+              <i class="fa-solid fa-circle-info info-icon"
+                 data-bs-toggle="tooltip" data-bs-html="true"
+                 title="<strong>1 sample</strong>: estimate one parameter (μ or p) for one population.<br>
+                 <strong>2 samples</strong>: estimate a difference (μ₁−μ₂ or p₁−p₂).<br><br>
+                 <strong>Assumption</strong>: the two samples are independent (different people/groups, random sampling).">
+              </i>
             </label>
             <select id="numSamples" class="form-select">
-              <option value="1" selected>1 sample (mean)</option>
-              <option value="2">2 samples (difference of means)</option>
+              <option value="1" selected>1 sample</option>
+              <option value="2">2 samples (difference)</option>
             </select>
           </div>
 
@@ -243,6 +253,13 @@
           <div class="mb-3">
             <label class="form-label">
               Confidence level (%)
+              <i class="fa-solid fa-circle-info info-icon"
+                 data-bs-toggle="tooltip" data-bs-html="true"
+                 title="<strong>Meaning:</strong> “How confident” your interval procedure is.<br>
+                 If CL = 98%, then α = 1 − 0.98 = 0.02 and α/2 = 0.01.<br><br>
+                 <strong>Critical value:</strong> z<sub>α/2</sub> is the z-score with <u>area to the left</u> = 1 − α/2.<br>
+                 Example: CL=98% ⇒ 1−α/2=0.99 ⇒ z≈2.326.">
+              </i>
             </label>
             <input id="clInput" type="number" step="0.1" value="95" min="50" max="99.9" class="form-control" />
             <div class="form-text text-secondary">
@@ -254,19 +271,65 @@
           <div class="mb-3 border-top pt-3">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <span class="fw-semibold">Sample 1</span>
-              <span class="small-label text-secondary">Group 1 (μ₁)</span>
+              <span class="small-label text-secondary">Group 1</span>
             </div>
-            <div class="mb-2">
-              <label class="form-label small-label">Mean of sample 1 (X̄₁)</label>
+
+            <!-- Mean mode -->
+            <div id="mean1Row" class="mb-2">
+              <label class="form-label small-label">
+                Mean of sample 1 (X̄₁)
+                <i class="fa-solid fa-circle-info info-icon"
+                   data-bs-toggle="tooltip" data-bs-html="true"
+                   title="<strong>Sample mean:</strong> X̄ = (x₁ + x₂ + ... + xₙ) / n.<br>
+                   Use the mean provided in the question (or compute it from raw data).<br><br>
+                   <strong>Units:</strong> same units as the original measurements (minutes, kg, $).">
+                </i>
+              </label>
               <input id="mean1Input" type="number" step="0.01" class="form-control" />
             </div>
-            <div class="mb-2">
-              <label class="form-label small-label">Sample size (n₁)</label>
-              <input id="n1Input" type="number" min="1" step="1" class="form-control" />
-            </div>
-            <div class="mb-2">
-              <label class="form-label small-label">Standard deviation (s₁ or σ₁)</label>
+
+            <div id="sd1Row" class="mb-2">
+              <label class="form-label small-label">
+                Standard deviation (s₁ or σ₁)
+                <i class="fa-solid fa-circle-info info-icon"
+                   data-bs-toggle="tooltip" data-bs-html="true"
+                   title="<strong>SD measures spread.</strong><br>
+                   If the question says “population SD is known”, use σ (Z-method).<br>
+                   If it says “sample SD” or σ is unknown, many courses require <u>t</u> instead of z.<br><br>
+                   <strong>Note:</strong> This page is Z-based; add a T-mode if your exam tests t-intervals for means.">
+                </i>
+              </label>
               <input id="sd1Input" type="number" step="0.01" min="0" class="form-control" />
+            </div>
+
+            <!-- Proportion mode -->
+            <div id="x1Row" class="mb-2" style="display:none;">
+              <label class="form-label small-label">
+                Successes in sample 1 (x₁)
+                <i class="fa-solid fa-circle-info info-icon"
+                   data-bs-toggle="tooltip" data-bs-html="true"
+                   title="<strong>Success = the category you count.</strong><br>
+                   Examples: “positive attitude”, “passed”, “defective”, “yes”.<br><br>
+                   <strong>How to compute:</strong> x = number of observations in the target category.">
+                </i>
+              </label>
+              <input id="x1Input" type="number" step="1" min="0" class="form-control" />
+              <div class="form-text text-secondary">
+                Example: count of “positive attitude”.
+              </div>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label small-label">
+                Total sample size (n₁)
+                <i class="fa-solid fa-circle-info info-icon"
+                   data-bs-toggle="tooltip" data-bs-html="true"
+                   title="<strong>Total number of observations.</strong><br>
+                   For a 2-category table: n = (positive + negative).<br><br>
+                   <strong>Common mistake:</strong> entering “negative count” here. This input is TOTAL n.">
+                </i>
+              </label>
+              <input id="n1Input" type="number" min="1" step="1" class="form-control" />
             </div>
           </div>
 
@@ -274,22 +337,61 @@
           <div id="sample2Block" class="mb-3 border-top pt-3" style="display:none;">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <span class="fw-semibold">Sample 2</span>
-              <span class="small-label text-secondary">Group 2 (μ₂)</span>
+              <span class="small-label text-secondary">Group 2</span>
             </div>
-            <div class="mb-2">
-              <label class="form-label small-label">Mean of sample 2 (X̄₂)</label>
+
+            <!-- Mean mode -->
+            <div id="mean2Row" class="mb-2">
+              <label class="form-label small-label">
+                Mean of sample 2 (X̄₂)
+                <i class="fa-solid fa-circle-info info-icon"
+                   data-bs-toggle="tooltip" data-bs-html="true"
+                   title="Same idea as sample 1 mean, but for group 2.<br>
+                   The point estimate for the difference is (X̄₁ − X̄₂).">
+                </i>
+              </label>
               <input id="mean2Input" type="number" step="0.01" class="form-control" />
             </div>
-            <div class="mb-2">
-              <label class="form-label small-label">Sample size (n₂)</label>
-              <input id="n2Input" type="number" min="1" step="1" class="form-control" />
-            </div>
-            <div class="mb-2">
-              <label class="form-label small-label">Standard deviation (s₂ or σ₂)</label>
+
+            <div id="sd2Row" class="mb-2">
+              <label class="form-label small-label">
+                Standard deviation (s₂ or σ₂)
+                <i class="fa-solid fa-circle-info info-icon"
+                   data-bs-toggle="tooltip" data-bs-html="true"
+                   title="SD for group 2. Used in SE for μ₁−μ₂: √(s₁²/n₁ + s₂²/n₂).">
+                </i>
+              </label>
               <input id="sd2Input" type="number" step="0.01" min="0" class="form-control" />
             </div>
+
+            <!-- Proportion mode -->
+            <div id="x2Row" class="mb-2" style="display:none;">
+              <label class="form-label small-label">
+                Successes in sample 2 (x₂)
+                <i class="fa-solid fa-circle-info info-icon"
+                   data-bs-toggle="tooltip" data-bs-html="true"
+                   title="x₂ is the count of “successes” in group 2.<br>
+                   Example: positive attitudes in France.">
+                </i>
+              </label>
+              <input id="x2Input" type="number" step="1" min="0" class="form-control" />
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label small-label">
+                Total sample size (n₂)
+                <i class="fa-solid fa-circle-info info-icon"
+                   data-bs-toggle="tooltip" data-bs-html="true"
+                   title="<strong>Total n in group 2.</strong><br>
+                   If the table gives positive and negative counts, use n = pos + neg.<br><br>
+                   <strong>Safety feature:</strong> If you accidentally type the negative count here (so x₂ &gt; n₂), the calculator will auto-correct to n₂ = x₂ + negatives and warn you.">
+                </i>
+              </label>
+              <input id="n2Input" type="number" min="1" step="1" class="form-control" />
+            </div>
+
             <div class="form-text text-secondary">
-              We will estimate a CI for μ₁ − μ₂ (Sample 1 minus Sample 2).
+              We estimate a CI for the difference (Sample 1 minus Sample 2).
             </div>
           </div>
 
@@ -316,8 +418,9 @@
         </div>
         <div class="card-body">
           <div id="errorBox" style="display:none;" class="alert-soft"></div>
+          <div id="warnBox" style="display:none;" class="warn-soft"></div>
 
-          <!-- Summary of alpha / z -->
+          <!-- Summary -->
           <div id="summaryBox" style="display:none;">
             <div class="result-box">
               <div class="summary-row">
@@ -344,14 +447,12 @@
             <!-- Final CI -->
             <div class="result-box mb-3">
               <div class="mb-1 fw-semibold" id="ciTitle">Confidence Interval:</div>
-              <div id="ciText" class="mb-1">
-                –
-              </div>
+              <div id="ciText" class="mb-1">–</div>
               <div id="ciInterpretation" class="small text-secondary"></div>
             </div>
           </div>
 
-          <!-- Step-by-step explanation -->
+          <!-- Steps -->
           <ol id="stepsList" class="step-list"></ol>
         </div>
       </div>
@@ -361,40 +462,34 @@
 
 <footer>
   <div class="hm-foot-icon mb-2">
-    <a href="https://www.facebook.com/dror.mor.9" target="_blank"
-      ><i class="fab fa-facebook"></i
-    ></a>
-    <a href="https://github.com/ColgateSmile" target="_blank"
-      ><i class="fab fa-github"></i
-    ></a>
-    <a
-      href="https://www.linkedin.com/in/dror-mor-%D7%93%D7%A8%D7%95%D7%A8-%D7%9E%D7%95%D7%A8-90865a201/"
-      target="_blank"
-      ><i class="fab fa-linkedin"></i
-    ></a>
-    <a href="https://www.instagram.com/drmor1994/" target="_blank"
-      ><i class="fab fa-instagram"></i
-    ></a>
+    <a href="https://www.facebook.com/dror.mor.9" target="_blank"><i class="fab fa-facebook"></i></a>
+    <a href="https://github.com/ColgateSmile" target="_blank"><i class="fab fa-github"></i></a>
+    <a href="https://www.linkedin.com/in/dror-mor-%D7%93%D7%A8%D7%95%D7%A8-%D7%9E%D7%95%D7%A8-90865a201/" target="_blank"><i class="fab fa-linkedin"></i></a>
+    <a href="https://www.instagram.com/drmor1994/" target="_blank"><i class="fab fa-instagram"></i></a>
   </div>
   <small>
     Created by <span style="color:#38bdf8;">Dror Mor</span> |
-    <a href="https://colgatesmile.github.io/DrorMorResume/" target="_blank"
-      >Website</a
-    >
-    |
+    <a href="https://colgatesmile.github.io/DrorMorResume/" target="_blank">Website</a> |
     <a href="https://github.com/ColgateSmile" target="_blank">GitHub</a>
   </small>
 </footer>
 
 <script>
+  // ---------- Bootstrap tooltips init ----------
+  document.addEventListener("DOMContentLoaded", () => {
+    const els = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+    els.forEach(el => new bootstrap.Tooltip(el));
+  });
+
   // ---------- Helper: format numbers ----------
   function fmt(v, decimals = 3) {
     if (!isFinite(v)) return "–";
     return Number(v).toFixed(decimals);
   }
+  function clamp01(x) { return Math.max(0, Math.min(1, x)); }
 
   // ---------- Inverse normal CDF (for z_{alpha/2}) ----------
-  // Approximation by Peter John Acklam (standard, good enough for CL calc).
+  // Acklam approximation
   function inverseNormalCDF(p) {
     if (p <= 0 || p >= 1) return NaN;
 
@@ -452,28 +547,40 @@
   }
 
   function getZCritical(alpha) {
-    const tail = alpha / 2;
-    const p = 1 - tail; // quantile for upper tail
+    const p = 1 - alpha / 2;
     return inverseNormalCDF(p);
   }
 
-  // ---------- DOM elements ----------
+  // ---------- DOM ----------
+  const paramTypeEl = document.getElementById("paramType");
   const numSamplesEl = document.getElementById("numSamples");
   const clInputEl = document.getElementById("clInput");
 
+  const mean1Row = document.getElementById("mean1Row");
+  const sd1Row = document.getElementById("sd1Row");
   const mean1Input = document.getElementById("mean1Input");
-  const n1Input = document.getElementById("n1Input");
   const sd1Input = document.getElementById("sd1Input");
 
-  const sample2Block = document.getElementById("sample2Block");
+  const mean2Row = document.getElementById("mean2Row");
+  const sd2Row = document.getElementById("sd2Row");
   const mean2Input = document.getElementById("mean2Input");
-  const n2Input = document.getElementById("n2Input");
   const sd2Input = document.getElementById("sd2Input");
+
+  const x1Row = document.getElementById("x1Row");
+  const x2Row = document.getElementById("x2Row");
+  const x1Input = document.getElementById("x1Input");
+  const x2Input = document.getElementById("x2Input");
+
+  const n1Input = document.getElementById("n1Input");
+  const n2Input = document.getElementById("n2Input");
+
+  const sample2Block = document.getElementById("sample2Block");
 
   const calcBtn = document.getElementById("calcBtn");
   const resetBtn = document.getElementById("resetBtn");
 
   const errorBox = document.getElementById("errorBox");
+  const warnBox = document.getElementById("warnBox");
   const summaryBox = document.getElementById("summaryBox");
   const resultSubtitle = document.getElementById("resultSubtitle");
 
@@ -486,361 +593,36 @@
   const ciTitle = document.getElementById("ciTitle");
   const ciText = document.getElementById("ciText");
   const ciInterpretation = document.getElementById("ciInterpretation");
-
   const stepsList = document.getElementById("stepsList");
 
-  // ---------- UI behavior ----------
+  // ---------- UI ----------
   function updateSampleVisibility() {
     const k = parseInt(numSamplesEl.value, 10);
-    if (k === 2) {
-      sample2Block.style.display = "block";
+    sample2Block.style.display = (k === 2) ? "block" : "none";
+  }
+
+  function updateParamVisibility() {
+    const isProp = (paramTypeEl.value === "prop");
+
+    mean1Row.style.display = isProp ? "none" : "block";
+    sd1Row.style.display   = isProp ? "none" : "block";
+    mean2Row.style.display = isProp ? "none" : "block";
+    sd2Row.style.display   = isProp ? "none" : "block";
+
+    x1Row.style.display    = isProp ? "block" : "none";
+    x2Row.style.display    = isProp ? "block" : "none";
+
+    if (isProp) {
+      resultSubtitle.textContent = "Z-confidence interval for proportions (p or p₁ − p₂).";
     } else {
-      sample2Block.style.display = "none";
+      resultSubtitle.textContent = "Z-confidence interval for means (μ or μ₁ − μ₂).";
     }
   }
 
   numSamplesEl.addEventListener("change", updateSampleVisibility);
+  paramTypeEl.addEventListener("change", updateParamVisibility);
 
-  // ---------- Main calculation ----------
-  function calculateCI() {
-    errorBox.style.display = "none";
-    summaryBox.style.display = "none";
-    stepsList.innerHTML = "";
-    ciText.textContent = "–";
-    ciInterpretation.textContent = "";
-    summaryExtra.textContent = "";
-
-    const k = parseInt(numSamplesEl.value, 10);
-    const clPercent = parseFloat(clInputEl.value);
-
-    if (!isFinite(clPercent) || clPercent <= 0 || clPercent >= 100) {
-      showError("Please enter a valid confidence level between 0 and 100.");
-      return;
-    }
-
-    const CL = clPercent / 100;
-    const alpha = 1 - CL;
-    const alpha2 = alpha / 2;
-    const zCrit = getZCritical(alpha);
-
-    if (!isFinite(zCrit)) {
-      showError("Unable to compute z-value. Please check the confidence level.");
-      return;
-    }
-
-    // Read sample 1
-    const mean1 = parseFloat(mean1Input.value);
-    const n1 = parseFloat(n1Input.value);
-    const sd1 = parseFloat(sd1Input.value);
-
-    if (!isFinite(mean1) || !isFinite(n1) || !isFinite(sd1) ||
-        n1 <= 0 || sd1 < 0) {
-      showError("Please fill valid mean, size, and SD for sample 1.");
-      return;
-    }
-
-    if (k === 1) {
-      // ----- One-sample CI for μ -----
-      const se1 = sd1 / Math.sqrt(n1);
-      const ME = zCrit * se1;
-      const lower = mean1 - ME;
-      const upper = mean1 + ME;
-
-      summaryCL.textContent = fmt(CL, 3) + " ( " + fmt(clPercent, 1) + "% )";
-      summaryAlpha.textContent = fmt(alpha, 3);
-      summaryAlpha2.textContent = fmt(alpha2, 3);
-      summaryZ.textContent = fmt(zCrit, 3);
-      summaryExtra.textContent =
-        "Using one-sample Z-CI: μ ∈ X̄ ± z_{α/2} · (s / √n).";
-
-      summaryBox.style.display = "block";
-
-      ciTitle.textContent = "Confidence Interval for μ (one sample):";
-      ciText.innerHTML =
-        "CI = X̄ ± z<sub>α/2</sub> · (s / √n) = " +
-        fmt(mean1, 3) +
-        " ± " +
-        fmt(ME, 3) +
-        " ⇒ (" +
-        "<span class='result-highlight'>" +
-        fmt(lower, 2) +
-        "</span>, " +
-        "<span class='result-highlight'>" +
-        fmt(upper, 2) +
-        "</span>)";
-
-      ciInterpretation.textContent =
-        "We are " +
-        fmt(clPercent, 1) +
-        "% confident that the true population mean lies between " +
-        fmt(lower, 2) +
-        " and " +
-        fmt(upper, 2) +
-        " (same units as the sample).";
-
-      // Step-by-step explanation
-      const steps = [];
-
-      steps.push({
-        title: "Write down the sample summary.",
-        text:
-          "Sample mean X̄ = " +
-          fmt(mean1, 3) +
-          ", sample size n = " +
-          fmt(n1, 0) +
-          ", standard deviation s = " +
-          fmt(sd1, 3) +
-          "."
-      });
-
-      steps.push({
-        title: "Convert confidence level to α and find z_{α/2}.",
-        text:
-          "Confidence level = " +
-          fmt(clPercent, 1) +
-          "% ⇒ CL = " +
-          fmt(CL, 3) +
-          ". Then α = 1 − CL = " +
-          fmt(alpha, 3) +
-          ", α/2 = " +
-          fmt(alpha2, 3) +
-          ". From the standard normal distribution, z_{α/2} ≈ " +
-          fmt(zCrit, 3) +
-          "."
-      });
-
-      steps.push({
-        title: "Compute the standard error of the mean.",
-        text:
-          "SE = s / √n = " +
-          fmt(sd1, 3) +
-          " / √" +
-          fmt(n1, 0) +
-          " ≈ " +
-          fmt(se1, 3) +
-          ". This is the typical sampling error of X̄."
-      });
-
-      steps.push({
-        title: "Compute the margin of error.",
-        text:
-          "ME = z_{α/2} · SE = " +
-          fmt(zCrit, 3) +
-          " × " +
-          fmt(se1, 3) +
-          " ≈ " +
-          fmt(ME, 3) +
-          "."
-      });
-
-      steps.push({
-        title: "Build the confidence interval.",
-        text:
-          "CI = X̄ ± ME = " +
-          fmt(mean1, 3) +
-          " ± " +
-          fmt(ME, 3) +
-          " ⇒ (" +
-          fmt(lower, 3) +
-          ", " +
-          fmt(upper, 3) +
-          ")."
-      });
-
-      steps.push({
-        title: "Interpret the result in context.",
-        text:
-          "We say: “We are " +
-          fmt(clPercent, 1) +
-          "% confident that the true mean is between " +
-          fmt(lower, 2) +
-          " and " +
-          fmt(upper, 2) +
-          " in the population from which the sample was taken.”"
-      });
-
-      renderSteps(steps);
-      resultSubtitle.textContent =
-        "One-sample Z-confidence interval for a population mean μ.";
-
-    } else if (k === 2) {
-      // ----- Two-sample CI for μ1 − μ2 -----
-      const mean2 = parseFloat(mean2Input.value);
-      const n2 = parseFloat(n2Input.value);
-      const sd2 = parseFloat(sd2Input.value);
-
-      if (!isFinite(mean2) || !isFinite(n2) || !isFinite(sd2) ||
-          n2 <= 0 || sd2 < 0) {
-        showError("Please fill valid mean, size, and SD for sample 2.");
-        return;
-      }
-
-      const diff = mean1 - mean2; // μ1 − μ2
-      const seDiff = Math.sqrt(
-        (sd1 * sd1) / n1 + (sd2 * sd2) / n2
-      );
-      const ME = zCrit * seDiff;
-      const lower = diff - ME;
-      const upper = diff + ME;
-
-      summaryCL.textContent = fmt(CL, 3) + " ( " + fmt(clPercent, 1) + "% )";
-      summaryAlpha.textContent = fmt(alpha, 3);
-      summaryAlpha2.textContent = fmt(alpha2, 3);
-      summaryZ.textContent = fmt(zCrit, 3);
-      summaryExtra.textContent =
-        "Using two-sample Z-CI for the difference μ₁ − μ₂ with independent samples.";
-
-      summaryBox.style.display = "block";
-
-      ciTitle.textContent = "Confidence Interval for μ₁ − μ₂ (Sample 1 minus Sample 2):";
-      ciText.innerHTML =
-        "CI = (X̄₁ − X̄₂) ± z<sub>α/2</sub> · √( s₁²/n₁ + s₂²/n₂ ) = " +
-        fmt(diff, 3) +
-        " ± " +
-        fmt(ME, 3) +
-        " ⇒ (" +
-        "<span class='result-highlight'>" +
-        fmt(lower, 2) +
-        "</span>, " +
-        "<span class='result-highlight'>" +
-        fmt(upper, 2) +
-        "</span>)";
-
-      let interpDirection = "";
-      if (lower > 0) {
-        interpDirection =
-          "Since the entire CI is above 0, sample 1 has a higher mean than sample 2 (statistically, μ₁ > μ₂ at this confidence level).";
-      } else if (upper < 0) {
-        interpDirection =
-          "Since the entire CI is below 0, sample 1 has a lower mean than sample 2 (statistically, μ₁ < μ₂ at this confidence level).";
-      } else {
-        interpDirection =
-          "Because the CI includes 0, we cannot rule out that the true difference might be 0 (no clear difference between μ₁ and μ₂).";
-      }
-
-      ciInterpretation.textContent =
-        "We are " +
-        fmt(clPercent, 1) +
-        "% confident that the true difference μ₁ − μ₂ lies between " +
-        fmt(lower, 2) +
-        " and " +
-        fmt(upper, 2) +
-        ". " +
-        interpDirection;
-
-      // Step-by-step explanation
-      const steps = [];
-
-      steps.push({
-        title: "Define the parameter and write the sample summaries.",
-        text:
-          "We estimate μ₁ − μ₂, where group 1 has X̄₁ = " +
-          fmt(mean1, 3) +
-          ", n₁ = " +
-          fmt(n1, 0) +
-          ", s₁ = " +
-          fmt(sd1, 3) +
-          ", and group 2 has X̄₂ = " +
-          fmt(mean2, 3) +
-          ", n₂ = " +
-          fmt(n2, 0) +
-          ", s₂ = " +
-          fmt(sd2, 3) +
-          "."
-      });
-
-      steps.push({
-        title: "Convert confidence level to α and find z_{α/2}.",
-        text:
-          "Confidence level = " +
-          fmt(clPercent, 1) +
-          "% ⇒ CL = " +
-          fmt(CL, 3) +
-          ". Then α = 1 − CL = " +
-          fmt(alpha, 3) +
-          ", α/2 = " +
-          fmt(alpha2, 3) +
-          ". From the standard normal distribution, z_{α/2} ≈ " +
-          fmt(zCrit, 3) +
-          "."
-      });
-
-      steps.push({
-        title: "Compute the point estimate of the difference.",
-        text:
-          "The sample difference is d̂ = X̄₁ − X̄₂ = " +
-          fmt(mean1, 3) +
-          " − " +
-          fmt(mean2, 3) +
-          " = " +
-          fmt(diff, 3) +
-          "."
-      });
-
-      steps.push({
-        title: "Compute the standard error of the difference.",
-        text:
-          "SE_diff = √( s₁²/n₁ + s₂²/n₂ ) = √( " +
-          fmt(sd1 * sd1, 3) +
-          "/" +
-          fmt(n1, 0) +
-          " + " +
-          fmt(sd2 * sd2, 3) +
-          "/" +
-          fmt(n2, 0) +
-          " ) ≈ " +
-          fmt(seDiff, 3) +
-          "."
-      });
-
-      steps.push({
-        title: "Compute the margin of error.",
-        text:
-          "ME = z_{α/2} · SE_diff = " +
-          fmt(zCrit, 3) +
-          " × " +
-          fmt(seDiff, 3) +
-          " ≈ " +
-          fmt(ME, 3) +
-          "."
-      });
-
-      steps.push({
-        title: "Build the confidence interval for μ₁ − μ₂.",
-        text:
-          "CI = d̂ ± ME = " +
-          fmt(diff, 3) +
-          " ± " +
-          fmt(ME, 3) +
-          " ⇒ (" +
-          fmt(lower, 3) +
-          ", " +
-          fmt(upper, 3) +
-          ")."
-      });
-
-      steps.push({
-        title: "Interpret the result in context.",
-        text:
-          "We say: “We are " +
-          fmt(clPercent, 1) +
-          "% confident that the true difference in means μ₁ − μ₂ is between " +
-          fmt(lower, 2) +
-          " and " +
-          fmt(upper, 2) +
-          ".” " +
-          interpDirection
-      });
-
-      renderSteps(steps);
-      resultSubtitle.textContent =
-        "Two-sample Z-confidence interval for the difference between two independent means μ₁ − μ₂.";
-    } else {
-      showError("This calculator currently supports 1 or 2 samples.");
-      return;
-    }
-  }
-
+  // ---------- Helpers ----------
   function showError(msg) {
     errorBox.textContent = msg;
     errorBox.style.display = "block";
@@ -857,8 +639,7 @@
 
       const textDiv = document.createElement("div");
       textDiv.className = "step-text";
-      textDiv.innerHTML =
-        "<strong>" + s.title + "</strong><br />" + s.text;
+      textDiv.innerHTML = "<strong>" + s.title + "</strong><br />" + s.text;
 
       li.appendChild(numSpan);
       li.appendChild(textDiv);
@@ -866,37 +647,303 @@
     });
   }
 
-  // ---------- Reset ----------
-  function resetAll() {
-    numSamplesEl.value = "1";
-    updateSampleVisibility();
+  // If x > n, user probably typed failures in n field; convert to total n = x + failures.
+  function coerceTotalNFromFailuresIfNeeded(x, n, label) {
+    if (isFinite(x) && isFinite(n) && n > 0 && x > n) {
+      const failures = n;
+      const total = x + failures;
 
-    clInputEl.value = 95;
+      warnBox.textContent =
+        `${label}: You entered x > n. This usually means you typed “failures/negatives” into the n field. ` +
+        `I will treat your n input (${failures}) as failures and use total n = x + failures = ${total}.`;
+      warnBox.style.display = "block";
 
-    mean1Input.value = "";
-    n1Input.value = "";
-    sd1Input.value = "";
+      return total;
+    }
+    return n;
+  }
 
-    mean2Input.value = "";
-    n2Input.value = "";
-    sd2Input.value = "";
+  function integerCheckWarn(x, label) {
+    if (isFinite(x) && Math.abs(x - Math.round(x)) > 1e-9) {
+      warnBox.textContent =
+        `${label}: successes (x) should normally be an integer count. You entered ${x}. Please double-check.`;
+      warnBox.style.display = "block";
+    }
+  }
 
+  // ---------- Main ----------
+  function calculateCI() {
     errorBox.style.display = "none";
+    warnBox.style.display = "none";
     summaryBox.style.display = "none";
     stepsList.innerHTML = "";
     ciText.textContent = "–";
     ciInterpretation.textContent = "";
     summaryExtra.textContent = "";
-    resultSubtitle.textContent =
-      'Fill the inputs on the left and click "Calculate CI".';
+
+    const mode = paramTypeEl.value; // mean/prop
+    const k = parseInt(numSamplesEl.value, 10);
+    const clPercent = parseFloat(clInputEl.value);
+
+    if (!isFinite(clPercent) || clPercent <= 0 || clPercent >= 100) {
+      return showError("Please enter a valid confidence level between 0 and 100.");
+    }
+
+    const CL = clPercent / 100;
+    const alpha = 1 - CL;
+    const alpha2 = alpha / 2;
+    const zCrit = getZCritical(alpha);
+
+    if (!isFinite(zCrit)) {
+      return showError("Unable to compute z-value. Please check the confidence level.");
+    }
+
+    summaryCL.textContent = fmt(CL, 3) + " ( " + fmt(clPercent, 1) + "% )";
+    summaryAlpha.textContent = fmt(alpha, 3);
+    summaryAlpha2.textContent = fmt(alpha2, 3);
+    summaryZ.textContent = fmt(zCrit, 3);
+
+    const steps = [];
+
+    if (mode === "mean") {
+      const mean1 = parseFloat(mean1Input.value);
+      const n1 = parseFloat(n1Input.value);
+      const sd1 = parseFloat(sd1Input.value);
+
+      if (!isFinite(mean1) || !isFinite(n1) || !isFinite(sd1) || n1 <= 0 || sd1 < 0) {
+        return showError("Please fill valid mean, size, and SD for sample 1.");
+      }
+
+      if (k === 1) {
+        const se = sd1 / Math.sqrt(n1);
+        const ME = zCrit * se;
+        const lower = mean1 - ME;
+        const upper = mean1 + ME;
+
+        summaryExtra.textContent = "Using one-sample Z-CI: μ ∈ X̄ ± z_{α/2} · (s / √n).";
+        summaryBox.style.display = "block";
+
+        ciTitle.textContent = "Confidence Interval for μ (one sample):";
+        ciText.innerHTML =
+          "CI = X̄ ± z<sub>α/2</sub> · (s / √n) = " +
+          fmt(mean1, 3) + " ± " + fmt(ME, 3) +
+          " ⇒ (" +
+          "<span class='result-highlight'>" + fmt(lower, 3) + "</span>, " +
+          "<span class='result-highlight'>" + fmt(upper, 3) + "</span>)";
+
+        ciInterpretation.textContent =
+          "We are " + fmt(clPercent, 1) +
+          "% confident that the true population mean lies between " +
+          fmt(lower, 3) + " and " + fmt(upper, 3) + ".";
+
+        steps.push({ title: "Write the sample summary.", text: "X̄=" + fmt(mean1, 3) + ", n=" + fmt(n1, 0) + ", s=" + fmt(sd1, 3) + "." });
+        steps.push({ title: "Convert CL to α and find z_{α/2}.", text: "α=1−CL=" + fmt(alpha, 3) + ", α/2=" + fmt(alpha2, 3) + ", z≈" + fmt(zCrit, 3) + "." });
+        steps.push({ title: "Compute standard error.", text: "SE=s/√n=" + fmt(sd1, 3) + "/√" + fmt(n1, 0) + "≈" + fmt(se, 6) + "." });
+        steps.push({ title: "Compute ME and build CI.", text: "ME=z·SE≈" + fmt(ME, 6) + " ⇒ CI=(" + fmt(lower, 6) + ", " + fmt(upper, 6) + ")." });
+
+        renderSteps(steps);
+      } else if (k === 2) {
+        const mean2 = parseFloat(mean2Input.value);
+        const n2 = parseFloat(n2Input.value);
+        const sd2 = parseFloat(sd2Input.value);
+
+        if (!isFinite(mean2) || !isFinite(n2) || !isFinite(sd2) || n2 <= 0 || sd2 < 0) {
+          return showError("Please fill valid mean, size, and SD for sample 2.");
+        }
+
+        const diff = mean1 - mean2;
+        const se = Math.sqrt((sd1*sd1)/n1 + (sd2*sd2)/n2);
+        const ME = zCrit * se;
+        const lower = diff - ME;
+        const upper = diff + ME;
+
+        summaryExtra.textContent = "Using two-sample Z-CI: (μ₁−μ₂) ∈ (X̄₁−X̄₂) ± z · √(s₁²/n₁ + s₂²/n₂).";
+        summaryBox.style.display = "block";
+
+        ciTitle.textContent = "Confidence Interval for μ₁ − μ₂:";
+        ciText.innerHTML =
+          "CI = (X̄₁ − X̄₂) ± z<sub>α/2</sub> · √( s₁²/n₁ + s₂²/n₂ ) = " +
+          fmt(diff, 3) + " ± " + fmt(ME, 3) +
+          " ⇒ (" +
+          "<span class='result-highlight'>" + fmt(lower, 3) + "</span>, " +
+          "<span class='result-highlight'>" + fmt(upper, 3) + "</span>)";
+
+        ciInterpretation.textContent =
+          "We are " + fmt(clPercent, 1) +
+          "% confident that the true mean difference μ₁ − μ₂ lies between " +
+          fmt(lower, 3) + " and " + fmt(upper, 3) + ".";
+
+        steps.push({ title: "Write sample summaries.", text: "Group1: X̄₁=" + fmt(mean1, 3) + ", n₁=" + fmt(n1, 0) + ", s₁=" + fmt(sd1, 3) + ". Group2: X̄₂=" + fmt(mean2, 3) + ", n₂=" + fmt(n2, 0) + ", s₂=" + fmt(sd2, 3) + "." });
+        steps.push({ title: "Compute z_{α/2}.", text: "z≈" + fmt(zCrit, 3) + " for CL=" + fmt(clPercent, 1) + "%." });
+        steps.push({ title: "Compute SE and ME, then CI.", text: "SE=√(s₁²/n₁+s₂²/n₂)≈" + fmt(se, 6) + ", ME=z·SE≈" + fmt(ME, 6) + " ⇒ CI=(" + fmt(lower, 6) + ", " + fmt(upper, 6) + ")." });
+
+        renderSteps(steps);
+      } else {
+        return showError("This calculator currently supports 1 or 2 samples.");
+      }
+
+    } else {
+      // Proportion mode
+      let x1 = parseFloat(x1Input.value);
+      let n1 = parseFloat(n1Input.value);
+
+      if (!isFinite(x1) || !isFinite(n1) || n1 <= 0 || x1 < 0) {
+        return showError("Please enter valid x₁ and n₁ (counts must be non-negative; n must be > 0).");
+      }
+
+      integerCheckWarn(x1, "Sample 1");
+      n1 = coerceTotalNFromFailuresIfNeeded(x1, n1, "Sample 1");
+
+      if (x1 > n1) {
+        return showError("Please enter valid x₁ and n₁ (must satisfy 0 ≤ x₁ ≤ n₁).");
+      }
+
+      const p1 = x1 / n1;
+      const se1 = Math.sqrt((p1*(1-p1))/n1);
+      const approxOK1 = (n1*p1 >= 10) && (n1*(1-p1) >= 10);
+
+      if (k === 1) {
+        const ME = zCrit * se1;
+        let lower = p1 - ME;
+        let upper = p1 + ME;
+
+        const clipped = (lower < 0 || upper > 1);
+        const lowerShown = clipped ? clamp01(lower) : lower;
+        const upperShown = clipped ? clamp01(upper) : upper;
+
+        summaryExtra.textContent =
+          "Using one-proportion Z-CI: p ∈ p̂ ± z_{α/2} · √( p̂(1−p̂) / n )." +
+          (clipped ? " (Bounds clipped to [0,1] for display.)" : "");
+        summaryBox.style.display = "block";
+
+        if (!approxOK1) {
+          warnBox.textContent =
+            "Warning: Normal approximation may be weak because n·p̂ or n·(1−p̂) is < 10. Some courses prefer exact/Wilson intervals in that case.";
+          warnBox.style.display = "block";
+        }
+
+        ciTitle.textContent = "Confidence Interval for p (one proportion):";
+        ciText.innerHTML =
+          "CI = p̂ ± z<sub>α/2</sub> · √( p̂(1−p̂) / n ) = " +
+          fmt(p1, 4) + " ± " + fmt(ME, 4) +
+          " ⇒ (" +
+          "<span class='result-highlight'>" + fmt(lowerShown, 4) + "</span>, " +
+          "<span class='result-highlight'>" + fmt(upperShown, 4) + "</span>)";
+
+        ciInterpretation.textContent =
+          "We are " + fmt(clPercent, 1) +
+          "% confident that the true population proportion lies between " +
+          fmt(lowerShown, 4) + " and " + fmt(upperShown, 4) + ".";
+
+        steps.push({ title: "Compute the sample proportion.", text: "p̂ = x/n = " + fmt(x1, 0) + "/" + fmt(n1, 0) + " = " + fmt(p1, 4) + "." });
+        steps.push({ title: "Find z_{α/2}.", text: "CL=" + fmt(clPercent, 1) + "% ⇒ α=" + fmt(alpha, 3) + " ⇒ z≈" + fmt(zCrit, 3) + "." });
+        steps.push({ title: "Compute standard error.", text: "SE=√(p̂(1−p̂)/n)=√(" + fmt(p1, 4) + "·" + fmt(1-p1, 4) + "/" + fmt(n1, 0) + ")≈" + fmt(se1, 6) + "." });
+        steps.push({ title: "Compute ME and CI.", text: "ME=z·SE≈" + fmt(ME, 6) + " ⇒ CI=(" + fmt(lowerShown, 6) + ", " + fmt(upperShown, 6) + ")." });
+
+        renderSteps(steps);
+
+      } else if (k === 2) {
+        let x2 = parseFloat(x2Input.value);
+        let n2 = parseFloat(n2Input.value);
+
+        if (!isFinite(x2) || !isFinite(n2) || n2 <= 0 || x2 < 0) {
+          return showError("Please enter valid x₂ and n₂ (counts must be non-negative; n must be > 0).");
+        }
+
+        integerCheckWarn(x2, "Sample 2");
+        n2 = coerceTotalNFromFailuresIfNeeded(x2, n2, "Sample 2");
+
+        if (x2 > n2) {
+          return showError("Please enter valid x₂ and n₂ (must satisfy 0 ≤ x₂ ≤ n₂).");
+        }
+
+        const p2 = x2 / n2;
+        const diff = p1 - p2;
+        const se = Math.sqrt((p1*(1-p1))/n1 + (p2*(1-p2))/n2);
+        const ME = zCrit * se;
+        const lower = diff - ME;
+        const upper = diff + ME;
+
+        summaryExtra.textContent =
+          "Using two-proportion Z-CI: (p₁−p₂) ∈ (p̂₁−p̂₂) ± z · √( p̂₁(1−p̂₁)/n₁ + p̂₂(1−p̂₂)/n₂ ).";
+        summaryBox.style.display = "block";
+
+        const approxOK2 =
+          (n1*p1 >= 10) && (n1*(1-p1) >= 10) &&
+          (n2*p2 >= 10) && (n2*(1-p2) >= 10);
+
+        if (!approxOK2) {
+          warnBox.textContent =
+            "Warning: Normal approximation may be weak for at least one group (some n·p̂ or n·(1−p̂) < 10).";
+          warnBox.style.display = "block";
+        }
+
+        ciTitle.textContent = "Confidence Interval for p₁ − p₂:";
+        ciText.innerHTML =
+          "CI = (p̂₁ − p̂₂) ± z<sub>α/2</sub> · √( p̂₁(1−p̂₁)/n₁ + p̂₂(1−p̂₂)/n₂ ) = " +
+          fmt(diff, 4) + " ± " + fmt(ME, 4) +
+          " ⇒ (" +
+          "<span class='result-highlight'>" + fmt(lower, 4) + "</span>, " +
+          "<span class='result-highlight'>" + fmt(upper, 4) + "</span>)";
+
+        ciInterpretation.textContent =
+          "We are " + fmt(clPercent, 1) +
+          "% confident that the true proportion difference p₁ − p₂ lies between " +
+          fmt(lower, 4) + " and " + fmt(upper, 4) + ".";
+
+        steps.push({ title: "Compute sample proportions.", text:
+          "p̂₁=x₁/n₁=" + fmt(x1,0) + "/" + fmt(n1,0) + "=" + fmt(p1,4) +
+          ", p̂₂=x₂/n₂=" + fmt(x2,0) + "/" + fmt(n2,0) + "=" + fmt(p2,4) + "."
+        });
+        steps.push({ title: "Find z_{α/2}.", text: "z≈" + fmt(zCrit, 3) + " for CL=" + fmt(clPercent, 1) + "%." });
+        steps.push({ title: "Compute SE, ME, and CI.", text:
+          "SE=√(p̂₁(1−p̂₁)/n₁ + p̂₂(1−p̂₂)/n₂)≈" + fmt(se,6) +
+          ", ME=z·SE≈" + fmt(ME,6) +
+          " ⇒ CI=(" + fmt(lower,6) + ", " + fmt(upper,6) + ")."
+        });
+
+        renderSteps(steps);
+      } else {
+        return showError("This calculator currently supports 1 or 2 samples.");
+      }
+    }
   }
 
-  // ---------- Event listeners ----------
+  // ---------- Reset ----------
+  function resetAll() {
+    paramTypeEl.value = "mean";
+    numSamplesEl.value = "1";
+    clInputEl.value = 95;
+
+    mean1Input.value = "";
+    sd1Input.value = "";
+    n1Input.value = "";
+
+    mean2Input.value = "";
+    sd2Input.value = "";
+    n2Input.value = "";
+
+    x1Input.value = "";
+    x2Input.value = "";
+
+    errorBox.style.display = "none";
+    warnBox.style.display = "none";
+    summaryBox.style.display = "none";
+    stepsList.innerHTML = "";
+    ciText.textContent = "–";
+    ciInterpretation.textContent = "";
+    summaryExtra.textContent = "";
+    resultSubtitle.textContent = 'Fill the inputs on the left and click "Calculate CI".';
+
+    updateSampleVisibility();
+    updateParamVisibility();
+  }
+
   calcBtn.addEventListener("click", calculateCI);
   resetBtn.addEventListener("click", resetAll);
 
-  // Initial
   updateSampleVisibility();
+  updateParamVisibility();
 </script>
 </body>
 </html>

@@ -23,5 +23,6 @@
 |-- Normal_Distribution_Calculator.html
 |-- robots.txt
 |-- Simple_Linear_Regression.html
+|-- sitemap.xml
 |-- t_distribution.html
 |-- T_Test_Calculator.html

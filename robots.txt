@@ -5,7 +5,7 @@ Allow: /
 Crawl-delay: 1
 
 # Sitemap location (update if you have a sitemap)
-# Sitemap: /sitemap.xml
+Sitemap: /sitemap.xml
 
 # Site map (visual)
 #

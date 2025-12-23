@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Replace BASE_URL with your site's root URL (no trailing slash),
+  e.g. https://example.com  → loc becomes https://example.com/index.html
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>BASE_URL/CheatSheet.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>BASE_URL/Chi_Square_Calculator.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>BASE_URL/Confidence_Interval_Calculator.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>BASE_URL/Hypothesis_Testing_Calculator.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>BASE_URL/index.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>BASE_URL/Multiple_Linear_Regression_calculator.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>BASE_URL/Normal_Distribution_Calculator.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>BASE_URL/Simple_Linear_Regression.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>BASE_URL/t_distribution.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>BASE_URL/T_Test_Calculator.html</loc>
+    <lastmod>2025-12-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>
