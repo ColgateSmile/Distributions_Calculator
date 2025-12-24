@@ -3,189 +3,98 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Confidence Interval Calculator</title>
+  <title>Confidence Interval Calculator (Mean & Proportion)</title>
 
-  <!-- Bootstrap (local) -->
-  <link href="./css/bootstrap.min.css" rel="stylesheet"/>
-  <script src="./js/bootstrap.bundle.min.js"></script>
+  <!-- Bootstrap 5 (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Font Awesome (local) -->
-  <link rel="stylesheet" href="./css/font-awesome.min.css"/>
+  <!-- Font Awesome (CDN) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+
+  <!-- MathJax -->
+  <script>
+    window.MathJax = {
+      tex: {
+        inlineMath: [['\\(','\\)'], ['$', '$']],
+        displayMath: [['\\[','\\]']]
+      },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+    };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 
   <style>
-    body {
-      background-color: #0f172a;
-      color: #f8fafc;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter",
-        Roboto, "Segoe UI", sans-serif;
-      min-height: 100vh;
-      padding-top: 2rem;
-      padding-bottom: 2rem;
-      display: flex;
-      flex-direction: column;
+    body{
+      background:#0f172a;color:#f8fafc;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont,"Inter",Roboto,"Segoe UI",sans-serif;
+      min-height:100vh;padding:2rem 0;display:flex;flex-direction:column;
     }
-    .page-wrapper { flex: 1 0 auto; }
-
-    .card {
-      background: #1e253b;
-      border: 1px solid #334155;
-      border-radius: 1rem;
-      box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
-      color: #f8fafc;
+    .page-wrapper{flex:1 0 auto;}
+    .card{
+      background:#1e253b;border:1px solid #334155;border-radius:1rem;
+      box-shadow:0 30px 80px rgba(0,0,0,.6);color:#f8fafc;
     }
-
-    .card-header {
-      background: radial-gradient(
-        circle at 0% 0%,
-        rgba(56, 189, 248, 0.08) 0%,
-        rgba(30, 37, 59, 0) 60%
-      );
-      border-bottom: 1px solid #334155;
-      border-radius: 1rem 1rem 0 0 !important;
-      color: #f8fafc;
+    .card-header{
+      background:radial-gradient(circle at 0% 0%, rgba(56,189,248,.08) 0%, rgba(30,37,59,0) 60%);
+      border-bottom:1px solid #334155;border-radius:1rem 1rem 0 0 !important;color:#f8fafc;
     }
-
-    .text-secondary {
-      color: #94a3b8 !important;
-      font-size: 0.9rem;
+    .text-secondary{color:#94a3b8 !important;font-size:.9rem;}
+    .badge-soft{
+      background-color:rgba(56,189,248,.1);color:#38bdf8;border-radius:999px;
+      padding:.15rem .6rem;font-size:.75rem;font-weight:700;
     }
+    .result-highlight{color:#38bdf8;font-weight:900;}
+    .small-label{font-size:.8rem;color:#94a3b8;}
+    .form-control,.form-select{background:#020617;border-color:#334155;color:#e2e8f0;}
+    .form-control:focus,.form-select:focus{
+      background:#020617;color:#e2e8f0;border-color:#38bdf8;
+      box-shadow:0 0 0 .2rem rgba(56,189,248,.25);
+    }
+    .info-icon{color:#38bdf8;margin-left:.35rem;cursor:pointer;opacity:.9;}
+    .info-icon:hover{opacity:1;color:#0ea5e9;}
+    .tooltip-inner{max-width:650px;text-align:left;padding:.6rem .75rem;font-size:.83rem;line-height:1.25rem;}
 
-    footer {
-      border-top: 1px solid #334155;
-      margin-top: 3rem;
-      padding-top: 1rem;
-      padding-bottom: 1rem;
-      color: #94a3b8;
-      text-align: center;
+    .alert-soft{
+      background:rgba(239,68,68,.08);
+      border:1px solid rgba(239,68,68,.4);
+      color:#fecaca;border-radius:.75rem;padding:.6rem .75rem;font-size:.88rem;margin-bottom:.75rem;
+    }
+    .warn-soft{
+      background:rgba(245,158,11,.10);
+      border:1px solid rgba(245,158,11,.45);
+      color:#fde68a;border-radius:.75rem;padding:.6rem .75rem;font-size:.88rem;margin-bottom:.75rem;
     }
 
-    .hm-foot-icon a {
-      color: #38bdf8;
-      font-size: 1.2rem;
-      display: inline-flex;
-      width: 2rem;
-      height: 2rem;
-      align-items: center;
-      justify-content: center;
-      transition: 0.3s;
-      text-decoration: none;
+    .formula-box{
+      background:#020617;border:1px solid #334155;border-radius:.85rem;
+      padding:.85rem .9rem;margin:.65rem 0;color:#e2e8f0;overflow-x:auto;
     }
-    .hm-foot-icon a:hover {
-      color: #0ea5e9;
-      text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
-    }
+    .kpi-grid{display:flex;flex-wrap:wrap;gap:.5rem 1.2rem;font-size:.9rem;}
+    .kpi-label{color:#cbd5f5;}
+    .kpi-val{color:#38bdf8;font-weight:900;}
+    .steps-wrap{background:#0b1224;border:1px solid #334155;border-radius:1rem;padding:1rem 1.05rem;}
+    .step-title{font-weight:900;margin:.15rem 0 .35rem;}
+    .step-body{color:#e2e8f0;font-size:.97rem;line-height:1.42rem;}
+    .divider{border-top:1px solid #334155;margin:1rem 0;}
 
-    footer a {
-      color: #38bdf8;
-      text-decoration: none;
-      font-weight: 500;
+    footer{
+      border-top:1px solid #334155;margin-top:3rem;padding:1rem 0;color:#94a3b8;text-align:center;
     }
-    footer a:hover {
-      color: #0ea5e9;
-      text-shadow: 0 0 8px rgba(56, 189, 248, 0.8);
+    .hm-foot-icon a{
+      color:#38bdf8;font-size:1.2rem;display:inline-flex;width:2rem;height:2rem;
+      align-items:center;justify-content:center;transition:.3s;text-decoration:none;
     }
+    .hm-foot-icon a:hover{color:#0ea5e9;text-shadow:0 0 8px rgba(56,189,248,.8);}
+    footer a{color:#38bdf8;text-decoration:none;font-weight:600;}
+    footer a:hover{color:#0ea5e9;text-shadow:0 0 8px rgba(56,189,248,.8);}
 
-    .badge-soft {
-      background-color: rgba(56, 189, 248, 0.1);
-      color: #38bdf8;
-      border-radius: 999px;
-      padding: 0.15rem 0.6rem;
-      font-size: 0.75rem;
-      font-weight: 600;
+    .mini-help{
+      background:#0b1224;border:1px solid #334155;border-radius:1rem;padding:.75rem .85rem;
     }
-
-    .result-highlight { color: #38bdf8; font-weight: 600; }
-
-    .step-list { list-style: none; padding-left: 0; margin-bottom: 0; }
-    .step-list li { margin-bottom: 0.75rem; display: flex; gap: 0.6rem; }
-    .step-number {
-      flex-shrink: 0;
-      width: 1.5rem;
-      height: 1.5rem;
-      border-radius: 999px;
-      background-color: #0f172a;
-      border: 1px solid #38bdf8;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: #38bdf8;
-      margin-top: 0.05rem;
-    }
-    .step-text { font-size: 0.9rem; color: #e2e8f0; }
-    .step-text strong { color: #f9fafb; }
-
-    .small-label { font-size: 0.8rem; color: #94a3b8; }
-
-    .form-control, .form-select {
-      background-color: #020617;
-      border-color: #334155;
-      color: #e2e8f0;
-    }
-    .form-control:focus, .form-select:focus {
-      background-color: #020617;
-      color: #e2e8f0;
-      border-color: #38bdf8;
-      box-shadow: 0 0 0 0.2rem rgba(56, 189, 248, 0.25);
-    }
-
-    .form-text { font-size: 0.75rem; }
-
-    .alert-soft {
-      background-color: rgba(239, 68, 68, 0.08);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: #fecaca;
-      border-radius: 0.75rem;
-      padding: 0.6rem 0.75rem;
-      font-size: 0.8rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .warn-soft {
-      background-color: rgba(245, 158, 11, 0.10);
-      border: 1px solid rgba(245, 158, 11, 0.45);
-      color: #fde68a;
-      border-radius: 0.75rem;
-      padding: 0.6rem 0.75rem;
-      font-size: 0.8rem;
-      margin-bottom: 0.75rem;
-    }
-
-    .summary-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1.5rem;
-      font-size: 0.85rem;
-      margin-bottom: 0.75rem;
-    }
-    .summary-label { color: #cbd5f5; }
-    .summary-value { color: #38bdf8; font-weight: 600; }
-
-    .result-box {
-      background-color: #020617;
-      border-radius: 0.75rem;
-      padding: 0.75rem 0.9rem;
-      border: 1px solid #334155;
-      font-size: 0.9rem;
-      margin-bottom: 0.75rem;
-    }
-
-    /* Tooltip usability */
-    .info-icon {
-      color: #38bdf8;
-      margin-left: 0.35rem;
-      cursor: pointer;
-      opacity: 0.9;
-    }
-    .info-icon:hover { opacity: 1; color: #0ea5e9; }
-    .tooltip-inner {
-      max-width: 380px;
-      text-align: left;
-      padding: 0.6rem 0.75rem;
-      font-size: 0.82rem;
-      line-height: 1.25rem;
-    }
+    .mini-help h6{margin:0 0 .35rem;font-weight:900;}
+    .mini-help ul{margin:0;padding-left:1.1rem;color:#e2e8f0;font-size:.9rem;}
+    .mini-help li{margin:.25rem 0;}
   </style>
 </head>
 
@@ -194,53 +103,63 @@
   <div class="text-center mb-4">
     <h1 class="h3 mb-1">Confidence Interval Calculator</h1>
     <div class="text-secondary">
-      Build CIs for <span class="result-highlight">means</span> or
-      <span class="result-highlight">proportions</span> using Z-based formulas.
+      Means or proportions. Supports <span class="result-highlight">Z vs T</span>, pooled t (regular), better proportion CIs, and implied CL from “±”.
     </div>
   </div>
 
   <div class="row g-4">
-    <!-- LEFT: Inputs -->
+    <!-- Inputs -->
     <div class="col-lg-4">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
           <div>
             <div class="fw-semibold">Inputs</div>
-            <div class="small text-secondary">
-              Choose parameter type and number of samples.
-            </div>
+            <div class="small text-secondary">Pick parameter, samples, mode, then enter data.</div>
           </div>
-          <span class="badge-soft">Z-CI</span>
+          <span class="badge-soft">CI</span>
         </div>
 
         <div class="card-body">
-          <!-- Parameter type -->
           <div class="mb-3">
             <label class="form-label">
-              Parameter type <span class="small-label">(what you estimate)</span>
-              <i class="fa-solid fa-circle-info info-icon"
-                 data-bs-toggle="tooltip" data-bs-html="true"
-                 title="<strong>Pick based on the question.</strong><br>
-                 <u>Mean (μ)</u>: questions about an average (e.g., average waiting time).<br>
-                 <u>Proportion (p)</u>: questions about a percentage/ratio (e.g., % positive attitude).<br><br>
-                 <strong>Exam tip:</strong> If the data are counts like “positive/negative”, that is almost always a <u>proportion</u> problem.">
+              Calculation mode
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-html="true"
+                 title="<strong>Compute CI from CL</strong>: you choose CL (e.g., 95%) and we compute the CI.<br><br>
+                        <strong>Implied CL from ±</strong>: you provide a reported result like <em>p̂ ± E</em> or <em>x̄ ± E</em> and we solve for the implied critical value and confidence level.<br><br>
+                        Key identities:<br>
+                        \\(E=\\text{crit}\\cdot SE\\), so \\(\\text{crit}=E/SE\\). Then<br>
+                        mean (Z): \\(CL=2\\Phi(z^*)-1\\); mean (T): \\(CL=2F_t(t^*;df)-1\\).">
+              </i>
+            </label>
+            <select id="calcMode" class="form-select">
+              <option value="ci" selected>Compute CI from confidence level (CL)</option>
+              <option value="impliedCL">Compute implied CL from “estimate ± E”</option>
+            </select>
+            <div id="modeNote" class="small text-secondary mt-1">
+              Default: compute a CI using a chosen confidence level.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">
+              Parameter type
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-html="true"
+                 title="<strong>Mean (μ)</strong>: numeric averages (time, weight, height).<br>
+                        <strong>Proportion (p)</strong>: success/failure percent (approval rate).">
               </i>
             </label>
             <select id="paramType" class="form-select">
-              <option value="mean" selected>Mean (μ or μ₁ − μ₂)</option>
-              <option value="prop">Proportion (p or p₁ − p₂)</option>
+              <option value="mean" selected>Mean (μ)</option>
+              <option value="prop">Proportion (p)</option>
             </select>
           </div>
 
-          <!-- Number of samples -->
           <div class="mb-3">
             <label class="form-label">
-              Number of samples <span class="small-label">(1 = one CI, 2 = difference)</span>
-              <i class="fa-solid fa-circle-info info-icon"
-                 data-bs-toggle="tooltip" data-bs-html="true"
-                 title="<strong>1 sample</strong>: estimate one parameter (μ or p) for one population.<br>
-                 <strong>2 samples</strong>: estimate a difference (μ₁−μ₂ or p₁−p₂).<br><br>
-                 <strong>Assumption</strong>: the two samples are independent (different people/groups, random sampling).">
+              Number of samples
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-html="true"
+                 title="1 sample → CI for μ or p.<br>2 samples → CI for difference (Group 1 minus Group 2).<br><br>
+                        Note: <strong>Implied CL</strong> mode uses 1 sample only (reported as estimate ± E).">
               </i>
             </label>
             <select id="numSamples" class="form-select">
@@ -249,211 +168,197 @@
             </select>
           </div>
 
-          <!-- Confidence level -->
-          <div class="mb-3">
+          <!-- CL input (hidden in implied mode) -->
+          <div id="clBlock" class="mb-3">
             <label class="form-label">
               Confidence level (%)
-              <i class="fa-solid fa-circle-info info-icon"
-                 data-bs-toggle="tooltip" data-bs-html="true"
-                 title="<strong>Meaning:</strong> “How confident” your interval procedure is.<br>
-                 If CL = 98%, then α = 1 − 0.98 = 0.02 and α/2 = 0.01.<br><br>
-                 <strong>Critical value:</strong> z<sub>α/2</sub> is the z-score with <u>area to the left</u> = 1 − α/2.<br>
-                 Example: CL=98% ⇒ 1−α/2=0.99 ⇒ z≈2.326.">
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-html="true"
+                 title="Example: 98% ⇒ α = 0.02 ⇒ α/2 = 0.01 (two tails).">
               </i>
             </label>
             <input id="clInput" type="number" step="0.1" value="95" min="50" max="99.9" class="form-control" />
-            <div class="form-text text-secondary">
-              Example: 95 → α = 1 − 0.95 = 0.05.
+          </div>
+
+          <!-- Margin of error input (shown in implied mode) -->
+          <div id="moeBlock" class="mb-3" style="display:none;">
+            <label class="form-label" id="eLabel">
+              Reported margin of error (E)
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-html="true"
+                 title="If the report says <strong>60% ± 5%</strong>, then E = 0.05 (in proportion units).<br>
+                        If the report says <strong>x̄ ± 2</strong>, then E = 2 (in the same units as x̄).">
+              </i>
+            </label>
+            <div class="row g-2 align-items-center">
+              <div class="col-7">
+                <input id="eInput" type="number" step="0.0001" value="5" class="form-control" />
+              </div>
+              <div class="col-5" id="eUnitWrap">
+                <select id="eUnit" class="form-select">
+                  <option value="percent" selected>%</option>
+                  <option value="prop">proportion</option>
+                </select>
+              </div>
+            </div>
+            <div class="small text-secondary mt-1" id="eHint">
+              Example: 5% ⇒ E = 0.05
             </div>
           </div>
 
+          <!-- Mean method -->
+          <div id="meanMethodBlock" class="mb-3">
+            <label class="form-label">
+              Mean method (Z vs T)
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-html="true"
+                 title="<strong>T-interval</strong> uses sample SD s with df=n−1 (σ unknown). This is what most exams use.<br>
+                        <strong>Z-interval</strong> uses known population σ (rare unless stated).">
+              </i>
+            </label>
+            <select id="meanMethod" class="form-select">
+              <option value="t" selected>T (σ unknown)</option>
+              <option value="z">Z (σ known)</option>
+            </select>
+          </div>
+
+          <!-- Proportion method -->
+          <div id="propMethodBlock" class="mb-3" style="display:none;">
+            <label class="form-label">
+              Proportion CI method (1-sample)
+              <i class="fa-solid fa-circle-info info-icon" data-bs-toggle="tooltip" data-bs-html="true"
+                 title="<strong>Wald</strong>: p̂ ± z*√(p̂(1−p̂)/n). Standard intro formula.<br>
+                        <strong>Wilson</strong> and <strong>Agresti–Coull</strong> are improved variants when counts are not large.<br><br>
+                        For <strong>2-proportion</strong> differences, we use the standard (Wald-style) SE for p̂₁ − p̂₂.">
+              </i>
+            </label>
+            <select id="propMethod" class="form-select">
+              <option value="wald" selected>Wald (standard)</option>
+              <option value="wilson">Wilson (better)</option>
+              <option value="ac">Agresti–Coull (better)</option>
+            </select>
+          </div>
+
+          <div class="mini-help mb-3">
+            <h6>Which method should I use?</h6>
+            <ul>
+              <li><strong>Mean:</strong> use <strong>T</strong> unless the question says σ is known.</li>
+              <li><strong>Proportion:</strong> use <strong>Z</strong> with large counts; Wilson/AC if counts are small.</li>
+              <li><strong>2 samples:</strong> result is a CI for a <strong>difference</strong> (Group 1 − Group 2).</li>
+            </ul>
+          </div>
+
+          <div class="divider"></div>
+
           <!-- Sample 1 -->
-          <div class="mb-3 border-top pt-3">
+          <div id="sample1Block">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <span class="fw-semibold">Sample 1</span>
               <span class="small-label text-secondary">Group 1</span>
             </div>
 
-            <!-- Mean mode -->
-            <div id="mean1Row" class="mb-2">
-              <label class="form-label small-label">
-                Mean of sample 1 (X̄₁)
-                <i class="fa-solid fa-circle-info info-icon"
-                   data-bs-toggle="tooltip" data-bs-html="true"
-                   title="<strong>Sample mean:</strong> X̄ = (x₁ + x₂ + ... + xₙ) / n.<br>
-                   Use the mean provided in the question (or compute it from raw data).<br><br>
-                   <strong>Units:</strong> same units as the original measurements (minutes, kg, $).">
-                </i>
-              </label>
-              <input id="mean1Input" type="number" step="0.01" class="form-control" />
-            </div>
-
-            <div id="sd1Row" class="mb-2">
-              <label class="form-label small-label">
-                Standard deviation (s₁ or σ₁)
-                <i class="fa-solid fa-circle-info info-icon"
-                   data-bs-toggle="tooltip" data-bs-html="true"
-                   title="<strong>SD measures spread.</strong><br>
-                   If the question says “population SD is known”, use σ (Z-method).<br>
-                   If it says “sample SD” or σ is unknown, many courses require <u>t</u> instead of z.<br><br>
-                   <strong>Note:</strong> This page is Z-based; add a T-mode if your exam tests t-intervals for means.">
-                </i>
-              </label>
-              <input id="sd1Input" type="number" step="0.01" min="0" class="form-control" />
-            </div>
-
-            <!-- Proportion mode -->
-            <div id="x1Row" class="mb-2" style="display:none;">
-              <label class="form-label small-label">
-                Successes in sample 1 (x₁)
-                <i class="fa-solid fa-circle-info info-icon"
-                   data-bs-toggle="tooltip" data-bs-html="true"
-                   title="<strong>Success = the category you count.</strong><br>
-                   Examples: “positive attitude”, “passed”, “defective”, “yes”.<br><br>
-                   <strong>How to compute:</strong> x = number of observations in the target category.">
-                </i>
-              </label>
-              <input id="x1Input" type="number" step="1" min="0" class="form-control" />
-              <div class="form-text text-secondary">
-                Example: count of “positive attitude”.
+            <div id="mean1Inputs">
+              <div class="mb-2">
+                <label class="form-label small-label">Sample mean (X̄₁)</label>
+                <input id="mean1Input" type="number" step="0.01" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label small-label">Sample size (n₁)</label>
+                <input id="n1Input" type="number" min="2" step="1" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label small-label">SD (s₁) or σ₁</label>
+                <input id="sd1Input" type="number" step="0.01" min="0" class="form-control" />
               </div>
             </div>
 
-            <div class="mb-2">
-              <label class="form-label small-label">
-                Total sample size (n₁)
-                <i class="fa-solid fa-circle-info info-icon"
-                   data-bs-toggle="tooltip" data-bs-html="true"
-                   title="<strong>Total number of observations.</strong><br>
-                   For a 2-category table: n = (positive + negative).<br><br>
-                   <strong>Common mistake:</strong> entering “negative count” here. This input is TOTAL n.">
-                </i>
-              </label>
-              <input id="n1Input" type="number" min="1" step="1" class="form-control" />
+            <div id="prop1Inputs" style="display:none;">
+              <div class="mb-2">
+                <label class="form-label small-label">Successes (x₁)</label>
+                <input id="x1Input" type="number" step="1" min="0" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label small-label">Sample size (n₁)</label>
+                <input id="n1pInput" type="number" step="1" min="1" class="form-control" />
+              </div>
             </div>
           </div>
 
           <!-- Sample 2 -->
-          <div id="sample2Block" class="mb-3 border-top pt-3" style="display:none;">
+          <div id="sample2Block" style="display:none;" class="mt-3">
             <div class="d-flex justify-content-between align-items-center mb-1">
               <span class="fw-semibold">Sample 2</span>
               <span class="small-label text-secondary">Group 2</span>
             </div>
 
-            <!-- Mean mode -->
-            <div id="mean2Row" class="mb-2">
-              <label class="form-label small-label">
-                Mean of sample 2 (X̄₂)
-                <i class="fa-solid fa-circle-info info-icon"
-                   data-bs-toggle="tooltip" data-bs-html="true"
-                   title="Same idea as sample 1 mean, but for group 2.<br>
-                   The point estimate for the difference is (X̄₁ − X̄₂).">
-                </i>
-              </label>
-              <input id="mean2Input" type="number" step="0.01" class="form-control" />
+            <div id="mean2Inputs">
+              <div class="mb-2">
+                <label class="form-label small-label">Sample mean (X̄₂)</label>
+                <input id="mean2Input" type="number" step="0.01" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label small-label">Sample size (n₂)</label>
+                <input id="n2Input" type="number" min="2" step="1" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label small-label">SD (s₂) or σ₂</label>
+                <input id="sd2Input" type="number" step="0.01" min="0" class="form-control" />
+              </div>
+              <div class="small text-secondary">
+                2-mean CI uses the <strong>regular pooled t</strong> method (equal variances), as taught in many intro courses.
+              </div>
             </div>
 
-            <div id="sd2Row" class="mb-2">
-              <label class="form-label small-label">
-                Standard deviation (s₂ or σ₂)
-                <i class="fa-solid fa-circle-info info-icon"
-                   data-bs-toggle="tooltip" data-bs-html="true"
-                   title="SD for group 2. Used in SE for μ₁−μ₂: √(s₁²/n₁ + s₂²/n₂).">
-                </i>
-              </label>
-              <input id="sd2Input" type="number" step="0.01" min="0" class="form-control" />
-            </div>
-
-            <!-- Proportion mode -->
-            <div id="x2Row" class="mb-2" style="display:none;">
-              <label class="form-label small-label">
-                Successes in sample 2 (x₂)
-                <i class="fa-solid fa-circle-info info-icon"
-                   data-bs-toggle="tooltip" data-bs-html="true"
-                   title="x₂ is the count of “successes” in group 2.<br>
-                   Example: positive attitudes in France.">
-                </i>
-              </label>
-              <input id="x2Input" type="number" step="1" min="0" class="form-control" />
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label small-label">
-                Total sample size (n₂)
-                <i class="fa-solid fa-circle-info info-icon"
-                   data-bs-toggle="tooltip" data-bs-html="true"
-                   title="<strong>Total n in group 2.</strong><br>
-                   If the table gives positive and negative counts, use n = pos + neg.<br><br>
-                   <strong>Safety feature:</strong> If you accidentally type the negative count here (so x₂ &gt; n₂), the calculator will auto-correct to n₂ = x₂ + negatives and warn you.">
-                </i>
-              </label>
-              <input id="n2Input" type="number" min="1" step="1" class="form-control" />
-            </div>
-
-            <div class="form-text text-secondary">
-              We estimate a CI for the difference (Sample 1 minus Sample 2).
+            <div id="prop2Inputs" style="display:none;">
+              <div class="mb-2">
+                <label class="form-label small-label">Successes (x₂)</label>
+                <input id="x2Input" type="number" step="1" min="0" class="form-control" />
+              </div>
+              <div class="mb-2">
+                <label class="form-label small-label">Sample size (n₂)</label>
+                <input id="n2pInput" type="number" step="1" min="1" class="form-control" />
+              </div>
             </div>
           </div>
 
           <div class="d-flex gap-2 mt-3">
             <button id="calcBtn" class="btn btn-primary flex-grow-1">
-              <i class="fa-solid fa-calculator me-1"></i> Calculate CI
+              <i class="fa-solid fa-calculator me-1"></i> Calculate
             </button>
-            <button id="resetBtn" class="btn btn-outline-secondary flex-grow-1">
-              Reset
-            </button>
+            <button id="resetBtn" class="btn btn-outline-secondary flex-grow-1">Reset</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- RIGHT: Results -->
+    <!-- Results -->
     <div class="col-lg-8">
       <div class="card h-100">
         <div class="card-header">
-          <div class="fw-semibold">Result & Step-by-Step Explanation</div>
-          <div class="small text-secondary" id="resultSubtitle">
-            Fill the inputs on the left and click "Calculate CI".
-          </div>
+          <div class="fw-semibold">Result & Step-by-Step</div>
+          <div class="small text-secondary" id="subtitle">Fill inputs and click “Calculate”.</div>
         </div>
+
         <div class="card-body">
           <div id="errorBox" style="display:none;" class="alert-soft"></div>
           <div id="warnBox" style="display:none;" class="warn-soft"></div>
 
-          <!-- Summary -->
-          <div id="summaryBox" style="display:none;">
-            <div class="result-box">
-              <div class="summary-row">
-                <div>
-                  <span class="summary-label">Confidence level:</span>
-                  <span class="summary-value" id="summaryCL"></span>
-                </div>
-                <div>
-                  <span class="summary-label">α:</span>
-                  <span class="summary-value" id="summaryAlpha"></span>
-                </div>
-                <div>
-                  <span class="summary-label">α/2:</span>
-                  <span class="summary-value" id="summaryAlpha2"></span>
-                </div>
-                <div>
-                  <span class="summary-label">z<sub>α/2</sub>:</span>
-                  <span class="summary-value" id="summaryZ"></span>
-                </div>
+          <div id="summaryBox" style="display:none;" class="mb-3">
+            <div class="formula-box">
+              <div class="kpi-grid">
+                <div><span class="kpi-label">CL:</span> <span class="kpi-val" id="kCL"></span></div>
+                <div><span class="kpi-label">α:</span> <span class="kpi-val" id="kAlpha"></span></div>
+                <div><span class="kpi-label">α/2:</span> <span class="kpi-val" id="kAlpha2"></span></div>
+                <div><span class="kpi-label">Critical:</span> <span class="kpi-val" id="kCrit"></span></div>
+                <div id="kDfWrap" style="display:none;"><span class="kpi-label">df:</span> <span class="kpi-val" id="kDf"></span></div>
               </div>
-              <div id="summaryExtra" class="small text-secondary"></div>
             </div>
 
-            <!-- Final CI -->
-            <div class="result-box mb-3">
-              <div class="mb-1 fw-semibold" id="ciTitle">Confidence Interval:</div>
-              <div id="ciText" class="mb-1">–</div>
-              <div id="ciInterpretation" class="small text-secondary"></div>
+            <div class="formula-box">
+              <div class="fw-semibold mb-1" id="finalTitle">Final Confidence Interval</div>
+              <div id="finalCI" class="result-highlight" style="font-size:1.05rem;"></div>
+              <div class="text-secondary mt-1" id="finalInterp"></div>
             </div>
           </div>
 
-          <!-- Steps -->
-          <ol id="stepsList" class="step-list"></ol>
+          <div id="stepsRoot" class="steps-wrap" style="display:none;"></div>
         </div>
       </div>
     </div>
@@ -475,475 +380,765 @@
 </footer>
 
 <script>
-  // ---------- Bootstrap tooltips init ----------
+  // Tooltips
   document.addEventListener("DOMContentLoaded", () => {
-    const els = Array.from(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    els.forEach(el => new bootstrap.Tooltip(el));
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach(el => new bootstrap.Tooltip(el));
   });
 
-  // ---------- Helper: format numbers ----------
-  function fmt(v, decimals = 3) {
-    if (!isFinite(v)) return "–";
-    return Number(v).toFixed(decimals);
+  // Safe MathJax typeset
+  async function typeset(element=null){
+    if (!window.MathJax) return;
+    try{
+      if (MathJax.startup?.promise) await MathJax.startup.promise;
+      if (element) await MathJax.typesetPromise([element]);
+      else await MathJax.typesetPromise();
+    }catch(e){}
   }
-  function clamp01(x) { return Math.max(0, Math.min(1, x)); }
 
-  // ---------- Inverse normal CDF (for z_{alpha/2}) ----------
-  // Acklam approximation
+  const fmt = (v, d=6) => (!isFinite(v) ? "–" : Number(v).toFixed(d));
+
+  // Normal CDF (Phi) via erf
+  function erf(x){
+    const sign = x>=0 ? 1 : -1;
+    x = Math.abs(x);
+    const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+    const t = 1/(1+p*x);
+    const y = 1-((((a5*t+a4)*t+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
+    return sign*y;
+  }
+  function normalCDF(z){ return 0.5*(1 + erf(z/Math.sqrt(2))); }
+
+  // Inverse normal CDF (Acklam)
   function inverseNormalCDF(p) {
     if (p <= 0 || p >= 1) return NaN;
-
-    const a1 = -39.69683028665376;
-    const a2 = 220.9460984245205;
-    const a3 = -275.9285104469687;
-    const a4 = 138.3577518672690;
-    const a5 = -30.66479806614716;
-    const a6 = 2.506628277459239;
-
-    const b1 = -54.47609879822406;
-    const b2 = 161.5858368580409;
-    const b3 = -155.6989798598866;
-    const b4 = 66.80131188771972;
-    const b5 = -13.28068155288572;
-
-    const c1 = -0.007784894002430293;
-    const c2 = -0.3223964580411365;
-    const c3 = -2.400758277161838;
-    const c4 = -2.549732539343734;
-    const c5 = 4.374664141464968;
-    const c6 = 2.938163982698783;
-
-    const d1 = 0.007784695709041462;
-    const d2 = 0.3224671290700398;
-    const d3 = 2.445134137142996;
-    const d4 = 3.754408661907416;
-
-    const plow = 0.02425;
-    const phigh = 1 - plow;
-    let q, r;
-
+    const a1=-39.69683028665376,a2=220.9460984245205,a3=-275.9285104469687,a4=138.3577518672690,a5=-30.66479806614716,a6=2.506628277459239;
+    const b1=-54.47609879822406,b2=161.5858368580409,b3=-155.6989798598866,b4=66.80131188771972,b5=-13.28068155288572;
+    const c1=-0.007784894002430293,c2=-0.3223964580411365,c3=-2.400758277161838,c4=-2.549732539343734,c5=4.374664141464968,c6=2.938163982698783;
+    const d1=0.007784695709041462,d2=0.3224671290700398,d3=2.445134137142996,d4=3.754408661907416;
+    const plow=0.02425, phigh=1-plow;
+    let q,r;
     if (p < plow) {
-      q = Math.sqrt(-2 * Math.log(p));
-      return (
-        (((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
-        ((((d1 * q + d2) * q + d3) * q + d4) * q + 1)
-      );
+      q = Math.sqrt(-2*Math.log(p));
+      return (((((c1*q+c2)*q+c3)*q+c4)*q+c5)*q+c6)/((((d1*q+d2)*q+d3)*q+d4)*q+1);
     }
-
     if (p > phigh) {
-      q = Math.sqrt(-2 * Math.log(1 - p));
-      return (
-        -(((((c1 * q + c2) * q + c3) * q + c4) * q + c5) * q + c6) /
-        ((((d1 * q + d2) * q + d3) * q + d4) * q + 1)
-      );
+      q = Math.sqrt(-2*Math.log(1-p));
+      return -(((((c1*q+c2)*q+c3)*q+c4)*q+c5)*q+c6)/((((d1*q+d2)*q+d3)*q+d4)*q+1);
     }
-
-    q = p - 0.5;
-    r = q * q;
-    return (
-      (((((a1 * r + a2) * r + a3) * r + a4) * r + a5) * r + a6) * q /
-      (((((b1 * r + b2) * r + b3) * r + b4) * r + b5) * r + 1)
-    );
+    q=p-0.5; r=q*q;
+    return (((((a1*r+a2)*r+a3)*r+a4)*r+a5)*r+a6)*q/(((((b1*r+b2)*r+b3)*r+b4)*r+b5)*r+1);
   }
 
-  function getZCritical(alpha) {
-    const p = 1 - alpha / 2;
-    return inverseNormalCDF(p);
+  function zStar(CL){
+    const alpha = 1-CL;
+    return inverseNormalCDF(1 - alpha/2);
   }
 
-  // ---------- DOM ----------
-  const paramTypeEl = document.getElementById("paramType");
-  const numSamplesEl = document.getElementById("numSamples");
-  const clInputEl = document.getElementById("clInput");
+  // Student t (CDF + inverse)
+  function gammaln(z){
+    const p=[676.5203681218851,-1259.1392167224028,771.32342877765313,-176.61502916214059,12.507343278686905,-0.13857109526572012,9.9843695780195716e-6,1.5056327351493116e-7];
+    if(z<0.5) return Math.log(Math.PI)-Math.log(Math.sin(Math.PI*z))-gammaln(1-z);
+    z-=1; let x=0.99999999999980993;
+    for(let i=0;i<p.length;i++) x+=p[i]/(z+i+1);
+    const t=z+p.length-0.5;
+    return 0.5*Math.log(2*Math.PI)+(z+0.5)*Math.log(t)-t+Math.log(x);
+  }
+  function betacf(a,b,x){
+    const MAXIT=200, EPS=3e-14, FPMIN=1e-30;
+    let qab=a+b, qap=a+1, qam=a-1;
+    let c=1, d=1-qab*x/qap;
+    if (Math.abs(d)<FPMIN) d=FPMIN;
+    d=1/d; let h=d;
+    for(let m=1;m<=MAXIT;m++){
+      let m2=2*m;
+      let aa=m*(b-m)*x/((qam+m2)*(a+m2));
+      d=1+aa*d; if(Math.abs(d)<FPMIN) d=FPMIN;
+      c=1+aa/c; if(Math.abs(c)<FPMIN) c=FPMIN;
+      d=1/d; h*=d*c;
+      aa=-(a+m)*(qab+m)*x/((a+m2)*(qap+m2));
+      d=1+aa*d; if(Math.abs(d)<FPMIN) d=FPMIN;
+      c=1+aa/c; if(Math.abs(c)<FPMIN) c=FPMIN;
+      d=1/d; const del=d*c; h*=del;
+      if(Math.abs(del-1)<EPS) break;
+    }
+    return h;
+  }
+  function betainc(a,b,x){
+    if (x<=0) return 0;
+    if (x>=1) return 1;
+    const lnBeta = gammaln(a)+gammaln(b)-gammaln(a+b);
+    const front = Math.exp(Math.log(x)*a + Math.log(1-x)*b - lnBeta) / a;
+    const cf = betacf(a,b,x);
+    const res = front*cf;
+    if (x < (a+1)/(a+b+2)) return res;
+    const front2 = Math.exp(Math.log(1-x)*b + Math.log(x)*a - lnBeta) / b;
+    const cf2 = betacf(b,a,1-x);
+    return 1 - front2*cf2;
+  }
+  function tCDF(t, df){
+    const x = df/(df + t*t);
+    const ib = betainc(df/2, 0.5, x);
+    return t>=0 ? 1 - 0.5*ib : 0.5*ib;
+  }
+  function tInv(p, df){
+    let lo=-50, hi=50;
+    for(let i=0;i<90;i++){
+      const mid=(lo+hi)/2;
+      const cm=tCDF(mid, df);
+      if (cm < p) lo=mid; else hi=mid;
+    }
+    return (lo+hi)/2;
+  }
+  function tStar(CL, df){
+    const alpha = 1-CL;
+    return tInv(1 - alpha/2, df);
+  }
 
-  const mean1Row = document.getElementById("mean1Row");
-  const sd1Row = document.getElementById("sd1Row");
-  const mean1Input = document.getElementById("mean1Input");
-  const sd1Input = document.getElementById("sd1Input");
+  // DOM
+  const calcMode = document.getElementById("calcMode");
+  const modeNote = document.getElementById("modeNote");
+  const clBlock = document.getElementById("clBlock");
+  const moeBlock = document.getElementById("moeBlock");
+  const eInput = document.getElementById("eInput");
+  const eUnit = document.getElementById("eUnit");
+  const eUnitWrap = document.getElementById("eUnitWrap");
+  const eLabel = document.getElementById("eLabel");
+  const eHint = document.getElementById("eHint");
 
-  const mean2Row = document.getElementById("mean2Row");
-  const sd2Row = document.getElementById("sd2Row");
-  const mean2Input = document.getElementById("mean2Input");
-  const sd2Input = document.getElementById("sd2Input");
+  const paramType = document.getElementById("paramType");
+  const numSamples = document.getElementById("numSamples");
+  const clInput = document.getElementById("clInput");
 
-  const x1Row = document.getElementById("x1Row");
-  const x2Row = document.getElementById("x2Row");
-  const x1Input = document.getElementById("x1Input");
-  const x2Input = document.getElementById("x2Input");
+  const meanMethodBlock = document.getElementById("meanMethodBlock");
+  const meanMethod = document.getElementById("meanMethod");
+  const propMethodBlock = document.getElementById("propMethodBlock");
+  const propMethod = document.getElementById("propMethod");
 
-  const n1Input = document.getElementById("n1Input");
-  const n2Input = document.getElementById("n2Input");
-
+  const mean1Inputs = document.getElementById("mean1Inputs");
+  const mean2Inputs = document.getElementById("mean2Inputs");
+  const prop1Inputs = document.getElementById("prop1Inputs");
+  const prop2Inputs = document.getElementById("prop2Inputs");
   const sample2Block = document.getElementById("sample2Block");
-
-  const calcBtn = document.getElementById("calcBtn");
-  const resetBtn = document.getElementById("resetBtn");
 
   const errorBox = document.getElementById("errorBox");
   const warnBox = document.getElementById("warnBox");
   const summaryBox = document.getElementById("summaryBox");
-  const resultSubtitle = document.getElementById("resultSubtitle");
+  const stepsRoot = document.getElementById("stepsRoot");
+  const subtitle = document.getElementById("subtitle");
 
-  const summaryCL = document.getElementById("summaryCL");
-  const summaryAlpha = document.getElementById("summaryAlpha");
-  const summaryAlpha2 = document.getElementById("summaryAlpha2");
-  const summaryZ = document.getElementById("summaryZ");
-  const summaryExtra = document.getElementById("summaryExtra");
+  const kCL = document.getElementById("kCL");
+  const kAlpha = document.getElementById("kAlpha");
+  const kAlpha2 = document.getElementById("kAlpha2");
+  const kCrit = document.getElementById("kCrit");
+  const kDfWrap = document.getElementById("kDfWrap");
+  const kDf = document.getElementById("kDf");
+  const finalTitle = document.getElementById("finalTitle");
+  const finalCI = document.getElementById("finalCI");
+  const finalInterp = document.getElementById("finalInterp");
 
-  const ciTitle = document.getElementById("ciTitle");
-  const ciText = document.getElementById("ciText");
-  const ciInterpretation = document.getElementById("ciInterpretation");
-  const stepsList = document.getElementById("stepsList");
+  // Inputs
+  const mean1Input = document.getElementById("mean1Input");
+  const n1Input = document.getElementById("n1Input");
+  const sd1Input = document.getElementById("sd1Input");
+  const mean2Input = document.getElementById("mean2Input");
+  const n2Input = document.getElementById("n2Input");
+  const sd2Input = document.getElementById("sd2Input");
 
-  // ---------- UI ----------
-  function updateSampleVisibility() {
-    const k = parseInt(numSamplesEl.value, 10);
-    sample2Block.style.display = (k === 2) ? "block" : "none";
+  const x1Input = document.getElementById("x1Input");
+  const n1pInput = document.getElementById("n1pInput");
+  const x2Input = document.getElementById("x2Input");
+  const n2pInput = document.getElementById("n2pInput");
+
+  function showError(msg){ errorBox.textContent=msg; errorBox.style.display="block"; }
+  function showWarn(msg){ warnBox.textContent=msg; warnBox.style.display="block"; }
+
+  function clearOutputs(){
+    errorBox.style.display="none";
+    warnBox.style.display="none";
+    summaryBox.style.display="none";
+    stepsRoot.style.display="none";
+    stepsRoot.innerHTML="";
+    kDfWrap.style.display="none";
   }
 
-  function updateParamVisibility() {
-    const isProp = (paramTypeEl.value === "prop");
+  function addStep(title, bodyHTML, formulaHTML=null){
+    const wrap=document.createElement("div");
+    wrap.className="mb-3";
 
-    mean1Row.style.display = isProp ? "none" : "block";
-    sd1Row.style.display   = isProp ? "none" : "block";
-    mean2Row.style.display = isProp ? "none" : "block";
-    sd2Row.style.display   = isProp ? "none" : "block";
+    const t=document.createElement("div");
+    t.className="step-title";
+    t.textContent=title;
 
-    x1Row.style.display    = isProp ? "block" : "none";
-    x2Row.style.display    = isProp ? "block" : "none";
+    const b=document.createElement("div");
+    b.className="step-body";
+    b.innerHTML=bodyHTML;
 
-    if (isProp) {
-      resultSubtitle.textContent = "Z-confidence interval for proportions (p or p₁ − p₂).";
+    wrap.appendChild(t);
+    wrap.appendChild(b);
+
+    if (formulaHTML){
+      const f=document.createElement("div");
+      f.className="formula-box";
+      f.innerHTML=formulaHTML;
+      wrap.appendChild(f);
+    }
+    stepsRoot.appendChild(wrap);
+  }
+
+  function setSummary(CL, alpha, critLabel, critVal, df=null){
+    kCL.textContent = fmt(CL,4) + " (" + fmt(CL*100,1) + "%)";
+    kAlpha.textContent = fmt(alpha,4);
+    kAlpha2.textContent = fmt(alpha/2,4);
+    kCrit.textContent = `${critLabel} = ${fmt(critVal,4)}`;
+    if (df!==null){
+      kDfWrap.style.display="inline";
+      kDf.textContent = fmt(df,0);
     } else {
-      resultSubtitle.textContent = "Z-confidence interval for means (μ or μ₁ − μ₂).";
+      kDfWrap.style.display="none";
     }
   }
 
-  numSamplesEl.addEventListener("change", updateSampleVisibility);
-  paramTypeEl.addEventListener("change", updateParamVisibility);
-
-  // ---------- Helpers ----------
-  function showError(msg) {
-    errorBox.textContent = msg;
-    errorBox.style.display = "block";
+  function getE(){
+    const raw = parseFloat(eInput.value);
+    if (!isFinite(raw) || raw<=0) return NaN;
+    if (paramType.value === "prop") {
+      return (eUnit.value==="percent") ? raw/100 : raw;
+    }
+    // mean: E is in the same units as x̄
+    return raw;
   }
 
-  function renderSteps(steps) {
-    stepsList.innerHTML = "";
-    steps.forEach((s, idx) => {
-      const li = document.createElement("li");
+  function setModeUI(){
+    const mode = calcMode.value;
 
-      const numSpan = document.createElement("span");
-      numSpan.className = "step-number";
-      numSpan.textContent = (idx + 1).toString();
-
-      const textDiv = document.createElement("div");
-      textDiv.className = "step-text";
-      textDiv.innerHTML = "<strong>" + s.title + "</strong><br />" + s.text;
-
-      li.appendChild(numSpan);
-      li.appendChild(textDiv);
-      stepsList.appendChild(li);
-    });
+    if (mode==="impliedCL"){
+      clBlock.style.display="none";
+      moeBlock.style.display="block";
+      modeNote.textContent = "Implied CL mode: solves for the implied critical value and confidence level from a reported estimate ± E (one-sample only).";
+      numSamples.value = "1";
+      numSamples.disabled = true;
+      subtitle.textContent = "Implied CL from a reported one-sample result (estimate ± E).";
+    } else {
+      clBlock.style.display="block";
+      moeBlock.style.display="none";
+      modeNote.textContent = "Default: compute a CI using a chosen confidence level.";
+      numSamples.disabled = false;
+    }
+    setParamUI();
   }
 
-  // If x > n, user probably typed failures in n field; convert to total n = x + failures.
-  function coerceTotalNFromFailuresIfNeeded(x, n, label) {
-    if (isFinite(x) && isFinite(n) && n > 0 && x > n) {
-      const failures = n;
-      const total = x + failures;
+  function setParamUI(){
+    const p = paramType.value;
+    const k = numSamples.value;
 
-      warnBox.textContent =
-        `${label}: You entered x > n. This usually means you typed “failures/negatives” into the n field. ` +
-        `I will treat your n input (${failures}) as failures and use total n = x + failures = ${total}.`;
-      warnBox.style.display = "block";
+    sample2Block.style.display = (k==="2") ? "block" : "none";
 
-      return total;
+    if (p==="mean"){
+      meanMethodBlock.style.display="block";
+      propMethodBlock.style.display="none";
+      mean1Inputs.style.display="block";
+      prop1Inputs.style.display="none";
+      mean2Inputs.style.display=(k==="2") ? "block" : "none";
+      prop2Inputs.style.display="none";
+
+      // implied CL mode: E has units (no percent selector)
+      if (calcMode.value==="impliedCL"){
+        eLabel.firstChild.textContent = "Reported margin of error (E) for x̄ ± E";
+        eUnitWrap.style.display="none";
+        eHint.textContent = "Enter E in the same units as the mean (e.g., minutes, kg).";
+        eInput.value = "2";
+      } else {
+        subtitle.textContent="Mean CIs. Use T when σ is unknown (most exams).";
+      }
+
+    } else {
+      meanMethodBlock.style.display="none";
+      propMethodBlock.style.display="block";
+      mean1Inputs.style.display="none";
+      prop1Inputs.style.display="block";
+      mean2Inputs.style.display="none";
+      prop2Inputs.style.display=(k==="2") ? "block" : "none";
+
+      if (calcMode.value==="impliedCL"){
+        eLabel.firstChild.textContent = "Reported margin of error (E) for p̂ ± E";
+        eUnitWrap.style.display="block";
+        eHint.textContent = "Example: 5% ⇒ E = 0.05";
+        eInput.value = "5";
+        eUnit.value = "percent";
+      } else {
+        subtitle.textContent="Proportion CIs. Wald is standard; Wilson/Agresti–Coull can be better for 1-sample.";
+      }
     }
-    return n;
   }
 
-  function integerCheckWarn(x, label) {
-    if (isFinite(x) && Math.abs(x - Math.round(x)) > 1e-9) {
-      warnBox.textContent =
-        `${label}: successes (x) should normally be an integer count. You entered ${x}. Please double-check.`;
-      warnBox.style.display = "block";
+  calcMode.addEventListener("change", () => { clearOutputs(); setModeUI(); });
+  paramType.addEventListener("change", () => { clearOutputs(); setParamUI(); });
+  numSamples.addEventListener("change", () => { clearOutputs(); setParamUI(); });
+  meanMethod.addEventListener("change", clearOutputs);
+  propMethod.addEventListener("change", clearOutputs);
+  eUnit.addEventListener("change", clearOutputs);
+  eInput.addEventListener("input", clearOutputs);
+
+  // --- Proportion CI helpers ---
+  function propCI_1sample(method, phat, x, n, z){
+    if (method==="wald"){
+      const SE = Math.sqrt(phat*(1-phat)/n);
+      const ME = z*SE;
+      return {L: phat-ME, U: phat+ME, SE, ME, meta:{phat_used: phat, n_used:n, label:"Wald"}};
     }
+    if (method==="ac"){
+      const nT = n + z*z;
+      const pT = (x + (z*z)/2) / nT;
+      const SE = Math.sqrt(pT*(1-pT)/nT);
+      const ME = z*SE;
+      return {L: pT-ME, U: pT+ME, SE, ME, meta:{phat_used:pT, n_used:nT, label:"Agresti–Coull", nT, pT}};
+    }
+    // Wilson
+    const denom = 1 + (z*z)/n;
+    const center = (phat + (z*z)/(2*n)) / denom;
+    const rad = z * Math.sqrt((phat*(1-phat)/n) + (z*z)/(4*n*n)) / denom;
+    // For Wilson, "SE/ME" is less canonical; we still provide an equivalent radius
+    return {L: center-rad, U: center+rad, SE: NaN, ME: NaN, meta:{label:"Wilson", center, rad, denom}};
   }
 
-  // ---------- Main ----------
-  function calculateCI() {
-    errorBox.style.display = "none";
-    warnBox.style.display = "none";
-    summaryBox.style.display = "none";
-    stepsList.innerHTML = "";
-    ciText.textContent = "–";
-    ciInterpretation.textContent = "";
-    summaryExtra.textContent = "";
+  async function compute(){
+    clearOutputs();
 
-    const mode = paramTypeEl.value; // mean/prop
-    const k = parseInt(numSamplesEl.value, 10);
-    const clPercent = parseFloat(clInputEl.value);
+    const mode = calcMode.value;
+    const pType = paramType.value;
 
-    if (!isFinite(clPercent) || clPercent <= 0 || clPercent >= 100) {
-      return showError("Please enter a valid confidence level between 0 and 100.");
+    // --- IMPLIED CL MODE (1-sample only) ---
+    if (mode==="impliedCL"){
+      const E = getE();
+      if (!isFinite(E) || E<=0) return showError("Implied CL: enter a valid margin of error E (>0).");
+
+      summaryBox.style.display="block";
+      stepsRoot.style.display="block";
+
+      // ----- IMPLIED CL for PROPORTION -----
+      if (pType==="prop"){
+        const x = parseFloat(x1Input.value);
+        const n = parseFloat(n1pInput.value);
+        if (![x,n].every(isFinite) || n<=0 || x<0 || x>n) return showError("Implied CL (proportion): enter valid x and n (0 ≤ x ≤ n, n>0).");
+
+        const phat = x/n;
+        if (phat<=0 || phat>=1) return showError("Implied CL (proportion): p̂ must be between 0 and 1 (not exactly 0 or 1).");
+
+        const SE = Math.sqrt(phat*(1-phat)/n);
+        const zImp = E/SE;
+        const CL = 2*normalCDF(zImp) - 1;
+        const alpha = 1 - CL;
+
+        const L = phat - E;
+        const U = phat + E;
+
+        setSummary(CL, alpha, "implied z*", zImp, null);
+        finalTitle.textContent = "Reported CI and Implied Confidence Level";
+        finalCI.textContent = `Reported: (${fmt(L,3)}, ${fmt(U,3)})   •   Implied CL ≈ ${fmt(CL*100,1)}%`;
+        finalInterp.textContent = `“p̂ ± E” implies z* ≈ ${fmt(zImp,3)} and CL ≈ ${fmt(CL*100,1)}%.`;
+
+        const ok1 = n*phat >= 10;
+        const ok2 = n*(1-phat) >= 10;
+        if (!ok1 || !ok2) showWarn("Large-count condition may fail (n·p̂ and n·(1−p̂) should be ≥ 10). Wald-based interpretations may be weaker.");
+
+        addStep("Step 1: Recognize the reported form",
+          `A report like <strong>${fmt(phat*100,1)}% ± ${fmt(E*100,1)}%</strong> means a Wald-style CI:<br>
+           \\(\\hat{p}\\pm z^*\\sqrt{\\hat{p}(1-\\hat{p})/n}\\), where the margin of error is \\(E\\).`,
+          `\\[\\hat{p}\\pm z^*\\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{n}}\\qquad E=z^*\\cdot SE\\]`
+        );
+
+        addStep("Step 2: Compute p̂ and SE (using p̂)",
+          `Compute \\(\\hat{p}=x/n\\) and \\(SE=\\sqrt{\\hat{p}(1-\\hat{p})/n}\\).`,
+          `\\[\\hat{p}=\\frac{x}{n}=\\frac{${fmt(x,0)}}{${fmt(n,0)}}=${fmt(phat,6)}\\]<br>
+           \\[SE=\\sqrt{\\frac{\\hat{p}(1-\\hat{p})}{n}}
+           =\\sqrt{\\frac{${fmt(phat,6)}\\cdot ${fmt(1-phat,6)}}{${fmt(n,0)}}}
+           \\approx ${fmt(SE,6)}\\]`
+        );
+
+        addStep("Step 3: Solve for the implied z*",
+          `Since \\(E=z^*\\cdot SE\\), we solve \\(z^*=E/SE\\).`,
+          `\\[z^*=\\frac{E}{SE}=\\frac{${fmt(E,6)}}{${fmt(SE,6)}}\\approx ${fmt(zImp,6)}\\]`
+        );
+
+        addStep("Step 4: Convert z* to the confidence level",
+          `For a symmetric CI, \\(CL=P(-z^*\\le Z\\le z^*)=2\\Phi(z^*)-1\\).`,
+          `\\[CL=2\\Phi(${fmt(zImp,6)})-1\\approx ${fmt(CL,6)}\\Rightarrow ${fmt(CL*100,1)}\\%\\]`
+        );
+
+        addStep("Step 5: Show the reported interval",
+          `The reported CI is \\(\\hat{p}\\pm E\\).`,
+          `\\[${fmt(phat,6)}\\pm ${fmt(E,6)}=(${fmt(L,6)},\\;${fmt(U,6)})\\]`
+        );
+
+        if (L<0 || U>1) showWarn("Note: the reported CI extends beyond [0,1]. Some courses keep the algebra; others clip to [0,1].");
+
+        await typeset(document.body);
+        return;
+      }
+
+      // ----- IMPLIED CL for MEAN (Z or T) -----
+      const xbar = parseFloat(mean1Input.value);
+      const n = parseFloat(n1Input.value);
+      const s = parseFloat(sd1Input.value);
+      if (![xbar,n,s].every(isFinite) || n<2 || s<=0) return showError("Implied CL (mean): enter valid x̄, n (≥2), and SD/σ (>0).");
+
+      const SE = s/Math.sqrt(n);
+      const critImp = E/SE;
+
+      // If meanMethod = t: CL = 2*F_t(t*) - 1; df=n-1
+      // If meanMethod = z: CL = 2*Phi(z*) - 1
+      let CL, alpha, label, df=null;
+
+      if (meanMethod.value === "t"){
+        df = n-1;
+        CL = 2*tCDF(critImp, df) - 1;
+        label = "implied t*";
+      } else {
+        CL = 2*normalCDF(critImp) - 1;
+        label = "implied z*";
+      }
+      alpha = 1 - CL;
+
+      const L = xbar - E;
+      const U = xbar + E;
+
+      setSummary(CL, alpha, label, critImp, df);
+      finalTitle.textContent = "Reported CI and Implied Confidence Level";
+      finalCI.textContent = `Reported: (${fmt(L,3)}, ${fmt(U,3)})   •   Implied CL ≈ ${fmt(CL*100,1)}%`;
+      finalInterp.textContent =
+        `“x̄ ± E” implies ${label} ≈ ${fmt(critImp,3)}${df!==null ? ` (df=${fmt(df,0)})` : ""} and CL ≈ ${fmt(CL*100,1)}%.`;
+
+      const cltStrong = n>=30;
+      if (!cltStrong) showWarn("Mean inference: if n is small (<30), many courses assume the population is roughly normal (or that the sample came from a normal population).");
+
+      addStep("Step 1: Recognize the reported form",
+        `A report like <strong>x̄ ± E</strong> means a CI of the form:<br>
+         Mean (Z): \\(\\bar{x}\\pm z^*\\cdot\\frac{\\sigma}{\\sqrt{n}}\\) or Mean (T): \\(\\bar{x}\\pm t^*\\cdot\\frac{s}{\\sqrt{n}}\\).`,
+        meanMethod.value==="t"
+          ? `\\[\\bar{x}\\pm t^*\\frac{s}{\\sqrt{n}}\\qquad E=t^*\\cdot SE\\]`
+          : `\\[\\bar{x}\\pm z^*\\frac{\\sigma}{\\sqrt{n}}\\qquad E=z^*\\cdot SE\\]`
+      );
+
+      addStep("Step 2: Compute the standard error (SE)",
+        `\\(SE\\) measures the typical sampling variability of \\(\\bar{x}\\).`,
+        `\\[SE=\\frac{s}{\\sqrt{n}}=\\frac{${fmt(s,6)}}{\\sqrt{${fmt(n,0)}}}\\approx ${fmt(SE,6)}\\]`
+      );
+
+      addStep("Step 3: Solve for the implied critical value",
+        `Because \\(E=\\text{crit}\\cdot SE\\), we solve \\(\\text{crit}=E/SE\\).`,
+        `\\[${label.replace("implied ","")}=\\frac{E}{SE}=\\frac{${fmt(E,6)}}{${fmt(SE,6)}}\\approx ${fmt(critImp,6)}\\]`
+      );
+
+      addStep("Step 4: Convert the critical value to CL",
+        meanMethod.value==="t"
+          ? `With df = n−1 = ${fmt(df,0)}, the central probability is \\(CL=2F_t(t^*;df)-1\\).`
+          : `For Z, the central probability is \\(CL=2\\Phi(z^*)-1\\).`,
+        meanMethod.value==="t"
+          ? `\\[CL=2F_t(${fmt(critImp,6)};\\,df=${fmt(df,0)})-1\\approx ${fmt(CL,6)}\\Rightarrow ${fmt(CL*100,1)}\\%\\]`
+          : `\\[CL=2\\Phi(${fmt(critImp,6)})-1\\approx ${fmt(CL,6)}\\Rightarrow ${fmt(CL*100,1)}\\%\\]`
+      );
+
+      addStep("Step 5: Show the reported interval",
+        `The reported CI is \\(\\bar{x}\\pm E\\).`,
+        `\\[${fmt(xbar,6)}\\pm ${fmt(E,6)}=(${fmt(L,6)},\\;${fmt(U,6)})\\]`
+      );
+
+      await typeset(document.body);
+      return;
     }
 
-    const CL = clPercent / 100;
-    const alpha = 1 - CL;
-    const alpha2 = alpha / 2;
-    const zCrit = getZCritical(alpha);
+    // --- DEFAULT MODE (compute CI from a chosen CL) ---
+    const clPct = parseFloat(clInput.value);
+    if (!isFinite(clPct) || clPct<=0 || clPct>=100) return showError("Enter a valid confidence level (0–100).");
+    const CL = clPct/100;
+    const alpha = 1-CL;
 
-    if (!isFinite(zCrit)) {
-      return showError("Unable to compute z-value. Please check the confidence level.");
-    }
+    const k = numSamples.value;
 
-    summaryCL.textContent = fmt(CL, 3) + " ( " + fmt(clPercent, 1) + "% )";
-    summaryAlpha.textContent = fmt(alpha, 3);
-    summaryAlpha2.textContent = fmt(alpha2, 3);
-    summaryZ.textContent = fmt(zCrit, 3);
+    summaryBox.style.display="block";
+    stepsRoot.style.display="block";
+    finalTitle.textContent = "Final Confidence Interval";
 
-    const steps = [];
+    // ===== MEAN =====
+    if (pType==="mean"){
+      const method = meanMethod.value;
 
-    if (mode === "mean") {
-      const mean1 = parseFloat(mean1Input.value);
+      const xbar1 = parseFloat(mean1Input.value);
       const n1 = parseFloat(n1Input.value);
-      const sd1 = parseFloat(sd1Input.value);
+      const s1 = parseFloat(sd1Input.value);
+      if (![xbar1,n1,s1].every(isFinite) || n1<2 || s1<=0) return showError("Mean CI: fill Sample 1 (X̄₁, n₁≥2, SD>0).");
 
-      if (!isFinite(mean1) || !isFinite(n1) || !isFinite(sd1) || n1 <= 0 || sd1 < 0) {
-        return showError("Please fill valid mean, size, and SD for sample 1.");
+      if (k==="1"){
+        let crit, df=null, label;
+        if (method==="t"){
+          df = n1-1;
+          crit = tStar(CL, df);
+          label = "t*";
+        } else {
+          crit = zStar(CL);
+          label = "z*";
+        }
+        setSummary(CL, alpha, label, crit, df);
+
+        const SE = s1/Math.sqrt(n1);
+        const ME = crit*SE;
+        const L = xbar1 - ME;
+        const U = xbar1 + ME;
+
+        if (n1<30) showWarn("Mean CI: if n < 30, many courses assume the population is roughly normal (or the sample is from a normal population).");
+
+        addStep("Step 1: Identify the method",
+          `This is a CI for <strong>one mean</strong> (μ).`,
+          method==="t" ? `\\[\\bar{x} \\pm t^*\\frac{s}{\\sqrt{n}}\\]` : `\\[\\bar{x} \\pm z^*\\frac{\\sigma}{\\sqrt{n}}\\]`
+        );
+
+        addStep("Step 2: Convert CL to α and find the critical value",
+          `${fmt(clPct,1)}% ⇒ \\(\\alpha=${fmt(alpha,4)}\\), \\(\\alpha/2=${fmt(alpha/2,4)}\\).`,
+          method==="t"
+            ? `\\[df=n-1=${fmt(df,0)}\\qquad t^*\\approx ${fmt(crit,6)}\\]`
+            : `\\[z^*\\approx ${fmt(crit,6)}\\]`
+        );
+
+        addStep("Step 3: Compute standard error (SE)",
+          `\\(SE\\) measures how much \\(\\bar{x}\\) typically varies from sample to sample.`,
+          `\\[SE=\\frac{s}{\\sqrt{n}}=\\frac{${fmt(s1,6)}}{\\sqrt{${fmt(n1,0)}}}\\approx ${fmt(SE,6)}\\]`
+        );
+
+        addStep("Step 4: Compute margin of error (ME)",
+          `\\(ME=\\text{critical}\\times SE\\).`,
+          `\\[ME=${fmt(crit,6)}\\cdot ${fmt(SE,6)}\\approx ${fmt(ME,6)}\\]`
+        );
+
+        addStep("Step 5: Build the CI and interpret",
+          `CI = point estimate ± ME. Then interpret in words.`,
+          `\\[${fmt(xbar1,6)}\\pm ${fmt(ME,6)}=(${fmt(L,6)},\\;${fmt(U,6)})\\]`
+        );
+
+        finalCI.textContent = `(${fmt(L,3)}, ${fmt(U,3)})`;
+        finalInterp.textContent = `We are ${fmt(clPct,1)}% confident that the true mean μ lies between ${fmt(L,3)} and ${fmt(U,3)}.`;
+
+        await typeset(document.body);
+        return;
       }
 
-      if (k === 1) {
-        const se = sd1 / Math.sqrt(n1);
-        const ME = zCrit * se;
-        const lower = mean1 - ME;
-        const upper = mean1 + ME;
+      // 2-sample mean CI
+      const xbar2 = parseFloat(mean2Input.value);
+      const n2 = parseFloat(n2Input.value);
+      const s2 = parseFloat(sd2Input.value);
+      if (![xbar2,n2,s2].every(isFinite) || n2<2 || s2<=0) return showError("2-mean CI: fill Sample 2 (X̄₂, n₂≥2, SD>0).");
 
-        summaryExtra.textContent = "Using one-sample Z-CI: μ ∈ X̄ ± z_{α/2} · (s / √n).";
-        summaryBox.style.display = "block";
+      const diff = xbar1 - xbar2;
 
-        ciTitle.textContent = "Confidence Interval for μ (one sample):";
-        ciText.innerHTML =
-          "CI = X̄ ± z<sub>α/2</sub> · (s / √n) = " +
-          fmt(mean1, 3) + " ± " + fmt(ME, 3) +
-          " ⇒ (" +
-          "<span class='result-highlight'>" + fmt(lower, 3) + "</span>, " +
-          "<span class='result-highlight'>" + fmt(upper, 3) + "</span>)";
+      if (method==="z"){
+        const crit = zStar(CL);
+        setSummary(CL, alpha, "z*", crit, null);
 
-        ciInterpretation.textContent =
-          "We are " + fmt(clPercent, 1) +
-          "% confident that the true population mean lies between " +
-          fmt(lower, 3) + " and " + fmt(upper, 3) + ".";
+        const SE = Math.sqrt((s1*s1)/n1 + (s2*s2)/n2);
+        const ME = crit*SE;
+        const L = diff - ME;
+        const U = diff + ME;
 
-        steps.push({ title: "Write the sample summary.", text: "X̄=" + fmt(mean1, 3) + ", n=" + fmt(n1, 0) + ", s=" + fmt(sd1, 3) + "." });
-        steps.push({ title: "Convert CL to α and find z_{α/2}.", text: "α=1−CL=" + fmt(alpha, 3) + ", α/2=" + fmt(alpha2, 3) + ", z≈" + fmt(zCrit, 3) + "." });
-        steps.push({ title: "Compute standard error.", text: "SE=s/√n=" + fmt(sd1, 3) + "/√" + fmt(n1, 0) + "≈" + fmt(se, 6) + "." });
-        steps.push({ title: "Compute ME and build CI.", text: "ME=z·SE≈" + fmt(ME, 6) + " ⇒ CI=(" + fmt(lower, 6) + ", " + fmt(upper, 6) + ")." });
+        addStep("Step 1: Identify the method",
+          `CI for \\(\\mu_1-\\mu_2\\) using Z (σ known).`,
+          `\\[(\\bar{x}_1-\\bar{x}_2) \\pm z^*\\sqrt{\\frac{\\sigma_1^2}{n_1}+\\frac{\\sigma_2^2}{n_2}}\\]`
+        );
 
-        renderSteps(steps);
-      } else if (k === 2) {
-        const mean2 = parseFloat(mean2Input.value);
-        const n2 = parseFloat(n2Input.value);
-        const sd2 = parseFloat(sd2Input.value);
+        addStep("Step 2: Compute SE, ME, and CI",
+          `Compute the standard error, then margin of error, then diff ± ME.`,
+          `\\[SE\\approx ${fmt(SE,6)}\\qquad ME\\approx ${fmt(ME,6)}\\qquad CI=(${fmt(L,6)},\\;${fmt(U,6)})\\]`
+        );
 
-        if (!isFinite(mean2) || !isFinite(n2) || !isFinite(sd2) || n2 <= 0 || sd2 < 0) {
-          return showError("Please fill valid mean, size, and SD for sample 2.");
-        }
+        finalCI.textContent = `(${fmt(L,3)}, ${fmt(U,3)})`;
+        finalInterp.textContent = `We are ${fmt(CL*100,1)}% confident that μ₁−μ₂ lies between ${fmt(L,3)} and ${fmt(U,3)}.`;
 
-        const diff = mean1 - mean2;
-        const se = Math.sqrt((sd1*sd1)/n1 + (sd2*sd2)/n2);
-        const ME = zCrit * se;
-        const lower = diff - ME;
-        const upper = diff + ME;
-
-        summaryExtra.textContent = "Using two-sample Z-CI: (μ₁−μ₂) ∈ (X̄₁−X̄₂) ± z · √(s₁²/n₁ + s₂²/n₂).";
-        summaryBox.style.display = "block";
-
-        ciTitle.textContent = "Confidence Interval for μ₁ − μ₂:";
-        ciText.innerHTML =
-          "CI = (X̄₁ − X̄₂) ± z<sub>α/2</sub> · √( s₁²/n₁ + s₂²/n₂ ) = " +
-          fmt(diff, 3) + " ± " + fmt(ME, 3) +
-          " ⇒ (" +
-          "<span class='result-highlight'>" + fmt(lower, 3) + "</span>, " +
-          "<span class='result-highlight'>" + fmt(upper, 3) + "</span>)";
-
-        ciInterpretation.textContent =
-          "We are " + fmt(clPercent, 1) +
-          "% confident that the true mean difference μ₁ − μ₂ lies between " +
-          fmt(lower, 3) + " and " + fmt(upper, 3) + ".";
-
-        steps.push({ title: "Write sample summaries.", text: "Group1: X̄₁=" + fmt(mean1, 3) + ", n₁=" + fmt(n1, 0) + ", s₁=" + fmt(sd1, 3) + ". Group2: X̄₂=" + fmt(mean2, 3) + ", n₂=" + fmt(n2, 0) + ", s₂=" + fmt(sd2, 3) + "." });
-        steps.push({ title: "Compute z_{α/2}.", text: "z≈" + fmt(zCrit, 3) + " for CL=" + fmt(clPercent, 1) + "%." });
-        steps.push({ title: "Compute SE and ME, then CI.", text: "SE=√(s₁²/n₁+s₂²/n₂)≈" + fmt(se, 6) + ", ME=z·SE≈" + fmt(ME, 6) + " ⇒ CI=(" + fmt(lower, 6) + ", " + fmt(upper, 6) + ")." });
-
-        renderSteps(steps);
-      } else {
-        return showError("This calculator currently supports 1 or 2 samples.");
+        await typeset(document.body);
+        return;
       }
 
-    } else {
-      // Proportion mode
-      let x1 = parseFloat(x1Input.value);
-      let n1 = parseFloat(n1Input.value);
+      // Regular pooled t (equal variances)
+      const df = n1 + n2 - 2;
+      const sp2 = (((n1-1)*s1*s1) + ((n2-1)*s2*s2)) / df;
+      const sp = Math.sqrt(sp2);
+      const SE = sp * Math.sqrt(1/n1 + 1/n2);
+      const crit = tStar(CL, df);
+      setSummary(CL, alpha, "t*", crit, df);
 
-      if (!isFinite(x1) || !isFinite(n1) || n1 <= 0 || x1 < 0) {
-        return showError("Please enter valid x₁ and n₁ (counts must be non-negative; n must be > 0).");
-      }
+      const ME = crit*SE;
+      const L = diff - ME;
+      const U = diff + ME;
 
-      integerCheckWarn(x1, "Sample 1");
-      n1 = coerceTotalNFromFailuresIfNeeded(x1, n1, "Sample 1");
+      addStep("Step 1: Identify the method",
+        `CI for \\(\\mu_1-\\mu_2\\) using the <strong>regular pooled t-interval</strong> (equal variances).`,
+        `\\[(\\bar{x}_1-\\bar{x}_2) \\pm t^*\\cdot s_p\\sqrt{\\frac{1}{n_1}+\\frac{1}{n_2}}\\]`
+      );
 
-      if (x1 > n1) {
-        return showError("Please enter valid x₁ and n₁ (must satisfy 0 ≤ x₁ ≤ n₁).");
-      }
+      addStep("Step 2: Compute pooled variance/SD and df",
+        `Compute \\(df=n_1+n_2-2\\) and the pooled SD \\(s_p\\).`,
+        `\\[df=${fmt(df,0)}\\]<br>
+         \\[s_p^2=\\frac{(n_1-1)s_1^2+(n_2-1)s_2^2}{df}\\approx ${fmt(sp2,6)}\\quad\\Rightarrow\\quad s_p\\approx ${fmt(sp,6)}\\]`
+      );
 
-      const p1 = x1 / n1;
-      const se1 = Math.sqrt((p1*(1-p1))/n1);
-      const approxOK1 = (n1*p1 >= 10) && (n1*(1-p1) >= 10);
+      addStep("Step 3: Compute SE",
+        `\\(SE=s_p\\sqrt{1/n_1+1/n_2}\\).`,
+        `\\[SE=${fmt(sp,6)}\\sqrt{\\frac{1}{${fmt(n1,0)}}+\\frac{1}{${fmt(n2,0)}}}\\approx ${fmt(SE,6)}\\]`
+      );
 
-      if (k === 1) {
-        const ME = zCrit * se1;
-        let lower = p1 - ME;
-        let upper = p1 + ME;
+      addStep("Step 4: Compute ME and build the CI",
+        `\\(ME=t^*\\cdot SE\\), then CI = diff ± ME.`,
+        `\\[\\widehat{(\\mu_1-\\mu_2)}=\\bar{x}_1-\\bar{x}_2=${fmt(diff,6)}\\]<br>
+         \\[ME=${fmt(crit,6)}\\cdot ${fmt(SE,6)}\\approx ${fmt(ME,6)}\\]<br>
+         \\[CI=(${fmt(L,6)},\\;${fmt(U,6)})\\]`
+      );
 
-        const clipped = (lower < 0 || upper > 1);
-        const lowerShown = clipped ? clamp01(lower) : lower;
-        const upperShown = clipped ? clamp01(upper) : upper;
+      finalCI.textContent = `(${fmt(L,3)}, ${fmt(U,3)})`;
+      finalInterp.textContent = `We are ${fmt(CL*100,1)}% confident that μ₁−μ₂ lies between ${fmt(L,3)} and ${fmt(U,3)}.`;
 
-        summaryExtra.textContent =
-          "Using one-proportion Z-CI: p ∈ p̂ ± z_{α/2} · √( p̂(1−p̂) / n )." +
-          (clipped ? " (Bounds clipped to [0,1] for display.)" : "");
-        summaryBox.style.display = "block";
-
-        if (!approxOK1) {
-          warnBox.textContent =
-            "Warning: Normal approximation may be weak because n·p̂ or n·(1−p̂) is < 10. Some courses prefer exact/Wilson intervals in that case.";
-          warnBox.style.display = "block";
-        }
-
-        ciTitle.textContent = "Confidence Interval for p (one proportion):";
-        ciText.innerHTML =
-          "CI = p̂ ± z<sub>α/2</sub> · √( p̂(1−p̂) / n ) = " +
-          fmt(p1, 4) + " ± " + fmt(ME, 4) +
-          " ⇒ (" +
-          "<span class='result-highlight'>" + fmt(lowerShown, 4) + "</span>, " +
-          "<span class='result-highlight'>" + fmt(upperShown, 4) + "</span>)";
-
-        ciInterpretation.textContent =
-          "We are " + fmt(clPercent, 1) +
-          "% confident that the true population proportion lies between " +
-          fmt(lowerShown, 4) + " and " + fmt(upperShown, 4) + ".";
-
-        steps.push({ title: "Compute the sample proportion.", text: "p̂ = x/n = " + fmt(x1, 0) + "/" + fmt(n1, 0) + " = " + fmt(p1, 4) + "." });
-        steps.push({ title: "Find z_{α/2}.", text: "CL=" + fmt(clPercent, 1) + "% ⇒ α=" + fmt(alpha, 3) + " ⇒ z≈" + fmt(zCrit, 3) + "." });
-        steps.push({ title: "Compute standard error.", text: "SE=√(p̂(1−p̂)/n)=√(" + fmt(p1, 4) + "·" + fmt(1-p1, 4) + "/" + fmt(n1, 0) + ")≈" + fmt(se1, 6) + "." });
-        steps.push({ title: "Compute ME and CI.", text: "ME=z·SE≈" + fmt(ME, 6) + " ⇒ CI=(" + fmt(lowerShown, 6) + ", " + fmt(upperShown, 6) + ")." });
-
-        renderSteps(steps);
-
-      } else if (k === 2) {
-        let x2 = parseFloat(x2Input.value);
-        let n2 = parseFloat(n2Input.value);
-
-        if (!isFinite(x2) || !isFinite(n2) || n2 <= 0 || x2 < 0) {
-          return showError("Please enter valid x₂ and n₂ (counts must be non-negative; n must be > 0).");
-        }
-
-        integerCheckWarn(x2, "Sample 2");
-        n2 = coerceTotalNFromFailuresIfNeeded(x2, n2, "Sample 2");
-
-        if (x2 > n2) {
-          return showError("Please enter valid x₂ and n₂ (must satisfy 0 ≤ x₂ ≤ n₂).");
-        }
-
-        const p2 = x2 / n2;
-        const diff = p1 - p2;
-        const se = Math.sqrt((p1*(1-p1))/n1 + (p2*(1-p2))/n2);
-        const ME = zCrit * se;
-        const lower = diff - ME;
-        const upper = diff + ME;
-
-        summaryExtra.textContent =
-          "Using two-proportion Z-CI: (p₁−p₂) ∈ (p̂₁−p̂₂) ± z · √( p̂₁(1−p̂₁)/n₁ + p̂₂(1−p̂₂)/n₂ ).";
-        summaryBox.style.display = "block";
-
-        const approxOK2 =
-          (n1*p1 >= 10) && (n1*(1-p1) >= 10) &&
-          (n2*p2 >= 10) && (n2*(1-p2) >= 10);
-
-        if (!approxOK2) {
-          warnBox.textContent =
-            "Warning: Normal approximation may be weak for at least one group (some n·p̂ or n·(1−p̂) < 10).";
-          warnBox.style.display = "block";
-        }
-
-        ciTitle.textContent = "Confidence Interval for p₁ − p₂:";
-        ciText.innerHTML =
-          "CI = (p̂₁ − p̂₂) ± z<sub>α/2</sub> · √( p̂₁(1−p̂₁)/n₁ + p̂₂(1−p̂₂)/n₂ ) = " +
-          fmt(diff, 4) + " ± " + fmt(ME, 4) +
-          " ⇒ (" +
-          "<span class='result-highlight'>" + fmt(lower, 4) + "</span>, " +
-          "<span class='result-highlight'>" + fmt(upper, 4) + "</span>)";
-
-        ciInterpretation.textContent =
-          "We are " + fmt(clPercent, 1) +
-          "% confident that the true proportion difference p₁ − p₂ lies between " +
-          fmt(lower, 4) + " and " + fmt(upper, 4) + ".";
-
-        steps.push({ title: "Compute sample proportions.", text:
-          "p̂₁=x₁/n₁=" + fmt(x1,0) + "/" + fmt(n1,0) + "=" + fmt(p1,4) +
-          ", p̂₂=x₂/n₂=" + fmt(x2,0) + "/" + fmt(n2,0) + "=" + fmt(p2,4) + "."
-        });
-        steps.push({ title: "Find z_{α/2}.", text: "z≈" + fmt(zCrit, 3) + " for CL=" + fmt(clPercent, 1) + "%." });
-        steps.push({ title: "Compute SE, ME, and CI.", text:
-          "SE=√(p̂₁(1−p̂₁)/n₁ + p̂₂(1−p̂₂)/n₂)≈" + fmt(se,6) +
-          ", ME=z·SE≈" + fmt(ME,6) +
-          " ⇒ CI=(" + fmt(lower,6) + ", " + fmt(upper,6) + ")."
-        });
-
-        renderSteps(steps);
-      } else {
-        return showError("This calculator currently supports 1 or 2 samples.");
-      }
+      await typeset(document.body);
+      return;
     }
+
+    // ===== PROPORTION =====
+    const method = propMethod.value;
+    const z = zStar(CL);
+    setSummary(CL, alpha, "z*", z, null);
+
+    const x1 = parseFloat(x1Input.value);
+    const n1p = parseFloat(n1pInput.value);
+    if (![x1,n1p].every(isFinite) || n1p<=0 || x1<0 || x1>n1p){
+      return showError("Proportion CI: Sample 1 must satisfy 0 ≤ x₁ ≤ n₁ and n₁>0.");
+    }
+    const p1 = x1/n1p;
+
+    if (k==="1"){
+      const res = propCI_1sample(method, p1, x1, n1p, z);
+      let L=res.L, U=res.U;
+
+      const ok1 = n1p*p1 >= 10;
+      const ok2 = n1p*(1-p1) >= 10;
+      if (!ok1 || !ok2) showWarn("Large-count check: need n·p̂ ≥ 10 and n·(1−p̂) ≥ 10 for normal approximation. Consider Wilson/Agresti–Coull if your course allows.");
+
+      addStep("Step 1: Identify the parameter and method",
+        `This is a CI for one proportion p. Method: <strong>${res.meta.label}</strong>.`,
+        `\\[\\hat{p}=\\frac{x}{n}\\]`
+      );
+
+      addStep("Step 2: Compute p̂",
+        `\\(\\hat{p}=x/n\\).`,
+        `\\[\\hat{p}=\\frac{${fmt(x1,0)}}{${fmt(n1p,0)}}=${fmt(p1,6)}\\]`
+      );
+
+      if (method==="wald"){
+        addStep("Step 3: Compute SE and ME",
+          `For Wald: \\(SE=\\sqrt{\\hat{p}(1-\\hat{p})/n}\\), \\(ME=z^*\\cdot SE\\).`,
+          `\\[SE=\\sqrt{\\frac{${fmt(p1,6)}\\cdot ${fmt(1-p1,6)}}{${fmt(n1p,0)}}}\\approx ${fmt(res.SE,6)}\\]<br>
+           \\[ME=${fmt(z,6)}\\cdot ${fmt(res.SE,6)}\\approx ${fmt(res.ME,6)}\\]`
+        );
+      } else if (method==="ac"){
+        addStep("Step 3: Agresti–Coull adjustment",
+          `Add \\(z^2\\) pseudo-counts: \\(\\tilde{n}=n+z^2\\), \\(\\tilde{p}=(x+z^2/2)/\\tilde{n}\\).`,
+          `\\[\\tilde{n}=${fmt(res.meta.nT,6)}\\qquad \\tilde{p}=${fmt(res.meta.pT,6)}\\]`
+        );
+        addStep("Step 4: Compute SE and CI using \\(\\tilde{p},\\tilde{n}\\)",
+          `\\(SE=\\sqrt{\\tilde{p}(1-\\tilde{p})/\\tilde{n}}\\), CI = \\(\\tilde{p}\\pm z^*SE\\).`,
+          `\\[CI=(${fmt(L,6)},\\;${fmt(U,6)})\\]`
+        );
+      } else {
+        addStep("Step 3: Wilson interval",
+          `Wilson re-centers and rescales the interval (often better for small counts).`,
+          `\\[CI=(${fmt(L,6)},\\;${fmt(U,6)})\\]`
+        );
+      }
+
+      addStep("Step 5: Final CI and interpretation",
+        `Write the final interval and interpret it in context.`,
+        `\\[CI=(${fmt(L,6)},\\;${fmt(U,6)})\\]`
+      );
+
+      finalCI.textContent = `(${fmt(L,3)}, ${fmt(U,3)})`;
+      finalInterp.textContent = `We are ${fmt(CL*100,1)}% confident that the true proportion p lies between ${fmt(L,3)} and ${fmt(U,3)}.`;
+
+      await typeset(document.body);
+      return;
+    }
+
+    // 2-proportion difference (standard)
+    const x2 = parseFloat(x2Input.value);
+    const n2p = parseFloat(n2pInput.value);
+    if (![x2,n2p].every(isFinite) || n2p<=0 || x2<0 || x2>n2p){
+      return showError("2-proportion CI: Sample 2 must satisfy 0 ≤ x₂ ≤ n₂ and n₂>0.");
+    }
+    const p2 = x2/n2p;
+
+    if (method!=="wald"){
+      showWarn("Note: Wilson/Agresti–Coull are defined for one proportion. For 2-proportion differences, this page uses the standard (Wald-style) SE for p̂₁ − p̂₂.");
+    }
+
+    const diff = p1 - p2;
+    const SE = Math.sqrt(p1*(1-p1)/n1p + p2*(1-p2)/n2p);
+    const ME = z*SE;
+    const L = diff - ME;
+    const U = diff + ME;
+
+    const okA = n1p*p1 >= 10 && n1p*(1-p1) >= 10;
+    const okB = n2p*p2 >= 10 && n2p*(1-p2) >= 10;
+    if (!okA || !okB) showWarn("Large-count condition may fail for one or both samples (need n·p̂ and n·(1−p̂) ≥ 10 in each group).");
+
+    addStep("Step 1: Identify the parameter",
+      `This is a CI for the difference in proportions: \\(p_1-p_2\\).`,
+      `\\[(\\hat{p}_1-\\hat{p}_2)\\pm z^*\\sqrt{\\frac{\\hat{p}_1(1-\\hat{p}_1)}{n_1}+\\frac{\\hat{p}_2(1-\\hat{p}_2)}{n_2}}\\]`
+    );
+
+    addStep("Step 2: Compute p̂₁ and p̂₂",
+      `\\(\\hat{p}_1=x_1/n_1\\), \\(\\hat{p}_2=x_2/n_2\\).`,
+      `\\[\\hat{p}_1=\\frac{${fmt(x1,0)}}{${fmt(n1p,0)}}=${fmt(p1,6)}\\qquad
+         \\hat{p}_2=\\frac{${fmt(x2,0)}}{${fmt(n2p,0)}}=${fmt(p2,6)}\\]`
+    );
+
+    addStep("Step 3: Compute SE and ME",
+      `Compute SE for \\(\\hat{p}_1-\\hat{p}_2\\), then ME.`,
+      `\\[SE=\\sqrt{\\frac{${fmt(p1,6)}\\cdot ${fmt(1-p1,6)}}{${fmt(n1p,0)}}+
+                 \\frac{${fmt(p2,6)}\\cdot ${fmt(1-p2,6)}}{${fmt(n2p,0)}}}
+         \\approx ${fmt(SE,6)}\\]<br>
+       \\[ME=${fmt(z,6)}\\cdot ${fmt(SE,6)}\\approx ${fmt(ME,6)}\\]`
+    );
+
+    addStep("Step 4: Build the CI and interpret",
+      `CI = (\\(\\hat{p}_1-\\hat{p}_2\\)) ± ME.`,
+      `\\[\\hat{p}_1-\\hat{p}_2=${fmt(diff,6)}\\]<br>
+       \\[CI=(${fmt(L,6)},\\;${fmt(U,6)})\\]`
+    );
+
+    finalCI.textContent = `(${fmt(L,3)}, ${fmt(U,3)})`;
+    finalInterp.textContent = `We are ${fmt(CL*100,1)}% confident that p₁−p₂ lies between ${fmt(L,3)} and ${fmt(U,3)}.`;
+
+    await typeset(document.body);
   }
 
-  // ---------- Reset ----------
-  function resetAll() {
-    paramTypeEl.value = "mean";
-    numSamplesEl.value = "1";
-    clInputEl.value = 95;
+  function resetAll(){
+    clearOutputs();
+    calcMode.value="ci";
+    paramType.value="mean";
+    numSamples.value="1";
+    numSamples.disabled=false;
 
-    mean1Input.value = "";
-    sd1Input.value = "";
-    n1Input.value = "";
+    clInput.value="95";
+    meanMethod.value="t";
+    propMethod.value="wald";
 
-    mean2Input.value = "";
-    sd2Input.value = "";
-    n2Input.value = "";
+    eInput.value="5";
+    eUnit.value="percent";
 
-    x1Input.value = "";
-    x2Input.value = "";
+    [mean1Input,n1Input,sd1Input,mean2Input,n2Input,sd2Input,x1Input,n1pInput,x2Input,n2pInput].forEach(el => el.value="");
 
-    errorBox.style.display = "none";
-    warnBox.style.display = "none";
-    summaryBox.style.display = "none";
-    stepsList.innerHTML = "";
-    ciText.textContent = "–";
-    ciInterpretation.textContent = "";
-    summaryExtra.textContent = "";
-    resultSubtitle.textContent = 'Fill the inputs on the left and click "Calculate CI".';
-
-    updateSampleVisibility();
-    updateParamVisibility();
+    setModeUI();
+    subtitle.textContent = "Fill inputs and click “Calculate”.";
   }
 
-  calcBtn.addEventListener("click", calculateCI);
-  resetBtn.addEventListener("click", resetAll);
+  document.getElementById("calcBtn").addEventListener("click", compute);
+  document.getElementById("resetBtn").addEventListener("click", resetAll);
 
-  updateSampleVisibility();
-  updateParamVisibility();
+  // Init
+  setModeUI();
 </script>
 </body>
 </html>
